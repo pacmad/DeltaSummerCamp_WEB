@@ -1,0 +1,68 @@
+@charset "windows-1251";
+.explanation {
+	font-size: x-small;
+}
+.required {
+	color: #C00;
+	font-weight: bold;
+}
+.indented {
+	display: block;
+	position: relative;
+	left: 20px;
+	width: 60%;
+	padding: 10px;
+	border: 1px solid darkgrey;
+	box-shadow: 2px 3px grey;
+}
+.text-input {
+	font-size: 18px;
+	box-sizing: border-box;
+	border: 1px solid white;
+	border-radius: 3px;
+	width: 75%;
+	margin: 8px 0 8px 0;
+	padding: 12px 0 12px 5px;
+	resize: none;
+}
+#birthday {
+    width: 200px;
+}
+.hidden_error {
+	display: none;
+	background-color: #CC0000;
+    color: azure;
+    font-size: x-small;
+    width: 200px;
+    height: auto;
+	opacity: 0;
+}
+.hidden_error.showed {
+	display: block !important;
+	opacity: 1;
+	-webkit-animation: toshow 1s;
+	animation: toshow 1s;
+}
+@-webkit-keyframes toshow {
+	from {opacity: 0;}
+	to {opacity: 1;}
+}
+@keyframes toshow {
+	from {opacity: 0;}
+	to {opacity: 1;}
+}
+@media only screen and (max-width: 850px) {
+	.text-input {
+		width: 100%;
+		font-size: large;
+		padding: 12px 10px;
+		margin: 0;
+		box-sizing: border-box;
+		border: 1px solid white;
+		border-radius: 5px;
+	}
+
+	.explanation {
+		font-size: small;
+	}
+}

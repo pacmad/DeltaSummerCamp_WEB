@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="windows-1251">
+<title>Регистрация</title>
+<link href="CSS/common.css" rel="stylesheet" type="text/css">
+<link href="CSS/form.css" rel="stylesheet" type="text/css">
+<?php require_once 'phplib/dbConnect.php' ?>
+</head>
+
+<body>
+<h1>Регистрация в летний физико-математический лагерь "Дельта"</h1>
+<p class="explanation">Поля, помеченные звёздочкой <span class="required">*</span> обязательны.</p>
+
+<form id="form" name="form" method="get">
+  <p>E-Mail <span class="required">*</span><br>
+    <input name="email" type="email" required id="email" placeholder="ivan@ivanov.earth" size="40">
+    <br>
+  <span class="explanation">Ваш адрес электронной почты. На него придёт подтверждение регистрации.</span></p>
+  <p>Фамилия <span class="required">*</span><br>
+    <input name="surname" type="text" required id="surname" placeholder="Иванов" size="40">
+  </p>
+  <p>Имя <span class="required">*</span><br>
+    <input name="name" type="text" required id="name" placeholder="Иван" size="40">
+  </p>
+  <p>Отчество<br>
+    <input name="middlename" type="text" id="middlename" placeholder="Иванович" size="40">
+  </p>
+  <p>Пол <span class="required">*</span><br>
+    <label>
+      <input name="gender" type="radio" required id="female" value="female">
+      девочка</label>
+    <br>
+    <label>
+      <input name="gender" type="radio" required id="male" value="male">
+      мальчик</label>
+  </p>
+  <p>Дата рождения <span class="required">*</span><br>
+    <input name="birthday" type="text" required id="birthday" placeholder="dd/mm/yyyy">
+  </p>
+  <p>Класс<br>
+    <input name="class" type="number" id="class" max="14" min="1" step="1">
+    <br>
+  <span class="explanation">Из расчёта 11-летней системы или год обучения ребёнка в школе.</span> </p>
+  <p>Школа <span class="required">*</span><br>
+    <input name="school" type="text" required id="school">
+  </p>
+  <p>Город <span class="required">*</span><br>
+    <input name="city" type="text" required id="sity">
+  </p>
+  <p>Страна <span class="required">*</span><br>
+    <input name="country" type="text" required id="country">
+  </p>
+  <p>Языки <span class="required">*</span><br>
+    <input name="langs" type="text" required id="langs" value="русский" size="60">
+    <br>
+  <span class="explanation">Языки, которыми владеет ребёнок. Перечислите через запятую.</span></p>
+  <p> Контактный телефон <span class="required">*</span><br>
+    <input name="tel" type="tel" required id="tel">
+  </p>
+  <p>Дополнительная информация<br>
+    <textarea name="notes" cols="60" rows="4" id="notes"></textarea>
+    <br>
+  <span class="explanation">Всё, что Вы ещё хотели бы нам сообщить. Также Вы можете задать свои вопросы письмом на delta@mathbaby.ru</span></p>
+  <div class="idented"><p>На основании ст.64 п.1 Семейного кодекса РФ даю свое согласие на   обработку указанных выше данных моего ребенка для участия в выездной   школе, получения информации о школе, отъезде, возвращении. Использование   данных для других целей не предусмотрено.<br>
+  Согласен<span class="required" title="Обязательно для заполнения.">*</span>: <input name="agree" type="checkbox" required id="agree"></p></div>
+  <p>
+    <input type="submit" name="submit" id="submit" value="Зарегистрировать">
+  </p>
+  <p>
+    <input name="ALL_DONE" type="hidden" id="ALL_DONE" value="Ok">
+    <br>
+  </p>
+</form>
+</body>
+</html>
