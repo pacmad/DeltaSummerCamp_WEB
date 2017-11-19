@@ -7,18 +7,26 @@
 <link href="CSS/common.css" rel="stylesheet" type="text/css">
 <link href="CSS/form.css" rel="stylesheet" type="text/css">
 <script src="JS/form_functions.js"></script>
-<?php require_once 'phplib/dbConnect.php' ?>
 </head>
 
 <body>
-<?php 
+<?php
+require_once 'phplib/dbConnect.php';
+require_once 'phplib/mail.php';
+require_once 'phplib/common.php';
 if (!isset($_POST["ALL_DONE"])) {
+    /****
+     *
+     * Форма регистрации
+     *
+     */
 ?>
 <div class="row"><div class="col-12">
 <h1>Регистрация в летний физико-математический лагерь "Дельта"</h1>
 <p class="explanation">Поля, помеченные звёздочкой <span class="required">*</span> обязательны.</p>
 </div></div> <!-- col12, row -->
 
+<div class="main">
 <form id="form" name="form" method="post" onsubmit="return checkForm()">
   <div class="row">
   <div class="col-4">
@@ -62,10 +70,8 @@ if (!isset($_POST["ALL_DONE"])) {
   <div class="col-3">
   <div id="gender">
   <p>Пол <span class="required">*</span><br>
-    <label>
-      <input name="gender" type="radio" required id="female" value="f">девочка</label>&nbsp;&nbsp;
-    <label>
-      <input name="gender" type="radio" required id="male" value="m">мальчик</label>
+    <input name="gender" type="radio" required id="female" value="f"><label for="female"><span><span></span></span>девочка</label>&nbsp;&nbsp;
+    <input name="gender" type="radio" required id="male" value="m"><label for="male"><span><span></span></span>мальчик</label>
   </p>
   </div> <!-- gender -->
   </div> <!-- col-3 -->
@@ -103,7 +109,10 @@ if (!isset($_POST["ALL_DONE"])) {
     <br>
   <span class="explanation">Всё, что Вы ещё хотели бы нам сообщить. Также Вы можете задать свои вопросы письмом на delta@mathbaby.ru</span></p>
   <div class="indented" id="agree"><p>На основании ст.64 п.1 Семейного кодекса РФ даю свое согласие на   обработку указанных выше данных моего ребенка для участия в выездной   школе, получения информации о школе, отъезде, возвращении. Использование   данных для других целей не предусмотрено.<br>
-  Согласен<span class="required" title="Обязательно для заполнения.">*</span>: <input name="agree" type="checkbox" required id="agree" title="Согласие"></p></div>
+  <b>Согласен</b><span class="required" title="Обязательно для заполнения.">*</span>: 
+  <input name="agree" type="checkbox" id="agree" value="agree" title="Согласие">
+  <label for="agree"><span><span></span></span></label>
+  </p></div>
   <p>
     <input name="submit" type="submit" id="submit" value="Зарегистрировать">
   </p>
@@ -111,14 +120,139 @@ if (!isset($_POST["ALL_DONE"])) {
   <p><input name="ALL_DONE" type="hidden" id="ALL_DONE" value="Ok"><br>
   </p>
 </form>
+</div> <!-- class "main" -->
 <?php
 } elseif ($_POST["ALL_DONE"] !== 'Ok') {
-    echo 'Что-то пошло не так...';
-} else { ?>
+    error('Что-то пошло не так...');
+} else {
+    /***
+     *
+     * Обработка данных после заполнения формы регистрации
+     *
+     */
+    try {
+        $db = new dbConnect();
+        $uniqueID = $db->putRegData();
+        if ($db->getStatus() == DB_ADD_OK) {
+            $person = $db->getPerson($uniqueID);
+            if (!sendRegMail($person)) {
+                error("Проблема с отправкой письма подтверждения");
+            } else {
+                $db->dbLog("Отправлено письмо-подтверждение регистрации, UniqueId=" . $uniqueID);
+            }
+            /*****
+             *
+             * Сообщение об успешной регистрации
+             *
+             */
+            ?>
+            <div class="row">
+                <div class="col-12">
+                    <h1>Регистрация в летний физико-математический лагерь "Дельта"</h1>
+                    <p class="explanation">&nbsp;</p>
+                </div>
+            </div> <!-- col12, row -->
 
-<?php
-    $db = new dbConnect();
-    $db->putRegData();
+            <div class="main">
+                <form id="form" name="form" method="post" action="index.php">
+                    <div class="row">
+                        <div class="col-2">&nbsp;</div>
+                        <div class="col-8">
+                            <p>Спасибо за регистрацию!</p>
+                            <p>На Ваш адрес будет выслано письмо.</p>
+                        </div>
+                        <!-- col-8 -->
+                        <div class="col-2">&nbsp;</div>
+                    </div> <!-- row -->
+                    <div class="row">
+                        <div class="col-6">
+                            <p>
+                                <input name="submit" type="submit" id="submit" value="Вернуться на сайт">
+                            </p>
+                        </div>
+                    </div> <!-- col-6 row -->
+                    <p><input name="ALL_DONE" type="hidden" id="ALL_DONE" value="Ok"><br>
+                    </p>
+                </form>
+            </div> <!-- class "main" -->
+            <?php
+        } elseif ($db->getStatus() == DB_ADD_DUP) {
+            /*
+             * Обработка повторной регистрации
+             */
+            $person = $db->getPerson($uniqueID);
+            if (!sendRegMail($person)) {
+                error("Проблема с отправкой письма подтверждения");
+            } else {
+                $db->dbLog("Повторно отправлено письмо-подтверждение регистрации, UniqueId=" . $uniqueID);
+            }
+            ?>
+            <div class="row">
+                <div class="col-12">
+                    <h1>Регистрация в летний физико-математический лагерь "Дельта"</h1>
+                    <p class="explanation">&nbsp;</p>
+                </div>
+            </div> <!-- col12, row -->
+
+            <div class="main">
+                <form id="form" name="form" method="post" action="index.php">
+                    <div class="row">
+                        <div class="col-2">&nbsp;</div>
+                        <div class="col-8">
+                            <p>Внимание!</p>
+                            <p><b><?php echo $person['Name'] . " " . $person['Surname']?></b> с датой рождения
+                                <?php echo $person['Birthday']?> уже зарегистрирован!</p>
+                            <p>На всякий случай мы высылаем повторное письмо на Ваш адрес (<?php echo $person['Email'] ?>).</p>
+                        </div>
+                        <!-- col-8 -->
+                        <div class="col-2">&nbsp;</div>
+                    </div> <!-- row -->
+                    <div class="row">
+                        <div class="col-6">
+                            <p>
+                                <input name="submit" type="submit" id="submit" value="Вернуться на сайт">
+                            </p>
+                        </div>
+                    </div> <!-- col-6 row -->
+                    <p><input name="ALL_DONE" type="hidden" id="ALL_DONE" value="Ok"><br>
+                    </p>
+                </form>
+                <div class="row"><div class="col-12">
+                        <hr>
+                        <p>Если у Вас возникли вопросы или Вы заметили неточность в регистрационных данных, пожалуйста воспользуйтесь формой
+                            обратной связи или свяжитесь с нами:</p>
+                    </div></div>  <!-- col-12, row -->
+                <div class="row"><div class="col-6">
+                        <p><b>Анна Семовская</b><br>
+                            +7(903)749-4851 (телефон, Telegram)<br>
+                            anna.sem@gmail.com<br>
+                            Skype: aselect1976</p></div> <!-- col-6 -->
+                    <div class="col-6">
+                        <p><b>Дмитрий Аблов</b><br>
+                            +7(903)795-4223 (телефон, Telegram, Viber, WhatsUpp)<br>
+                            d.ablov@gmail.com<br>
+                            Skype: d.ablov</p></div></div> <!-- col-6, row -->
+                <div class="row"><div class="col-8">
+                        <form method="post" action="feedback.php">
+                            <p>
+                                <input name="id" type="hidden" id="id" value="<?php echo $person['UniqueId'] ?>">
+                                <input name="name" type="hidden" id="name" value="<?php echo $person['Name'] . ' ' . $person['Surname'] ?>">
+                                <input name="email" type="hidden" id="email" value="<?php echo $person['Email'] ?>">
+                                <input type="submit" value="Связь с организаторами">
+                            </p>
+                            <p>&nbsp; </p>
+                        </form>
+                    </div></div> <!-- col-8, row -->
+
+            </div> <!-- class "main" -->
+            <?php
+
+        }
+        $db = null;
+    }
+    catch (PDOException $e) {
+        error("PDO Exception: " . $e->getMessage());
+    }
 }
 ?>
 </body>

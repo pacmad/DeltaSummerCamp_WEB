@@ -2,40 +2,26 @@
 <html>
 <head>
 <meta charset="windows-1251">
-<?php require_once 'phplib/dbConnect.php' ?>
+<style>
+#myDate {
+	border: thin solid gray;
+}
+</style>
+<script src="JS/test.js"></script>
+<script>
+function Click() {
+    document.getElementById('demo').innerHTML = document.getElementById('myDate').value;
+}
+</script>
+
 </head>
-<body>
-<h1>Эксперименты с базами данных</h1>
-<?php
-$servername = "localhost";
-$username = "PHP";
-$password = "DeltaDB";
-try {
-    $conn = new PDO("mysql:host=$servername;dbname=delta;charset=CP1251", $username, $password);
-    // set the PDO error mode to exception
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    echo "<br>Connected successfully";
-}
-catch (PDOException $e) {
-    echo "<br>Connection failed: " . $e->getMessage();
-}
+<body onload="init()">
+Date:
+<input type="tel" id="myDate" name="bday" onFocus='Focus(this)' onBlur='Blur(this)' onchange='checkDate(this)'/>
+<br>
+<button onclick='Click()'>Try it</button>
 
-try {
-    $sql = "SELECT UniqueId, Surname, Name FROM registrations";
-    if (!($result = $conn->query($sql))) {
-        echo "<br>Nothing found";
-    } else {
-        foreach ($result as $row) {
-            print_r('<br>' . $row['UniqueId'] . '&nbsp;' . $row['Surname'] . '&nbsp;' . $row['Name']);
-        }
+<p id="demo"></p>
 
-    }
-}
-catch (PDOException $e) {
-    echo "<br>SELECT failed: " . $e->getMessage();
-    return -1;
-}
-
-?>
 </body>
 </html>

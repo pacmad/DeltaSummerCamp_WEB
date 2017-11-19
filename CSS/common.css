@@ -2,12 +2,24 @@
 * {
 	box-sizing:border-box;
 }
-body {
-	margin:0;
-	font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", "DejaVu Sans", Verdana, sans-serif;
+html, body {
+    padding:0;
+	margin:auto;
+	font-family: Gotham, "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-style: normal;
 	font-size: 14px;
 	color: #333;
-	background-color: #EEE;
+	background-color: #FFF;
+}
+.main {
+    display: block;
+    width: 90%;
+    padding: 0 20px;
+    margin: auto auto 40px auto;
+	border:#CCC 1px solid;
+	box-shadow: 0 0 10px Grey;
+    align-content:center;
+    background-color:#EEE;
 }
 .col-1 {width: 8.33%;}
 .col-2 {width: 16.66%;}
