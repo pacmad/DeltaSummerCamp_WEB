@@ -8,6 +8,7 @@
 
 require_once 'common.php';
 
+define("DB_NOT_FOUND", "-1"); // Запись с таким UID не существует
 define("DB_ADD_OK", "0"); // Добавление данных в баз упрошло успешно
 define("DB_ADD_DUP", "1"); // Запись не добавлена - ключ UniqueId уже есть в базе
 
@@ -107,13 +108,15 @@ class dbConnect
             foreach ($result as $row) {
                 return $row;
             }
+        } else {
+            $this->status = DB_NOT_FOUND;
         }
         return false;
     }
 
-    // Устанавливает флаг is_reg
-    public function setReg($uniqueId) {
-        $sql = "UPDATE registrations SET is_reg=1 WHERE UniqueId='" . $uniqueId ."'";
+    // Устанавливает флаг status
+    public function setRegStatus($uniqueId, $flag) {
+        $sql = "UPDATE registrations SET status=" . $flag . " WHERE UniqueId='" . $uniqueId ."'";
         return $this->conn->query($sql);
 }
 

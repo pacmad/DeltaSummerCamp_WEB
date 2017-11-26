@@ -64,7 +64,7 @@ if (!isset($_POST["ALL_DONE"])) {
     <input class="text-input" name="birthday" type="text" required id="birthday" placeholder="dd/mm/yyyy"
            title="Дата рождения" onChange="checkDate(this);">
     <span class="hidden_error" id="date_error">Неверный формат даты!<br>Используйте "день/месяц/год"<br>Например: 27/03/1999</span>
-    <span class="explanation"><span class="age" id="age"></span></span>
+    <span class="explanation"><span class="age" id="age">&nbsp;</span></span>
   </p>
   </div> <!-- col-3 -->
   <div class="col-3">
@@ -134,17 +134,18 @@ if (!isset($_POST["ALL_DONE"])) {
         $db = new dbConnect();
         $uniqueID = $db->putRegData();
         if ($db->getStatus() == DB_ADD_OK) {
-            $person = $db->getPerson($uniqueID);
-            if (!sendRegMail($person)) {
-                error("Проблема с отправкой письма подтверждения");
-            } else {
-                $db->dbLog("Отправлено письмо-подтверждение регистрации, UniqueId=" . $uniqueID);
-            }
             /*****
              *
              * Сообщение об успешной регистрации
              *
              */
+            $person = $db->getPerson($uniqueID);
+            try {
+                sendRegMail($person);
+            } catch (\PHPMailer\PHPMailer\Exception $e) {
+                error($e->errorMessage());
+            }
+            $db->dbLog("Отправлено письмо-подтверждение регистрации, UniqueId=" . $uniqueID);
             ?>
             <div class="row">
                 <div class="col-12">
@@ -181,11 +182,12 @@ if (!isset($_POST["ALL_DONE"])) {
              * Обработка повторной регистрации
              */
             $person = $db->getPerson($uniqueID);
-            if (!sendRegMail($person)) {
-                error("Проблема с отправкой письма подтверждения");
-            } else {
-                $db->dbLog("Повторно отправлено письмо-подтверждение регистрации, UniqueId=" . $uniqueID);
+            try {
+                sendRegMail($person);
+            } catch (\PHPMailer\PHPMailer\Exception $e) {
+                error($e->errorMessage());
             }
+            $db->dbLog("Повторно отправлено письмо-подтверждение регистрации, UniqueId=" . $uniqueID);
             ?>
             <div class="row">
                 <div class="col-12">
@@ -249,8 +251,7 @@ if (!isset($_POST["ALL_DONE"])) {
 
         }
         $db = null;
-    }
-    catch (PDOException $e) {
+    } catch (PDOException $e) {
         error("PDO Exception: " . $e->getMessage());
     }
 }

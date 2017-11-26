@@ -6,6 +6,7 @@
 <title>Личный кабинет</title>
 <link href="CSS/common.css" rel="stylesheet" type="text/css">
 <link href="CSS/form.css" rel="stylesheet" type="text/css">
+<script src="JS/cabinet_functions.js"></script>
 </head>
 <body>
 <?php
@@ -18,10 +19,18 @@ if (!isset($_GET["id"])) {
 <p>Страница не предназначена для просмотра без параметров.</p>
 <?php
 } else {
+    /*
+     * Обработка AJAX-запроса на изменение статуса записи
+     */
+    if (isset($_GET["SetStatus"])) {
+        $db = new dbConnect();
+        $db->setRegStatus($_GET["id"], $_GET["SetStatus"]);
+        exit();
+    }
     $db = new dbConnect();
     if ($row = $db->getPerson($_GET["id"])) {
         $db->dbLog($row['Name'] . " " . $row['Surname'] . " зашёл в Личный кабинет");
-        $db->setReg($_GET["id"]);
+        $db->setRegStatus($_GET["id"], 1); // Пользователь зашёл в Личный кабинет
 
         /*
          * Вывод страницы личного кабинета
@@ -35,7 +44,7 @@ if (!isset($_GET["id"])) {
 <div class="row">
 <div class="col-6">
 <h3>Здравствуйте! </h3>
-<p>Скачайте, пожалуйста, <a href="documents/assignments.pdf" title="Вступительная олимпиада." target="_blank">вступительную олимпиаду</a> (.pdf).</p>
+<p>Скачайте, пожалуйста, <a href="documents/assignments.pdf" title="Вступительная олимпиада." target="_blank" onclick='setStatus("<?php echo $row['UniqueId'] ?>", 2);'>вступительную олимпиаду</a> (.pdf).</p>
 <p>Вы можете, также, отправить файл с задачами себе на почту (<?php echo $row["Email"] ?>):</p>
 <form id="form1" name="form1" method="get">
 <input name="sbm" type="hidden" id="SendByMail">
@@ -88,6 +97,7 @@ if (!isset($_GET["id"])) {
         if (isset($_GET['sbm']) && $_GET['sbm']==='yes') {
             if(sendAssignmentsMail($row)) {
                 $db->dbLog($row['Name'] . " " . $row['Surname'] . ": выслана вступительная олимпиада");
+                $db->setRegStatus($row['UniqueId'], 2);
                 echo <<<SUCCESS
 <script>
 document.getElementById("sendStatus").innerHTML = "Письмо со вступительной олимпиадой выслано Вам на почту.";
@@ -122,7 +132,6 @@ ERROR;
   <input name="email" type="hidden" id="email" value="<?php echo $row['Email'] ?>">
   <input type="submit" value="Связь с организаторами">
   </p>
-  <p>&nbsp; </p>
 </form>
 </div> </div> </div>
 <?php
