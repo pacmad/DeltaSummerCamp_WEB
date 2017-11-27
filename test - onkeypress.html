@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+var kdHandler = function(e) {return false};
+function init() {
+//    document.getElementById('date').onkeydown = kdHandler;
+    document.getElementById('date').addEventListener('onkeydown',kdHandler);
+    alert("init");
+}
+
+</script>
+</head>
+<body onload = "init()">
+<input type="tel" id="date"/>
+</body>
+</html>
