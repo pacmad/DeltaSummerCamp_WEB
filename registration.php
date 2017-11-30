@@ -64,7 +64,7 @@ if (!isset($_POST["ALL_DONE"])) {
     <input class="text-input" name="birthday" type="text" required id="birthday" placeholder="dd/mm/yyyy"
            title="Дата рождения" onChange="checkDate(this);">
     <span class="hidden_error" id="date_error">Неверный формат даты!<br>Используйте "день/месяц/год"<br>Например: 27/03/1999</span>
-    <span class="explanation"><span class="age" id="age">&nbsp;</span></span>
+    <span class="explanation"><span class="age" id="age"><br>Возраст на начало лагеря: </span></span>
   </p>
   </div> <!-- col-3 -->
   <div class="col-3">

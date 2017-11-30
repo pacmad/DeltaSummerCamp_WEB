@@ -18,8 +18,9 @@
 .text-input {
 	font-size: 18px;
 	box-sizing: border-box;
-	border: 1px solid white;
+	border: 1px solid gray;
 	border-radius: 3px;
+    background-color: white;
 	width: 75%;
 	max-width: 500px;
 	margin: 8px 0 8px 0;
@@ -27,8 +28,12 @@
 	resize: none;
 	box-shadow: 0 0 2px #333;
 }
+.text-input:focus {
+    border-color: blue;
+    background-color: #CFC;
+}
 #birthday {
-    width: 200px;
+    width: 10em;
 }
 /* checkbox and radio styling: http://code.stephenmorley.org/html-and-css/styling-checkboxes-and-radio-buttons/ */
 input[type=checkbox]:not(old),

@@ -15,9 +15,9 @@ function Click() {
 </script>
 
 </head>
-<body onload="init()">
+<body>
 Date:
-<input type="tel" id="myDate" name="bday" onFocus='Focus(this)' onBlur='Blur(this)' onchange='checkDate(this)'/>
+<input type="tel" id="myDate" name="bday" onchange='checkDate(this)'/>
 <br>
 <button onclick='Click()'>Try it</button>
 
