@@ -1,14 +1,17 @@
-// JavaScript functions for registration
+// JavaScript functions for registration in Delta Summer Camp '18
+
 var beginday = new Date('2018-07-16');
 var MIN_AGE = 11, MAX_AGE = 18;
 var MIN_YEAR = 1950, MAX_YEAR = 2018;
 
-// Вешаем обработчики событий
-document.addEventListener("DOMContentLoaded", function(e) {
-    bdayInput = document.getElementById("birthday");
-    bdayInput.onkeydown = kdHandler;
-    bdayInput.onfocus = focus;
-    bdayInput.onblur = blur;
+// Вешаем обработчики событий (с проверкой IE > 9)
+document.addEventListener("DOMContentLoaded", function (e) {
+    if (is.not.ie() || is.ie(9)) {
+        bdayInput = document.getElementById("birthday");
+        bdayInput.onkeydown = kdHandler;
+        bdayInput.onfocus = focus;
+        bdayInput.onblur = blur;
+    }
 });
 
 var focus = function(e) {
@@ -194,7 +197,7 @@ var kdHandler = function (e) {
         output = text.substring(0, caret) + "_" + text.substring(caret+1);
     }
 
-    // 2.7 Если нажаты клавишы "Tab", "Shift-Tab" или "Enter" - возвращаем true
+    // 2.7 Если нажаты клавишы "Tab", "Shift-Tab" или "Enter" - причёсываем и возвращаем true
     else if (key == "Enter" || key == "Tab") {
         return true;
     }
@@ -226,7 +229,9 @@ function age(birthday, beginday) {
 }
 
 // Проверка на корректность даты
-function checkDate(dateInput) { // Взято отсюда: https://javascript.ru/forum/events/29223-validnost-daty.html
+// @param input field with date value
+// Взято отсюда: https://javascript.ru/forum/events/29223-validnost-daty.html
+function checkDate(dateInput) {
     var input = dateInput.value.match(/\d+/g);
     var error =  false;
 
@@ -235,10 +240,21 @@ function checkDate(dateInput) { // Взято отсюда: https://javascript.ru/forum/eve
     }
 
     if (!error) {
+        // Для извращенцев, написавших год одной или двумя цифрами
+        if (input[2] < 10) {
+            input[2] = '200' + input[2];
+        } else if (input[2] < 50) {
+            input[2] = '20' + input[2];
+        } else if (input[2] < 100) {
+            input[2] = '19' + input[2];
+        }
         var date = new Date(input[2], input[1] - 1, input[0]);
         if (date.getFullYear() != input[2] || date.getDate() != input[0] || date.getMonth() != input[1] - 1) {
-        error = true;
+            error = true;
+        } else { // Если смогли дату распознать, строим канонический вид даты dd/mm/yyyy и помещаем его в поле формы
+            dateInput.value = ('0' + input[0]).slice(-2) + '/' + ('0' + input[1]).slice(-2) + '/' + input[2];
         }
+
         if (!error && input[2] > MIN_YEAR && input[2] < MAX_YEAR) {
             dateInput.style.border = "solid 1px gray";
             document.getElementById("date_error").classList.remove("showed");
@@ -261,6 +277,8 @@ function checkDate(dateInput) { // Взято отсюда: https://javascript.ru/forum/eve
             document.getElementById("date_error").classList.add("showed");
             document.getElementById("ALL_DONE").value = "Error";
     }
+
+    return error;
 }
 
 // Проверка на правильность заполнения формы перед отправкой
@@ -273,13 +291,9 @@ function checkForm() {
     for (i = 0; i < formInputs.length; i++ ) {
         var inpt = formInputs[i];
         inpt.style.border = "thin solid green";
-        document.getElementById("gender").style.paddingLeft = "10px";
-        document.getElementById("gender").style.border = "thin solid green";
 
-        if (inpt.required &&
-            (inpt.type === "text" || inpt.type === "email" || inpt.type === "tel") &&
-            inpt.value === "")
-        {
+        if (inpt.required && (inpt.type === "text" || inpt.type === "email" || inpt.type === "tel") &&
+            inpt.value === "") {
             inpt.style.border = "thin solid red";
             result = false;
         }
@@ -291,6 +305,9 @@ function checkForm() {
             agreed = true;
         }
     }
+
+    document.getElementById("gender").style.paddingLeft = "10px";
+    document.getElementById("gender").style.border = "thin solid green";
     if (!gdr) {
         document.getElementById("gender").style.border = "thin solid red";
         result = false;
@@ -301,6 +318,10 @@ function checkForm() {
     } else {
         document.getElementById("agree").style.border = "thin solid green";
         result = true;
+    }
+    // проверка правильности даты
+    if (checkDate(document.getElementById("birthday"))) {
+        result = false;
     }
 
     if (!result) {

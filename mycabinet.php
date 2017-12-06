@@ -9,6 +9,7 @@
 <script src="JS/cabinet_functions.js"></script>
 </head>
 <body>
+<div class="logo"></div>
 <?php
 require_once 'phplib/dbConnect.php';
 require_once 'phplib/mail.php';
@@ -24,14 +25,19 @@ if (!isset($_GET["id"])) {
      */
     if (isset($_GET["SetStatus"])) {
         $db = new dbConnect();
-        $db->setRegStatus($_GET["id"], $_GET["SetStatus"]);
+        $db->setAppStatus($_GET["id"], $_GET["SetStatus"]);
         exit();
     }
+
+    /*
+     * Основной модуль личного кабинета
+     */
     $db = new dbConnect();
     if ($row = $db->getPerson($_GET["id"])) {
         $db->dbLog($row['Name'] . " " . $row['Surname'] . " зашёл в Личный кабинет");
-        $db->setRegStatus($_GET["id"], 1); // Пользователь зашёл в Личный кабинет
-
+        if ($row['AppStatus'] == 0) {
+            $db->setAppStatus($_GET["id"], 1); // Пользователь первый раз зашёл в Личный кабинет
+        }
         /*
          * Вывод страницы личного кабинета
          *
@@ -44,8 +50,9 @@ if (!isset($_GET["id"])) {
 <div class="row">
 <div class="col-6">
 <h3>Здравствуйте! </h3>
-<p>Скачайте, пожалуйста, <a href="documents/assignments.pdf" title="Вступительная олимпиада." target="_blank" onclick='setStatus("<?php echo $row['UniqueId'] ?>", 2);'>вступительную олимпиаду</a> (.pdf).</p>
-<p>Вы можете, также, отправить файл с задачами себе на почту (<?php echo $row["Email"] ?>):</p>
+<p>Скачайте, пожалуйста, <a href="documents/assignments.pdf" title="Вступительная олимпиада." target="_blank"
+                            onclick='setAppStatus("<?php echo $row['UniqueId'] ?>", 2);'>вступительную олимпиаду</a> (.pdf).</p>
+<p>Также Вы можете отправить файл с задачами себе на почту (<?php echo $row["Email"] ?>):</p>
 <form id="form1" name="form1" method="get">
 <input name="sbm" type="hidden" id="SendByMail">
 <input name="id" type="hidden" id="UniqueId" value="<?php echo $row['UniqueId'] ?>">
@@ -64,12 +71,12 @@ if (!isset($_GET["id"])) {
 </div> <!-- row -->
 <div class="row"><div class="col-12">
 <hr>
-<p>Если у Вас возникли вопросы или Вы заметили неточность в регистрационных данных, пожалуйста воспользуйтесь формой
+<p>Если у Вас возникли вопросы или Вы заметили неточность в регистрационных данных, пожалуйста, воспользуйтесь формой
     обратной связи или свяжитесь с нами:</p>
 </div></div>  <!-- col-12, row -->
 <div class="row"><div class="col-6">
     <p><b>Анна Семовская</b><br>
-    +7(903)749-4851 (телефон, Telegram)<br>
+    +7(903)749-4851 (телефон, Telegram, WhatsApp)<br>
     anna.sem@gmail.com<br>
     Skype: aselect1976</p></div> <!-- col-6 -->
 <div class="col-6">
@@ -95,9 +102,10 @@ if (!isset($_GET["id"])) {
          * Обработка запроса выслать файл-олимпиады письмом
          */
         if (isset($_GET['sbm']) && $_GET['sbm']==='yes') {
-            if(sendAssignmentsMail($row)) {
+            try {
+                sendAssignmentsMail($row);
                 $db->dbLog($row['Name'] . " " . $row['Surname'] . ": выслана вступительная олимпиада");
-                $db->setRegStatus($row['UniqueId'], 2);
+                $db->setAppStatus($row['UniqueId'], 2); // Выслана олимпиада
                 echo <<<SUCCESS
 <script>
 document.getElementById("sendStatus").innerHTML = "Письмо со вступительной олимпиадой выслано Вам на почту.";
@@ -105,7 +113,7 @@ document.getElementById("sendStatus").style.color = "#188";
 document.getElementById("sendStatus").style.opacity = "1";
 </script>
 SUCCESS;
-            } else {
+            } catch (\PHPMailer\PHPMailer\Exception $e) {
                 echo <<<ERROR
 <script>
 document.getElementById("sendStatus").innerHTML = "Проблема с отправкой письма. Свяжитесь, пожалуйста, с организаторами!";
@@ -118,6 +126,9 @@ ERROR;
         }
 
     } else {
+        /*
+        Обработка запроса с неверным UID
+        */
 ?>
 <div class="row"><div class="col-12"> 
 <h2>Инентификатор пользователя не найден.</h2>

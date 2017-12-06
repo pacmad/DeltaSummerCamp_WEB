@@ -3,8 +3,8 @@
 	box-sizing:border-box;
 }
 html, body {
-    padding:0;
-	margin:auto;
+    padding: 0;
+	margin: auto;
 	font-family: Gotham, "Helvetica Neue", Helvetica, Arial, sans-serif;
 	font-style: normal;
 	font-size: 14px;
@@ -20,6 +20,19 @@ html, body {
 	box-shadow: 0 0 10px Grey;
     align-content:center;
     background-color:#EEE;
+}
+.logo {
+	display: block;
+	text-indent: -9999px;
+	position: fixed;
+	top: 5px;
+	right: 5px;
+	width: 70px;
+	height: 70px;
+	padding: 0;
+	margin: 0;
+	background-image: url(/images/logo.svg);
+	background-size: 70px 70px;
 }
 .col-1 {width: 8.33%;}
 .col-2 {width: 16.66%;}
@@ -61,6 +74,9 @@ html, body {
 	[class*="col-"] {
 		width: 100%;
 	}
+    .logo {
+        display: none;
+    }
 }
 .row::after {
     content: "";

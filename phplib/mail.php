@@ -13,8 +13,20 @@ require_once 'PHPMailer\SMTP.php';
 require_once 'PHPMailer\Exception.php';
 
 /***
+ * Определяем глобальные переменные
+ ***/
+$from = 'delta_mail_robot@cintra.ru';
+$cc = 'd.ablov@gmail.com';
+$reply_to = 'd.ablov@gmail.com';
+$myCabinet = 'http://test.ablov.ru/mycabinet.php';
+$domain = 'test.ablov.ru';
+
+
+/***
  * Отсылка письма об удадчной регистрации
- * Контроль отсылки письма - через обработку исключения.
+ * @param array from delta(registrations)  $person
+ * @throws \PHPMailer\PHPMailer\Exception
+ *
  ***/
 function sendRegMail($person) {
     $id = $person['UniqueId'];
@@ -33,11 +45,13 @@ function sendRegMail($person) {
     $lang = $person['Languages'];
     $tel = $person['Tel'];
     $notes = $person['Notes'];
-    $from = 'delta_mail_robot@cintra.ru';
+    global $from;
     $to = $person['Email'];
-    $cc = 'd.ablov@gmail.com';
-    $reply_to = 'd.ablov@gmail.com';
+    global $cc;
+    global $reply_to;
     $subject = 'Delta-2018 registration';
+    global $myCabinet;
+    global $domain;
 
     /*
      * Сначала отправляем строку для ввода в Excel
@@ -76,17 +90,21 @@ function sendRegMail($person) {
         <body>
         <p>Благодарим Вас за регистрацию в летний физико-математический лагерь «Дельта» в Мюнхене!</p>
         <p> Адрес Личного кабинета:</p>
-        <p><a href="http://test.ablov.ru/mycabinet.php?id=' . $id . '">http://test.ablov.ru/mycabinet.php?id=' . $id . '</a></p>
+        <p><a href="http://' . $domain . '/mycabinet.php?id=' . $id . '">http://test.ablov.ru/mycabinet.php?id=' . $id . '</a></p>
         <p><b>Пожалуйста, зайдите в Личный кабинет и скачайте вступительную олимпиаду!</b></p>
-        <p>Обратите внимание: условия задач вступительной олимпиады могут показаться сложными и непривычными. Это не страшно.
-        Так как программы в разных странах и возраста детей отличаются, олимпиада не предполагает знаний по конкретной школьной
-        программе. Основная задача Олимпиады не отсев "слабых детей", а информация: нам надо понять, какие дети собираются в Дельту, 
-        какие у них интересы, какой кругозор. Исходя из этого мы планируем курсы, которые собираемся рассказывать в лагере.</p>
-        <p>Учтите, что решение некоторых задач подтебует определённой исследовательской работы и может занять несколько 
-        дней.</p>
-        <p>Предупредите, пожалуйста, ребёнка, что мы не ожидаем от него 100%-ного выполнения всех задач. Нам интесерсны идеи, 
-        которые придут ему в голову, а не ответы!</p>
-        <p>Результаты можно представить в виде сканов (фотографий) работы или в электронном виде в течение <b>двух недель</b> после регистрации.</p>
+        <p>Несколько слов о задачах вступительной олимпиады.</p>
+        <p>Возможно, вашему ребёнку условия задач покажутся непривычными, отличающимися от школьных задач или задач 
+        математических олимпиад. Это не случайно. Так как Дельта – лагерь для детей разных возрастов из разных стран, 
+        подходы к математике и физике в которых довольно сильно отличаются, мы не ставим цель проверить соответствие 
+        знаний ребёнка какой-либо академической программе. Нам интересен ход мысли ребёнка, его интересы и способность 
+        изложить решение. Некоторые задачи, возможно, будут решены не полностью, а некоторые – совсем не тем способом, 
+        который мы предполагали, составляя олимпиаду.</p>
+        <p>Именно поэтому на решение задач даётся две недели. Не стоит решать всё в последний день, лучше подумать 
+        над задачами подольше.</p>
+        <p>&nbsp;</p>
+        <p>Результаты можно представить в виде сканов (фотографий) работы или в электронном виде в течение <b>двух 
+        недель</b> после регистрации.</p>
+        <p>&nbsp;</p>
         <p>С уважением,<br>
         Анна Семовская<br>
         директор лагеря</p>
@@ -113,85 +131,89 @@ function sendRegMail($person) {
     $mail->Subject = $subject;
     $mail->Body = $message;
     $mail->AltBody = 'Здравствуйте! Вы зарегистрировались в Летний физико-математический лагерь "Дельта" в Мюнхене.\n\r
-    Зайдите, пожалуйста, в личный кабинет по адресу: http://test.ablov.ru/mycabinet.php?id=' . $id;
+    Зайдите, пожалуйста, в личный кабинет по адресу: ' . $myCabinet . '?id=' . $id;
 
     $mail->send();
 }
 
 /***
  * Отсылка письма с вступительной олимпиадой
- * $person - данные по ребёнку (массив)
- * Возвращает false, если что-то пошло не так
+ * @param array from delta(registrations)  $person
+ * @throws \PHPMailer\PHPMailer\Exception
  */
 function sendAssignmentsMail($person) {
-    $from = 'delta_mail_robot@cintra.ru';
+    global $from;
     $to = $person['Email'];
-    $cc = 'd.ablov@gmail.com';
-    $reply_to = 'd.ablov@gmail.com';
+    global $cc;
+    global $reply_to;
     $subject = 'Вступительная олимпиада Delta-2018';
     $attachment = 'documents/assignments.pdf';
+    global $domain;
 
     $message = '
-<!doctype html>
-<html>
-<head>
-<meta charset="windows-1251">
-<title>Вступительная олимпиада</title>
-</head>
-<body>
-<p>Здравствуйте!</p>
-<p>В приложении к этому письму Вы найдёте вступительную олимпиаду в Летний физико-математический лагерь "Дельта" в Мюнхене.</p>
-<p>Обратите внимание: условия задач вступительной олимпиады могут показаться сложными и непривычными. Это не страшно.
-Так как программы в разных странах и возраста детей отличаются, олимпиада не предполагает знаний по конкретной школьной
-программе. Основная задача Олимпиады не отсев "слабых детей", а информация: нам надо понять, какие дети собираются в Дельту, 
-какие у них интересы, какой кругозор. Исходя из этого мы планируем курсы, которые собираемся рассказывать в лагере.</p>
-<p>Учтите, что решение некоторых задач подтебует определённой исследовательской работы и может занять несколько 
-дней.</p>
-<p>Предупредите, пожалуйста, ребёнка, что мы не ожидаем от него 100%-ного выполнения всех задач. Нам интесерсны идеи, 
-которые придут ему в голову, а не ответы!</p>
-<p>Результаты можно представить в виде сканов (фотографий) работы или в электронном виде в течение <b>двух недель</b> после регистрации.</p>
-<p>С уважением,<br>
-Анна Семовская<br>
-директор лагеря</p>
-<p>+7(903)749-4851<br>
-Skype: aselect1976<br>
-<a href="https://www.facebook.com/Summer.Camp.Delta">https://www.facebook.com/Summer.Camp.Delta</a> </p>
-</body>
-</html>
+        <!doctype html>
+        <html>
+        <head>
+        <meta charset="windows-1251">
+        <title>Вступительная олимпиада</title>
+        </head>
+        <body>
+        <p>Здравствуйте!</p>
+        <p>В приложении к этому письму - вступительная олимпиада в Летний физико-математический лагерь "Дельта" в Мюнхене.</p>
+        <p>Возможно, вашему ребёнку условия задач покажутся непривычными, отличающимися от школьных задач или задач 
+        математических олимпиад. Это не случайно. Так как Дельта – лагерь для детей разных возрастов из разных стран, 
+        подходы к математике и физике в которых довольно сильно отличаются, мы не ставим цель проверить соответствие 
+        знаний ребёнка какой-либо академической программе. Нам интересен ход мысли ребёнка, его интересы и способность 
+        изложить решение. Некоторые задачи, возможно, будут решены не полностью, а некоторые – совсем не тем способом, 
+        который мы предполагали, составляя олимпиаду.</p>
+        <p>Учтите, что решение некоторых задач потребует определённой исследовательской работы и может занять несколько 
+        дней. Именно поэтому на решение задач даётся две недели. Не стоит решать всё в последний день, лучше подумать 
+        над задачами подольше.</p>
+        <p>Результаты можно представить в виде сканов (фотографий) работы или в электронном виде в течение 
+        <b>двух недель</b> после получения работы.</p>
+        <p>&nbsp;</p>
+        <p>С уважением,<br>
+        Анна Семовская<br>
+        директор лагеря</p>
+        <p>+7(903)749-4851<br>
+        Skype: aselect1976<br>
+        <a href="https://www.facebook.com/Summer.Camp.Delta">https://www.facebook.com/Summer.Camp.Delta</a> </p>
+        <p>P.S.</p>
+        <p> Адрес Вашего личного кабинета:</p>
+        <p><a href="http://' . $domain .'/mycabinet.php?id=' . $person['UniqueId'] . '">http://' . $domain .
+        '/mycabinet.php?id=' . $person['UniqueId'] . '</a></p>
+        </body>
+        </html>
     ';
     $mail = new PHPMailer(true);
-    try {
-        $mail->SMTPDebug = 0;
-        $mail->isSMTP();
-        $mail->Host = 'mx.cintra.ru';
-        $mail->SMTPAuth = false;
-        $mail->SMTPAutoTLS = false;
-        $mail->CharSet = 'windows-1251';
 
-        $mail->setFrom($from, 'Delta Summer Camp');
-        $mail->addAddress($to);
-        $mail->addCC($cc);
-        $mail->addReplyTo($reply_to);
+    $mail->SMTPDebug = 0;
+    $mail->isSMTP();
+    $mail->Host = 'mx.cintra.ru';
+    $mail->SMTPAuth = false;
+    $mail->SMTPAutoTLS = false;
+    $mail->CharSet = 'windows-1251';
 
-        $mail->addAttachment($attachment);
+    $mail->setFrom($from, 'Delta Summer Camp');
+    $mail->addAddress($to);
+    $mail->addCC($cc);
+    $mail->addReplyTo($reply_to);
 
-        $mail->isHTML(true);
-        $mail->Subject = $subject;
-        $mail->Body = $message;
-        $mail->AltBody = 'Здравствуйте! В приложении вступительная олимпиада в Летний физико-математический лагерь "Дельта" в Мюнхене';
+    $mail->addAttachment($attachment);
 
-        $mail->send();
+    $mail->isHTML(true);
+    $mail->Subject = $subject;
+    $mail->Body = $message;
+    $mail->AltBody = 'Здравствуйте! В приложении вступительная олимпиада в Летний физико-математический лагерь "Дельта" в Мюнхене';
 
-        return true;
-    }
-    catch (Exception $e){
-        return false;
-    }
+    $mail->send();
 }
 
 /***
  *
  * Отсылка письма из формы обратной связи
+ * @param array from delta(registrations)  $person
+ * @throws \PHPMailer\PHPMailer\Exception
  *
  */
 function sendFeedbackMail($email, $name, $message){
@@ -202,28 +224,21 @@ function sendFeedbackMail($email, $name, $message){
     $subject = 'Сообщение с формы обратной связи Delta-2018';
 
     $mail = new PHPMailer(true);
-    try {
-        $mail->SMTPDebug = 0;
-        $mail->isSMTP();
-        $mail->Host = 'mx.cintra.ru';
-        $mail->SMTPAuth = false;
-        $mail->SMTPAutoTLS = false;
-        $mail->CharSet = 'windows-1251';
+    $mail->SMTPDebug = 0;
+    $mail->isSMTP();
+    $mail->Host = 'mx.cintra.ru';
+    $mail->SMTPAuth = false;
+    $mail->SMTPAutoTLS = false;
+    $mail->CharSet = 'windows-1251';
 
-        $mail->setFrom($from, 'Delta Summer Camp');
-        $mail->addAddress($to);
-        $mail->addCC($cc);
-        $mail->addReplyTo($reply_to);
+    $mail->setFrom($from, 'Delta Summer Camp');
+    $mail->addAddress($to);
+    $mail->addCC($cc);
+    $mail->addReplyTo($reply_to);
 
-        $mail->isHTML(true);
-        $mail->Subject = $subject;
-        $mail->Body = $name . ' say: ' . $message;
+    $mail->isHTML(true);
+    $mail->Subject = $subject;
+    $mail->Body = $name . ' say: ' . $message;
 
-        $mail->send();
-
-        return true;
-    }
-    catch (Exception $e){
-        return false;
-    }
+    $mail->send();
 }

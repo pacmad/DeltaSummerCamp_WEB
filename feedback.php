@@ -8,6 +8,7 @@
 <link href="CSS/form.css" rel="stylesheet" type="text/css">
 </head>
 <body>
+<div class="logo"></div>
 <?php
 
 $name = '';

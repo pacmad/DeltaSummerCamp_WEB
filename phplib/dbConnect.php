@@ -38,13 +38,13 @@ class dbConnect
     {
         // Общее заполнение формы
         if (!isset($_POST["ALL_DONE"]) || strcmp($_POST["ALL_DONE"], "Ok")) {
-            error("<br>Form not filled correctly.");
+            error("Form not filled correctly.");
         }
         // Наличие всех ожидаемых полей
         if (!isset($_POST["email"], $_POST["surname"], $_POST["name"], $_POST["middlename"], $_POST["gender"],
             $_POST["birthday"], $_POST["class"], $_POST["school"], $_POST["city"], $_POST["country"], $_POST["langs"],
             $_POST["tel"], $_POST["notes"])) {
-            error("<br>No data found.");
+            error("No data found: " . print_r($_POST));
         }
         // Уникальный ключ, проверка: если есть, значит регистрация уже была
         $unique = md5($_POST["surname"] . $_POST["name"] . $_POST["middlename"] . $_POST["birthday"] . $_POST["email"]);
@@ -59,11 +59,14 @@ class dbConnect
         $email = filter_var($_POST["email"], FILTER_VALIDATE_EMAIL);
         if (!$email) {
             error("<br>Invalid e-mail");
+            $email = "noemail@found.com";
+        } else {
+            $email = substr(trim($email), 0, 50);
         }
-        $phone = filter_var($_POST["tel"], FILTER_SANITIZE_STRING);
-        $surname = filter_var($_POST["surname"], FILTER_SANITIZE_STRING);
-        $name = filter_var($_POST["name"], FILTER_SANITIZE_STRING);
-        $middlename = filter_var($_POST["middlename"], FILTER_SANITIZE_STRING);
+        $phone = substr(trim(filter_var($_POST["tel"], FILTER_SANITIZE_STRING)), 0, 20);
+        $surname = substr(trim(filter_var($_POST["surname"], FILTER_SANITIZE_STRING)), 0, 30);
+        $name = substr(trim(filter_var($_POST["name"], FILTER_SANITIZE_STRING)), 0, 30);
+        $middlename = substr(trim(filter_var($_POST["middlename"], FILTER_SANITIZE_STRING)), 0, 30);
         if ($_POST["gender"] === "f") {
             $gender = 'f';
         } else {
@@ -73,26 +76,32 @@ class dbConnect
             $birthday = $birthday->format("Y-m-d");
         } else {
             error("Invalid Date of Birthday field");
+            $birthday = "2000-01-01";
         }
         if ($_POST["class"] === '') {
             $_POST["class"] = 0;
         }
-        $class = filter_var($_POST["class"], FILTER_SANITIZE_STRING);
-        $school = filter_var($_POST["school"], FILTER_SANITIZE_STRING);
-        $city = filter_var($_POST["city"], FILTER_SANITIZE_STRING);
-        $country = filter_var($_POST["country"], FILTER_SANITIZE_STRING);
-        $langs = filter_var($_POST["langs"], FILTER_SANITIZE_STRING);
-        $notes = filter_var($_POST["notes"], FILTER_SANITIZE_STRING);
+        $class = substr(trim(filter_var($_POST["class"], FILTER_SANITIZE_STRING)), 0, 2);
+        $school = substr(trim(filter_var($_POST["school"], FILTER_SANITIZE_STRING)), 0, 30);
+        $city = substr(trim(filter_var($_POST["city"], FILTER_SANITIZE_STRING)), 0, 40);
+        $country = substr(trim(filter_var($_POST["country"], FILTER_SANITIZE_STRING)), 0, 20);
+        $langs = substr(trim(filter_var($_POST["langs"], FILTER_SANITIZE_STRING)), 0, 60);
+        $notes = substr(trim(filter_var($_POST["notes"], FILTER_SANITIZE_STRING)), 0, 1024);
         // Записываем в базу
         $sql = "INSERT INTO registrations (UniqueId, UserIP, Email, Surname, Name, MiddleName, Gender, Birthday,
               Class, School, City, Country, Languages, Tel, Notes)
               VALUES ('$unique', '$_SERVER[REMOTE_ADDR]', '$email', '$surname', '$name',
               '$middlename', '$gender', '$birthday', '$class', '$school', '$city',
               '$country', '$langs', '$phone', '$notes')";
-        $this->conn->exec($sql);
-        $this->dbLog("New record created successfully: $name $surname $email");
-        $this->status = DB_ADD_OK;
-        return $unique;
+        try {
+            $this->conn->exec($sql);
+            $this->dbLog("New record created successfully: $name $surname $email");
+            $this->status = DB_ADD_OK;
+            return $unique;
+        }
+        catch (PDOException $exception) {
+            error("Error in database update: " . $exception);
+        }
     }
 
     /*
@@ -101,30 +110,45 @@ class dbConnect
     public function getPerson($uniqueId)
     {
         $sql = "SELECT * FROM registrations WHERE UniqueId='" . $uniqueId . "'";
-        if (!($result = $this->conn->query($sql))) {
-            error("Something wrong when getting records in function getPerson");
-        }
-        if ($result->rowCount() == 1) {
-            foreach ($result as $row) {
-                return $row;
+        try {
+            $result = $this->conn->query($sql);
+            if ($result->rowCount() == 1) {
+                foreach ($result as $row) {
+                    return $row;
+                }
+            } else {
+                $this->status = DB_NOT_FOUND;
             }
-        } else {
-            $this->status = DB_NOT_FOUND;
+            return false;
         }
-        return false;
+        catch (PDOException $exception){
+            error("Something wrong when getting records in function getPerson, UID=" . $uniqueId . "; error: " . $exception);
+            return false;
+        }
     }
 
     // Устанавливает флаг status
-    public function setRegStatus($uniqueId, $flag) {
-        $sql = "UPDATE registrations SET status=" . $flag . " WHERE UniqueId='" . $uniqueId ."'";
-        return $this->conn->query($sql);
-}
+    public function setAppStatus($uniqueId, $flag) {
+        $sql = "UPDATE registrations SET AppStatus=" . $flag . " WHERE UniqueId='" . $uniqueId ."'";
+        try {
+            return $this->conn->query($sql);
+        }
+        catch (PDOException $exception) {
+            error("setAppStatus error: ". $exception);
+        }
+    }
 
     // Внутренний журнал
     public function dbLog($text)
     {
+        $text = filter_var($text);
         $sql = 'INSERT INTO log (text) VALUES ("' . $text . '")';
-        $this->conn->exec($sql);
+        try {
+            $this->conn->exec($sql);
+        }
+        catch (PDOException $exception) {
+            error("dbLog error: " . $exception);
+        }
     }
 
     public function getStatus()
