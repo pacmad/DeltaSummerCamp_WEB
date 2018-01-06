@@ -1,6 +1,27 @@
 @charset "windows-1251";
+.title {
+    display: block;
+    margin: 0 0 20px 0;
+    padding: 10px 10px 10px 30px;
+    width: 100%;
+    background-color: #EEEEEE;
+    border-bottom: darkblue 1px solid;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+}
+.main {
+	display: block;
+	width: 90%;
+	padding: 0 20px;
+	margin: auto auto 40px auto;
+	box-shadow: 0 0 10px Grey;
+	align-content:center;
+	background-color:#EEE;
+	border: darkblue 1px solid;
+    border-radius: 15px;
+}
 .explanation {
-	font-size: x-small;
+	font-size: small;
 }
 .required {
 	color: #C00;
@@ -16,7 +37,7 @@
 	box-shadow: 2px 3px grey;
 }
 .text-input {
-	font-size: 18px;
+	font-size: 16px;
 	box-sizing: border-box;
 	border: 1px solid gray;
 	border-radius: 3px;
@@ -143,15 +164,24 @@ input[type=submit], button {
 	margin: 0;
 }
 @media only screen and (max-width: 850px) {
+    .title {
+        font-size: smaller;
+        border-style: none;
+        border-bottom-left-radius: unset;
+        border-bottom-right-radius: unset;
+        margin-bottom: 0;
+    }
 	.main {
 		display: block;
 		width: 100%;
 		padding: 0;
 		margin: 0;
-		border:#CCC 1px solid;
 		box-shadow: 0 0 3px Grey;
 		align-content:center;
 		background-color:#EEE;
+        border-style: none;
+        border-radius: unset;
+        margin-top: 0;
 	}
 	.text-input {
 		width: 100%;

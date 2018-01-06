@@ -2,8 +2,8 @@
 <project version="4">
   <component name="WebServers">
     <option name="servers">
-      <webServer id="ab824b09-9dbc-4967-a30b-5cd4fed4d6a2" name="rebus.ablov.ru" url="http://test.ablov.ru">
-        <fileTransfer host="rebus.ablov.ru" port="22" rootFolder="/ablov/ablov/test.ablov.ru" accessType="SFTP">
+      <webServer id="ab824b09-9dbc-4967-a30b-5cd4fed4d6a2" name="delta.gorod.de" url="http://delta.gorod.de">
+        <fileTransfer host="rebus.ablov.ru" port="22" rootFolder="/delta" accessType="SFTP">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" />
           </advancedOptions>

@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: Dima
+ * User: Dmitry Ablov
  * Date: 05.10.2017
  * Time: 14:12
  */
@@ -11,7 +11,6 @@ require_once 'common.php';
 define("DB_NOT_FOUND", "-1"); // Запись с таким UID не существует
 define("DB_ADD_OK", "0"); // Добавление данных в баз упрошло успешно
 define("DB_ADD_DUP", "1"); // Запись не добавлена - ключ UniqueId уже есть в базе
-
 
 class dbConnect
 {
@@ -127,7 +126,8 @@ class dbConnect
         }
     }
 
-    // Устанавливает флаг status
+    // Устанавливает флаг status для конкретного абитуриента
+    // 0 - только что создан; 1 -  входил в персональный кабинет и т.д.
     public function setAppStatus($uniqueId, $flag) {
         $sql = "UPDATE registrations SET AppStatus=" . $flag . " WHERE UniqueId='" . $uniqueId ."'";
         try {
@@ -136,6 +136,28 @@ class dbConnect
         catch (PDOException $exception) {
             error("setAppStatus error: ". $exception);
         }
+    }
+
+    // Возвращает из таблицы news $newsPerPage новостей для страницы $page
+    public function getNews($page, $newsPerPage) {
+        $start = ($page - 1) * $newsPerPage;
+
+        try {
+            $sth = $this->conn->prepare("SELECT Top, Datetime, Text, Picture FROM news ORDER BY Top DESC, Datetime DESC 
+            LIMIT " . $start . "," . $newsPerPage);
+            $sth->execute();
+        }
+        catch (PDOException $exception) {
+            error("getNews error: " . $exception);
+        }
+        if($sth->rowCount() == 0) {
+            return false;
+        }
+        $row = array();
+        for($i=0; $i<$sth->rowCount(); $i++){
+            $row[] = $sth->fetch(PDO::FETCH_ASSOC);
+        }
+        return $row;
     }
 
     // Внутренний журнал
@@ -151,6 +173,8 @@ class dbConnect
         }
     }
 
+    // результат работы с базой данных
+    // DB_NOT_FOUND, DB_ADD_OK и т.д.
     public function getStatus()
     {
         return $this->status;

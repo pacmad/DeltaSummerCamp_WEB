@@ -1,38 +1,37 @@
 @charset "windows-1251";
 * {
+	-moz-box-sizing: border-box;
 	box-sizing:border-box;
 }
-html, body {
+html {
     padding: 0;
-	margin: auto;
 	font-family: Gotham, "Helvetica Neue", Helvetica, Arial, sans-serif;
 	font-style: normal;
 	font-size: 14px;
 	color: #333;
-	background-color: #FFF;
 }
-.main {
+body {
+	background-image: url(/images/green_grass_02_hd_picture_166104_m.jpg);
+    background-repeat: repeat;
+    margin: auto;
+    width: 100%;
+    max-width: 1800px;
+}
+.copy {
     display: block;
-    width: 90%;
-    padding: 0 20px;
-    margin: auto auto 40px auto;
-	border:#CCC 1px solid;
-	box-shadow: 0 0 10px Grey;
-    align-content:center;
-    background-color:#EEE;
-}
-.logo {
-	display: block;
-	text-indent: -9999px;
-	position: fixed;
-	top: 5px;
-	right: 5px;
-	width: 70px;
-	height: 70px;
-	padding: 0;
-	margin: 0;
-	background-image: url(/images/logo.svg);
-	background-size: 70px 70px;
+    padding: 2px;
+    margin: 0;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 30px;
+    width: 100%;
+    content: "\00A9 2017 dmitry@ablov.ru";
+    text-align: right;
+    font-size: x-small;
+    color: #C0C0C0;
+    background-color: #606060;
+    z-index: 50;
 }
 .col-1 {width: 8.33%;}
 .col-2 {width: 16.66%;}
@@ -74,9 +73,6 @@ html, body {
 	[class*="col-"] {
 		width: 100%;
 	}
-    .logo {
-        display: none;
-    }
 }
 .row::after {
     content: "";

@@ -6,6 +6,9 @@
 <title>Обратная связь</title>
 <link href="CSS/common.css" rel="stylesheet" type="text/css">
 <link href="CSS/form.css" rel="stylesheet" type="text/css">
+<?php
+    require_once 'phplib/common.php';
+?>
 </head>
 <body>
 <div class="logo"></div>
@@ -23,9 +26,9 @@ if (isset($_POST["id"])) {
  * Вывод страницы обратной связи
  *
  */ ?>
-<div class="row"><div class="col-12">
-        <h1>Форма обратной связи с организаторами летнего физико-математического лагеря &quot;Дельта&quot; в Мюнхене</h1>
-</div></div>
+<div class="title">
+    <h1>Связаться с организаторами летнего физико-математического лагеря &quot;Дельта&quot; в Мюнхене</h1>
+</div>
 <div class="main">
     <form id="feedback" name="feedback" method="post" action="feedback-status.php">
     <div class="row"><div class="col-8">
@@ -53,6 +56,19 @@ if (isset($_POST["id"])) {
     <p><input type="submit" value="Отправить!"></p>
     </div></div> <!-- row --><!-- col-8-->
     </form>
+    <hr>
+    <div class="row">
+        <div class="col-6">
+            <p><b>Анна Семовская</b><br>
+                <?php printContact('sem'); ?>
+            </p></div> <!-- col-6 -->
+        <div class="col-6">
+            <p><b>Дмитрий Аблов</b><br>
+                <?php printContact('abl'); ?>
+            </p>
+        </div>
+    </div> <!-- col-6, row -->
+
 </div><!-- main -->
 </body>
 </html>

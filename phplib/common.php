@@ -51,3 +51,29 @@ function error($err) {
     mail($reply_to, $subject, $error, $headers);
 
 }
+
+/*
+ * Печатает стандартно контакты организатора
+ * @param string $person - 'abl' or 'sem'
+ */
+function printContact($person) {
+    if($person == 'sem') {
+        echo '
+                +7(903)749-4851 (<a title="Телефон" href="tel:+79037494851" target="_blank">телефон</a>,
+                <a title="Telegram" href="https://t.me/annasemovskaya" target="_blank">Telegram</a>,
+                <a title="WhatsApp" href="whatsapp://send?phone=+79037494851" target="_blank">WhatsApp</a>)<br>
+                <a title="E-mail" href="mailto:anna.sem@gmail.com" target="_blank">anna.sem@gmail.com</a><br>
+                Skype: <a title="Skype" href="skype:aselect1976?chat" target="_blank">aselect1976</a>
+        ';
+    }
+    elseif ($person == 'abl') {
+        echo '
+                +7(903)795-4223 (<a title="Телефон" href="tel:+79037954223" target="_blank">телефон</a>,
+                <a title="Telegram" href="https://t.me/d_ablov" target="_blank">Telegram</a>,
+                <a title="Viber" href="viber://add?number=+79037954223" target="_blank">Viber</a>,
+                <a title="WhatsApp" href="whatsapp://send?phone=+79037954223" target="_blank">WhatsApp</a>)<br>
+                <a title="E-Mail" href="mailto:d.ablov@gmail.com" target="_blank">d.ablov@gmail.com</a><br>
+                Skype: <a title="Skype" href="skype:d.ablov?chat" target="_blank">d.ablov</a>       
+        ';
+    }
+}

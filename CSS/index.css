@@ -1,0 +1,320 @@
+/* Заголовок страницы */
+.title {
+    display: block;
+    height: 141px;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    margin: 0;
+    background-color: #FDFECF;
+    -webkit-mask-image: -webkit-gradient(linear, left top , left bottom,  from(rgba(0,0,0,1)), to(rgba(0,0,0,0.9)));
+    z-index: 10;
+}
+.title .banner-140 {
+    display: block;
+    height: 140px;
+    width: 631px;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.title .banner-75 {
+    display: none;
+    height: 75px;
+    width: 288px;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+/* Иконки для связи */
+.icons {
+    display: block;
+    position: absolute;
+    top: 100px;
+    right: 40px;
+    z-index: 20;
+}
+.icons.big {
+    display: block;
+    position: static;
+    height: 50px;
+}
+.iconbox {
+    display: table;
+    float: left;
+    border: darkblue 1px solid;
+    border-radius: 5px;
+    width: 30px;
+    height: 30px;
+    margin: 0 3px;
+}
+.iconbox.big {
+    width: 60px;
+    height: 60px;
+    border-color: darkred;
+    background-color: darkred;
+}
+.icon {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    text-decoration: none;
+    font-size: 20px;
+    color: #2F4F4F;
+}
+.icon.big {
+    font-size: 40px;
+    color: #EEEEEE;
+}
+.iconbox:hover .icon {
+    color: red;
+}
+/* Подсказки к иконкам */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    bottom: 110%;
+    left: 50%;
+    margin-left: -50px;
+    background-color: #FDFECF;
+    color: #2F4F4F;
+    text-align: center;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 20;
+}
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}
+/* Травка */
+ .bgrass:not(old) {
+    display: block;
+    position: fixed;
+    top: 140px;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-image:url(/images/green_grass_02_hd_picture_166104_m.jpg);
+    z-index: 1;
+}
+ /* Лента новостей */
+.news {
+    display: block;
+    position: relative;
+    float: right;
+    width: 70%;
+    max-width: 1150px;
+    color: darkblue;
+    top: -140px;
+    height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+.newsblock {
+    display: block;
+    width: 98%;
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 15px;
+    border: darkblue 1px solid;
+    background-color: #EEEEEE;
+}
+.newsblock h1,h2,h3,h4,h5,h6 {
+    clear: both;
+}
+.newsblock:not(old) {
+    background-color: rgba(250, 250 ,250, 0.9);
+}
+.newsblock .inactive {
+    color: gray;
+}
+.newsblock a {
+    text-decoration: none;
+}
+.top { /* Скрытый верх новостной летнты (под титулом страницы) */
+    display: block;
+    height: 150px;
+    width: 98%;
+    background-color: rgba(255,255,255,0);
+    border: darkblue 1px none;
+}
+.bottom { /* Нижний край ленты */
+    display: block;
+    height: 50px;
+    width: 98%;
+    border-style: none;
+    background-color: rgba(255,255,255,0);
+    color: #f8ea39;
+    text-align: right;
+    line-height: 50px;
+    font-weight: bold;
+    padding: 20px;
+}
+.hot {
+    font-size: 2.5em;
+    color: #b06e0f;
+}
+ .newsdate {
+    text-align: right;
+    font-size: smaller;
+    font-weight: bold;
+}
+.newsblock h5 {
+    color: darkred;
+    font-size: larger;
+}
+.newsblock img {
+    display: block;
+    width: 100%;
+    max-width: 1600px;
+}
+.newsblock .logo img {
+    padding: 5px 5px 5px 0;
+    float: left;
+    width: 400px;
+    height: auto;
+    max-width: 100%;
+}
+.newsblock a {
+    text-decoration: none;
+    font-weight: bold;
+    color: darkblue;
+}
+.newsblock .avatar {
+	margin: 5px;
+	padding: 0;
+	float: left;
+	height: 100px;
+	width: 100px;
+	border: 1px solid darkblue;
+	border-radius: 50px;
+}
+.continue {
+    display: block;
+    color: #606060;
+    font-size: smaller;
+}
+/* Основные ссылки */
+.buttonholder {
+    display: block;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    margin: 5px 10px;
+    width: 30%;
+    color: darkblue;
+}
+.button {
+    display: table;
+    float: left;
+    width: 150px;
+    height: 10vh;
+    max-height: 150px;
+    margin: 5px 10px;
+    border: darkblue 1px solid;
+    padding: 10px;
+    border-radius: 15px;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 16px;
+    background: #FDFECF;
+}
+.button:hover {
+    background: #f8ea39;
+    border-width: 2px;
+}
+.button p {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+}
+.button::after {
+    clear: left;
+}
+.button:not(old) {
+    background: -webkit-linear-gradient(left top, rgba(248,234,57,1), rgba(253,253,204,0.9));
+    background: -o-linear-gradient(left top, rgba(248,234,57,1), rgba(253,253,204,0.9));
+    background: -moz-linear-gradient(left top, rgba(248,234,57,1), rgba(253,253,204,0.9));
+    background: linear-gradient(left top, rgba(248,234,57,1), rgba(253,253,204,0.9));
+}
+@media only screen and (max-width: 900px) {
+    h1, h2, h3 {
+        font-size: smaller;
+    }
+    .title {
+        height: 76px;
+    }
+    .title .banner-140 {
+        display: none;
+    }
+    .title .banner-75 {
+        display: block;
+    }
+    .bgrass:not(old) {
+        top: 75px;
+    }
+    .news {
+        top: -70px;
+        width: 70%;
+    }
+    .top {
+        height: 75px;
+    }
+    .bottom {
+        margin: 3vh;
+    }
+    .hot {
+        font-size: 1.5em;
+    }
+    .icons {
+        top: 60px;
+        right: 20px;
+        z-index: 20;
+    }
+    .iconbox {
+        border-radius: 3px;
+        width: 15px;
+        height: 15px;
+        margin: 0 1px;
+    }
+    .icon {
+        display: table-cell;
+        vertical-align: middle;
+        text-align: center;
+        text-decoration: none;
+        font-size: 10px;
+        color: #2F4F4F;
+    }
+    .tooltip .tooltiptext {
+        visibility: hidden;
+        width: 70px;
+        bottom: 110%;
+        left: 50%;
+        margin-left: -25px;
+        padding: 3px 0;
+        z-index: 20;
+    }
+    .tooltip:hover .tooltiptext {
+        visibility: visible;
+    }
+    .buttonholder {
+        top: 9px;
+        left: 2px;
+        margin: 0;
+        width: 30%;
+    }
+    .button {
+        width: 90px;
+        height: 10vh;
+        max-height: 90px;
+        margin: 2px 2px;
+        padding: 2px;
+        border-radius: 7px;
+        font-size: 9px;
+    }
+}

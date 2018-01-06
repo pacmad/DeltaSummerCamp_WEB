@@ -11,7 +11,11 @@
 </head>
 
 <body>
-<div class="logo"></div>
+<div class="title">
+    <h1>Регистрация в летний физико-математический лагерь "Дельта"</h1>
+    <p>Поля, помеченные звёздочкой <span class="required">*</span> обязательны.</p>
+</div>
+
 <?php
 require_once 'phplib/dbConnect.php';
 require_once 'phplib/mail.php';
@@ -23,11 +27,6 @@ if (!isset($_POST["ALL_DONE"])) {
      *
      */
 ?>
-<div class="row"><div class="col-12">
-<h1>Регистрация в летний физико-математический лагерь "Дельта"</h1>
-<p>Поля, помеченные звёздочкой <span class="required">*</span> обязательны.</p>
-</div></div> <!-- col12, row -->
-
 <div class="main">
 <form id="form" name="form" method="post" onsubmit="return checkForm()">
   <div class="row">
@@ -71,14 +70,14 @@ if (!isset($_POST["ALL_DONE"])) {
     <input name="gender" type="radio" required id="male" value="m"><label for="male"><span><span></span></span>мальчик</label>
   </div> <!-- gender -->
   </div> <!-- col-3 -->
+      <div class="col-3">
+          Класс<br>
+          <input class="text-input" name="class" type="tel" id="class" title="Класс">
+          <br>
+          <span class="explanation">Из расчёта 11-летней системы или год обучения ребёнка в школе.</span>
+      </div> <!-- col-3 -->
   </div> <!-- raw -->
   <div class="row">
-  <div class="col-3">
-  Класс<br>
-    <input class="text-input" name="class" type="tel" id="class" title="Класс">
-    <br>
-  <span class="explanation">Из расчёта 11-летней системы или год обучения ребёнка в школе.</span>
-  </div> <!-- col-3 -->
   <div class="col-3">
   Школа <span class="required">*</span><br>
     <input class="text-input" name="school" type="text" required id="school" title="Школа">
@@ -116,7 +115,7 @@ if (!isset($_POST["ALL_DONE"])) {
 </div> <!-- class "main" -->
 <?php
 } elseif ($_POST["ALL_DONE"] !== 'Ok') {
-    error('Что-то пошло не так...');
+    error('Что-то пошло не так: ALL_DONE != Ok POST[]=' . print_r($_POST));
 } else {
     /***
      *
@@ -136,18 +135,13 @@ if (!isset($_POST["ALL_DONE"])) {
             try {
                 sendRegMail($person);
                 $db->dbLog("Выслано подтверждение регистрации, UID=" . $uniqueID);
-            } catch (\PHPMailer\PHPMailer\Exception $e) {
+            } catch (PDOException $exception) {
+                error("Error in sendRegMail function, with person UID=" . $uniqueID . ": " . $exception->getMessage());
+            } catch (PHPMailer\PHPMailer\Exception $e) {
                 error("Error in sendRegMail function, with person UID=" . $uniqueID . ": " . $e->errorMessage());
             }
             $db->dbLog("Отправлено письмо-подтверждение регистрации, UniqueId=" . $uniqueID);
             ?>
-            <div class="row">
-                <div class="col-12">
-                    <h1>Регистрация в летний физико-математический лагерь "Дельта"</h1>
-                    <p class="explanation">&nbsp;</p>
-                </div>
-            </div> <!-- col12, row -->
-
             <div class="main">
                 <form id="form" name="form" method="post" action="index.php">
                     <div class="row">
@@ -183,13 +177,6 @@ if (!isset($_POST["ALL_DONE"])) {
             }
             $db->dbLog("Повторно отправлено письмо-подтверждение регистрации, UniqueId=" . $uniqueID);
             ?>
-            <div class="row">
-                <div class="col-12">
-                    <h1>Регистрация в летний физико-математический лагерь "Дельта"</h1>
-                    <p class="explanation">&nbsp;</p>
-                </div>
-            </div> <!-- col12, row -->
-
             <div class="main">
                 <form id="form" name="form" method="post" action="index.php">
                     <div class="row">
@@ -217,17 +204,20 @@ if (!isset($_POST["ALL_DONE"])) {
                         <hr>
                         <p>Если у Вас возникли вопросы или Вы заметили неточность в регистрационных данных, пожалуйста воспользуйтесь формой
                             обратной связи или свяжитесь с нами:</p>
-                    </div></div>  <!-- col-12, row -->
-                <div class="row"><div class="col-6">
-                        <p><b>Анна Семовская</b><br>
-                            +7(903)749-4851 (телефон, Telegram)<br>
-                            anna.sem@gmail.com<br>
-                            Skype: aselect1976</p></div> <!-- col-6 -->
-                    <div class="col-6">
-                        <p><b>Дмитрий Аблов</b><br>
-                            +7(903)795-4223 (телефон, Telegram, Viber, WhatsUpp)<br>
-                            d.ablov@gmail.com<br>
-                            Skype: d.ablov</p></div></div> <!-- col-6, row -->
+                        <div class="row"><div class="col-6">
+                                <p><b>Анна Семовская</b><br>
+                                    <?php printContact('sem'); ?>
+                                </p></div> <!-- col-6 -->
+                            <div class="col-6">
+                                <p><b>Дмитрий Аблов</b><br>
+                                    <?php printContact('abl'); ?>
+                                </p></div></div> <!-- col-6, row -->
+                        <div class="row">
+                            <div class="col-8">
+                                <p><input type="submit" value="Вернуться на главную страницу."></p>
+                            </div>
+                        </div> <!-- row --><!-- col-8-->
+                </div></div>  <!-- col-12, row -->
                 <div class="row"><div class="col-8">
                         <form method="post" action="feedback.php">
                             <p>

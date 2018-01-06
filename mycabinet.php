@@ -42,10 +42,10 @@ if (!isset($_GET["id"])) {
          * Вывод страницы личного кабинета
          *
          */ ?>
-<div class="row"><div class="col-12"> 
+<div class="title">
 <h1>Личный кабинет участника летнего физико-математического лагеря "Дельта"</h1>
 <p>Здесь мы будем выкладывать всю необходимую информацию по организации поездки.</p>
-</div></div>
+</div>
 <div class="main">
 <div class="row">
 <div class="col-6">
@@ -76,14 +76,12 @@ if (!isset($_GET["id"])) {
 </div></div>  <!-- col-12, row -->
 <div class="row"><div class="col-6">
     <p><b>Анна Семовская</b><br>
-    +7(903)749-4851 (телефон, Telegram, WhatsApp)<br>
-    anna.sem@gmail.com<br>
-    Skype: aselect1976</p></div> <!-- col-6 -->
+        <?php printContact('sem');?>
+    </p></div> <!-- col-6 -->
 <div class="col-6">
     <p><b>Дмитрий Аблов</b><br>
-    +7(903)795-4223 (телефон, Telegram, Viber, WhatsApp)<br>
-    d.ablov@gmail.com<br>
-    Skype: d.ablov</p></div></div> <!-- col-6, row -->
+        <?php printContact('abl');?>
+    </p></div></div> <!-- col-6, row -->
 <div class="row"><div class="col-8">
 <form method="post" action="feedback.php">
   <p>

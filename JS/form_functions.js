@@ -291,12 +291,19 @@ function checkForm() {
     for (i = 0; i < formInputs.length; i++ ) {
         var inpt = formInputs[i];
         inpt.style.border = "thin solid green";
+        document.getElementById("gender").style.paddingLeft = "10px";
+        document.getElementById("gender").style.border = "thin solid green";
 
         if (inpt.required && (inpt.type === "text" || inpt.type === "email" || inpt.type === "tel") &&
             inpt.value === "") {
             inpt.style.border = "thin solid red";
             result = false;
         }
+        // проверка правильности даты
+        if (checkDate(document.getElementById("birthday"))) {
+            result = false;
+        }
+
         // проверка определённости пола и согласия
         else if (inpt.required && inpt.type === "radio" && inpt.checked) {
             gdr = true;
@@ -305,9 +312,6 @@ function checkForm() {
             agreed = true;
         }
     }
-
-    document.getElementById("gender").style.paddingLeft = "10px";
-    document.getElementById("gender").style.border = "thin solid green";
     if (!gdr) {
         document.getElementById("gender").style.border = "thin solid red";
         result = false;
@@ -318,10 +322,6 @@ function checkForm() {
     } else {
         document.getElementById("agree").style.border = "thin solid green";
         result = true;
-    }
-    // проверка правильности даты
-    if (checkDate(document.getElementById("birthday"))) {
-        result = false;
     }
 
     if (!result) {
