@@ -8,8 +8,8 @@
 ?>
 <div class="newsblock">
     <h1>Фотогалерея</h1>
-    <p>В данный момент этот раздел находится в разработке</p>
-    <p>Фотографии из прошлых лет можно посмотреть на наших страничках в соцсетях:</p>
+    <p>В данный момент этот раздел находится в разработке.</p>
+    <p>Фотографии прошлых лет можно посмотреть на наших страничках в соцсетях:</p>
     <div class="icons big">
         <a href="https://www.facebook.com/pg/Summer.Camp.Delta/photos/?tab=albums" target="_blank">
             <div class="iconbox big"><span class="icon big fa fa-facebook"></span></div>

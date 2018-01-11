@@ -16,10 +16,10 @@ require_once 'PHPMailer\Exception.php';
  * Определяем глобальные переменные
  ***/
 $from = 'delta_mail_robot@cintra.ru';
-$cc = 'd.ablov@gmail.com';
-$reply_to = 'd.ablov@gmail.com';
-$myCabinet = 'http://test.ablov.ru/mycabinet.php';
-$domain = 'test.ablov.ru';
+$cc = 'ablov@cintra.ru';
+$reply_to = 'anna.sem@gmail.com';
+$domain = 'delta.gorod.de';
+$myCabinet = 'http://' . $domain . '/mycabinet.php';
 
 
 /***
@@ -71,7 +71,7 @@ function sendRegMail($person) {
     $headers =
         'MIME-Version: 1.0' . "\r\n" .
         'Content-type: text/html; charset=windows-1251' . "\r\n" .
-        'From: Delta <delta_mail_robot@cintra.ru>' . "\r\n" .
+        'From: Delta <' . $from . '>' . "\r\n" .
         'To: ' . $reply_to . "\r\n" .
         'Cc: ' . $cc . "\r\n" .
         'X-Mailer: PHP/' . phpversion();
@@ -90,7 +90,7 @@ function sendRegMail($person) {
         <body>
         <p>Благодарим Вас за регистрацию в летний физико-математический лагерь «Дельта» в Мюнхене!</p>
         <p> Адрес Личного кабинета:</p>
-        <p><a href="http://' . $domain . '/mycabinet.php?id=' . $id . '">http://test.ablov.ru/mycabinet.php?id=' . $id . '</a></p>
+        <p><a href="' . $myCabinet . '?id=' . $id . '">' . $myCabinet . '?id=' . $id . '</a></p>
         <p><b>Пожалуйста, зайдите в Личный кабинет и скачайте вступительную олимпиаду!</b></p>
         <p>Несколько слов о задачах вступительной олимпиады.</p>
         <p>Возможно, вашему ребёнку условия задач покажутся непривычными, отличающимися от школьных задач или задач 
@@ -109,6 +109,7 @@ function sendRegMail($person) {
         Анна Семовская<br>
         директор лагеря</p>
         <p>+7(903)749-4851<br>
+        E-mail: anna@sem@gmail.com<br>
         Skype: aselect1976<br>
         <a href="https://www.facebook.com/Summer.Camp.Delta">https://www.facebook.com/Summer.Camp.Delta</a> </p>
         </body>
@@ -149,6 +150,7 @@ function sendAssignmentsMail($person) {
     $subject = 'Вступительная олимпиада Delta-2018';
     $attachment = 'documents/assignments.pdf';
     global $domain;
+    global $myCabinet;
 
     $message = '
         <!doctype html>
@@ -169,9 +171,9 @@ function sendAssignmentsMail($person) {
         <p>Учтите, что решение некоторых задач подтебует определённой исследовательской работы и может занять несколько 
         дней. Именно поэтому на решение задач даётся две недели. Не стоит решать всё в последний день, лучше подумать 
         над задачами подольше.</p>
-        <p>Результаты можно представить в виде сканов (фотографий) работы или в электронном виде в течение 
-        <b>двух недель</b> после получения работы.</p>
-        <p>&nbsp;</p>
+        <p>Результаты можно прислать в течение <b>двух недель</b> после получения работы в виде сканов (фотографий) работы 
+        или в электронном виде по адресу anna.sem@gmail.com или загрузить в личном кабинете.</p>
+        <p>&nbsp</p>
         <p>С уважением,<br>
         Анна Семовская<br>
         директор лагеря</p>
@@ -180,7 +182,7 @@ function sendAssignmentsMail($person) {
         <a href="https://www.facebook.com/Summer.Camp.Delta">https://www.facebook.com/Summer.Camp.Delta</a> </p>
         <p>P.S.</p>
         <p> Адрес Вашего личного кабинета:</p>
-        <p><a href="http://' . $domain .'/mycabinet.php?id=' . $person['UniqueId'] . '">http://' . $domain .
+        <p><a href="' . $myCabinet . '?id=' . $person['UniqueId'] . '">http://' . $domain .
         '/mycabinet.php?id=' . $person['UniqueId'] . '</a></p>
         </body>
         </html>
@@ -218,8 +220,8 @@ function sendAssignmentsMail($person) {
  */
 function sendFeedbackMail($email, $name, $message){
     $from = 'delta_mail_robot@cintra.ru';
-    $to = 'dmitry@ablov.ru'; //'anna.sem@gmail.com';
-    $cc = 'd.ablov@gmail.com';
+    $to = 'anna.sem@gmail.com';
+    $cc = 'ablov@cintra.ru';
     $reply_to = $email;
     $subject = 'Сообщение с формы обратной связи Delta-2018';
 

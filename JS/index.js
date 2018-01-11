@@ -2,7 +2,7 @@
 Подготовка ленты новостей. Скрываем все блоки "more",
 Вместо них вставляем метку "далее..."
  */
-function initNews() {
+document.addEventListener("DOMContentLoaded", function (e) {
     var blocks = document.getElementsByClassName('more');
     if(blocks && blocks != undefined) {
         var n, len, cont;
@@ -14,11 +14,21 @@ function initNews() {
             blocks[n].style.display = 'none';
         }
     }
-}
+});
+var msnry;
+window.addEventListener("load", function (e) {
+    var elem = document.querySelector('.projects');
+    msnry = new Masonry(elem, {
+        itemSelector: '.project',
+        columnWidth: '.project-sizer',
+        percentPosition: true
+    });
+});
 /*
 Раскрываем новость
  */
 function showMore(el) {
     el.querySelector('p.continue').style.display = 'none';
     el.querySelector('div.more').style.display = 'block';
+    msnry.layout();
 }

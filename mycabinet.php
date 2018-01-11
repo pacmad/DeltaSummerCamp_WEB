@@ -51,9 +51,9 @@ if (!isset($_GET["id"])) {
 <div class="col-6">
 <h3>Здравствуйте! </h3>
 <p>Скачайте, пожалуйста, <a href="documents/assignments.pdf" title="Вступительная олимпиада." target="_blank"
-                            onclick='setAppStatus("<?php echo $row['UniqueId'] ?>", 2);'>вступительную олимпиаду</a> (.pdf).</p>
+                            onclick='setStatus("<?php echo $row['UniqueId'] ?>", 2);'>вступительную олимпиаду</a> (.pdf).</p>
 <p>Также Вы можете отправить файл с задачами себе на почту (<?php echo $row["Email"] ?>):</p>
-<form id="form1" name="form1" method="get">
+<form id="SentWorkByMail" name="SentWorkByMail" method="get">
 <input name="sbm" type="hidden" id="SendByMail">
 <input name="id" type="hidden" id="UniqueId" value="<?php echo $row['UniqueId'] ?>">
 <input type="submit" value="Выслать на почту!" onClick='document.getElementById("SendByMail").value = "yes";'>

@@ -172,6 +172,9 @@
     display: block;
     width: 100%;
     max-width: 1600px;
+    margin: 5px 0;
+    border-style: none;
+    border-radius: 7px;
 }
 .newsblock .logo img {
     padding: 5px 5px 5px 0;
@@ -198,7 +201,34 @@
     display: block;
     color: #606060;
     font-size: smaller;
+    cursor: pointer;
 }
+
+/* Проекты */
+.projects:after {
+    content: '';
+    display: block;
+    clear: both;
+}
+.project-sizer {
+    width: 50%;
+}
+.project {
+    display: block;
+    width: 48%;
+    float: left;
+    margin: 5px;
+    padding: 5px;
+    max-width: 800px;
+    border: darkblue 1px solid;
+    border-radius: 15px;
+}
+.project img {
+    margin: 3px 0;
+    border-style: none;
+    border-radius: 7px;
+}
+
 /* Основные ссылки */
 .buttonholder {
     display: block;
@@ -242,6 +272,8 @@
     background: -moz-linear-gradient(left top, rgba(248,234,57,1), rgba(253,253,204,0.9));
     background: linear-gradient(left top, rgba(248,234,57,1), rgba(253,253,204,0.9));
 }
+
+/* Mobile correction */
 @media only screen and (max-width: 900px) {
     h1, h2, h3 {
         font-size: smaller;
@@ -261,6 +293,11 @@
     .news {
         top: -70px;
         width: 70%;
+    }
+    .newsblock .avatar {
+        height: 60px;
+        width: 60px;
+        border-radius: 30px;
     }
     .top {
         height: 75px;
@@ -301,6 +338,18 @@
     }
     .tooltip:hover .tooltiptext {
         visibility: visible;
+    }
+    .project {
+        width: 100%;
+        margin: 2px 0;
+        padding: 2px;
+        border-radius: 8px;
+    }
+    .project-sizer {
+        width: 100%;
+    }
+    .project img {
+        border-radius: 2px;
     }
     .buttonholder {
         top: 9px;

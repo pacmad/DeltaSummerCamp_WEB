@@ -7,13 +7,14 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link href="CSS/common.css" rel="stylesheet" type="text/css">
 <link href="CSS/index.css" rel="stylesheet" type="text/css">
+<script src="JS/lib/masonry.pkgd.min.js"></script>
 <script src="JS/index.js"></script>
 <?php
 require_once 'phplib/dbConnect.php';
 require_once 'phplib/news.php';
 ?>
 </head>
-<body onload="initNews();">
+<body>
 <div class="title">
     <div class="icons">
         <div class="tooltip">
@@ -41,25 +42,25 @@ require_once 'phplib/news.php';
             </a>
         </div>
         <div class="tooltip">
-            <a href="feedback.php">
+            <a href="feedback.php#persons">
             <div class="iconbox"><span class="icon fa fa-phone"></span></div>
             <span class="tooltiptext">Обратная связь</span>
             </a>
         </div>
         <div class="tooltip">
-            <a href="feedback.php">
+            <a href="feedback.php#persons">
             <div class="iconbox"><span class="icon fa fa-skype"></span></div>
             <span class="tooltiptext">Обратная связь</span>
             </a>
         </div>
         <div class="tooltip">
-            <a href="feedback.php">
+            <a href="feedback.php#persons">
             <div class="iconbox"><span class="icon fa fa-whatsapp"></span></div>
             <span class="tooltiptext">Обратная связь</span>
             </a>
         </div>
         <div class="tooltip">
-            <a href="feedback.php">
+            <a href="feedback.php#persons">
             <div class="iconbox"><span class="icon fa fa-telegram"></span></div>
             <span class="tooltiptext">Обратная связь</span>
             </a>
@@ -85,7 +86,7 @@ require_once 'phplib/news.php';
             <div class="button"><p>Курсы и<br>проекты</p></div>
         </a>
         <a href="index.php?page=environment">
-            <div class="button"><p>Проживание<br> и питание</p></div>
+            <div class="button"><p>Жизнь в<br>лагере</p></div>
         </a>
         <a href="index.php?page=photos">
             <div class="button"><p>Фотоальбом</p></div>

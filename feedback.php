@@ -57,7 +57,7 @@ if (isset($_POST["id"])) {
     </div></div> <!-- row --><!-- col-8-->
     </form>
     <hr>
-    <div class="row">
+    <div id="persons" class="row">
         <div class="col-6">
             <p><b>Анна Семовская</b><br>
                 <?php printContact('sem'); ?>
