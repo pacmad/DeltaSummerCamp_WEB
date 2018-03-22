@@ -2,8 +2,14 @@
 <html>
 <head>
 <meta charset="windows-1251">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>&Delta;elta - физико-математический летний лагерь в Мюнхене</title>
+<?php
+include 'phplib/yandex.metrika.php';
+include 'phplib/google.analytics.php';
+?>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="title" content="&Delta;elta - летний физико-математический лагерь в Мюнхене">
+<meta name="description" content="Международный летний детский лагерь в Мюнхене. Отдых со смыслом: математика, физика, программирование. Сроки: 16-30.07.2018. Стоимость: 750 Евро.">
+<title>&Delta;elta - летний физико-математический лагерь в Мюнхене</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link href="CSS/common.css" rel="stylesheet" type="text/css">
 <link href="CSS/index.css" rel="stylesheet" type="text/css">
@@ -67,8 +73,8 @@ require_once 'phplib/news.php';
         </div>
     </div>
     <a href="index.php">
-        <img class="banner-140" src="images/title-140px.jpg">
-        <img class="banner-75" src="images/title-75px.jpg">
+        <img class="banner-140" src="images/title-140px.jpg" alt="Delta">
+        <img class="banner-75" src="images/title-75px.jpg" alt="Delta">
     </a>
 </div>
 <div class="bgrass">

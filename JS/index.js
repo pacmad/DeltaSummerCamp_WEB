@@ -5,24 +5,34 @@
 document.addEventListener("DOMContentLoaded", function (e) {
     var blocks = document.getElementsByClassName('more');
     if(blocks && blocks != undefined) {
-        var n, len, cont;
+        var n, len, cont, style, arr;
         for (n = 0, len = blocks.length; n < len; ++n) {
             cont = document.createElement("p");
             blocks[n].parentNode.insertBefore(cont, blocks[n]);
-            cont.innerHTML = "<p>далее...</p>";
-            cont.className += 'continue';
+            style = 'expandable';
+            arr = blocks[n].parentNode.className.split(" ");
+            if (arr.indexOf(style) == -1) {
+                blocks[n].parentNode.className += " " + style;
+            }
+            cont.innerHTML = "<p>&#9660;далее...</p>";
+            cont.className = ' continue';
             blocks[n].style.display = 'none';
         }
     }
 });
+/*
+»нициализаци€ библиотеки Masonry, используетс€ при выводе проектов
+ */
 var msnry;
 window.addEventListener("load", function (e) {
     var elem = document.querySelector('.projects');
-    msnry = new Masonry(elem, {
-        itemSelector: '.project',
-        columnWidth: '.project-sizer',
-        percentPosition: true
-    });
+    if(elem) {
+        msnry = new Masonry(elem, {
+            itemSelector: '.project',
+            columnWidth: '.project-sizer',
+            percentPosition: true
+        });
+    }
 });
 /*
 –аскрываем новость

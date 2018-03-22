@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /CSS
+Disallow: /documents
+Disallow: /JS
+Disallow: /phplib
+Disallow: /uploads
+Host: http://delta.gorod.de

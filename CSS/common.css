@@ -17,6 +17,10 @@ body {
     width: 100%;
     max-width: 1800px;
 }
+.testbox {
+    display: block;
+    border: darkred 1px solid;
+}
 .copy {
     display: block;
     padding: 2px;

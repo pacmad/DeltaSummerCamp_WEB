@@ -27,7 +27,15 @@ class dbConnect
         $password = "DeltaDB";
         $this->conn = new PDO("mysql:host=$servername;dbname=delta;charset=CP1251", $username, $password);
         $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // set the PDO error mode to exception
+        $this->conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
     }
+
+/*
+ *
+ *  Р Е Г И С Т Р А Ц И И
+ *
+ */
+
 
     /**
      * putRegData() - put registration data from _POST array into the 'registrations' table
@@ -94,13 +102,13 @@ class dbConnect
               '$country', '$langs', '$phone', '$notes')";
         try {
             $this->conn->exec($sql);
-            $this->dbLog("New record created successfully: $name $surname $email");
+            $this->dbLog("Новая регистрация: $name $surname $email", $unique);
             $this->status = DB_ADD_OK;
-            return $unique;
         }
         catch (PDOException $exception) {
             error("Error in database update: " . $exception);
         }
+        return $unique;
     }
 
     /*
@@ -127,7 +135,11 @@ class dbConnect
     }
 
     // Устанавливает флаг status для конкретного абитуриента
-    // 0 - только что создан; 1 -  входил в персональный кабинет и т.д.
+    // -1 - отказ от регистрации;
+    // 0 - только что создан;
+    // 1 - входил в персональный кабинет;
+    // 2 - выслана олимпиада;
+    // 3 - получено решение олимпиады;
     public function setAppStatus($uniqueId, $flag) {
         $sql = "UPDATE registrations SET AppStatus=" . $flag . " WHERE UniqueId='" . $uniqueId ."'";
         try {
@@ -137,6 +149,68 @@ class dbConnect
             error("setAppStatus error: ". $exception);
         }
     }
+
+    // Устанавливает дату отсылки олимпиады и выставляет AppStatus=2
+    public function setWorkDaySent($UID, $date = ""){
+        if ($date == "") {
+            $date = date("Y-m-d");
+        }
+
+        $sql = "UPDATE registrations SET AppStatus=\"2\", DateOfWorkSent=\"$date\" WHERE UniqueId=\"$UID\"";
+        try {
+            $this->conn->query($sql);
+        }
+        catch (PDOException $exception) {
+            error("setWorkDaySent error: $exception");
+        }
+    }
+
+    // Возвращает статус зарегистрировавшегося
+    public function getAppStatus($UID) {
+        $sql = "SELECT AppStatus FROM registrations WHERE UniqueId=\"$UID\"";
+        try {
+            $result = $this->conn->query($sql);
+        }
+        catch (PDOException $exception) {
+            error("getAppStatus error: $exception");
+        }
+
+        if ($result->rowCount() == 1) {
+            foreach ($result as $row) {
+                return $row["AppStatus"];
+            }
+        } else {
+            return -1;
+        }
+    }
+
+    // Возвращает результат запроса вида 'SELECT $list_of_fields FROM "registations" ORDER BY $sort_by'
+    public function getStudentsList($list_of_fields, $sort_by, $minstatus = 0) {
+        $sql = "SELECT $list_of_fields FROM registrations WHERE AppStatus >= $minstatus ORDER BY $sort_by";
+        return $this->conn->query($sql);
+    }
+/*
+ *
+ *  А Н К Е Т А
+ *
+ */
+    // Запись в базу регистраций из анкеты языка сертификата и написания фамилии и имени на языке сертификата
+    public function setCertName($UID, $cert_lang, $cert_name) {
+        $sql = "UPDATE registrations SET CertLang='$cert_lang', CertName='$cert_name' WHERE UniqueId='$UID'";
+        $this->conn->query($sql);
+    }
+
+    // Вывод данных по языку сертификата для определённого человека
+    public function getCertName($UID) {
+        $sql = "SELECT CertLang, CertName FROM registrations WHERE UniqueId='$UID'";
+        return $this->conn->query($sql);
+    }
+
+/*
+ *
+ *  Н О В О С Т И
+ *
+ */
 
     // Возвращает из таблицы news $newsPerPage новостей для страницы $page
     public function getNews($page, $newsPerPage) {
@@ -161,10 +235,10 @@ class dbConnect
     }
 
     // Внутренний журнал
-    public function dbLog($text)
+    public function dbLog($text, $UserID = "")
     {
         $text = filter_var($text);
-        $sql = 'INSERT INTO log (text) VALUES ("' . $text . '")';
+        $sql = 'INSERT INTO log (UserID, text) VALUES ("' . $UserID . '", "' . $text . '")';
         try {
             $this->conn->exec($sql);
         }
@@ -174,10 +248,87 @@ class dbConnect
     }
 
     // результат работы с базой данных
-    // DB_NOT_FOUND, DB_ADD_OK и т.д.
+    // DB_NOT_FOUND, DB_ADD_OK, DB_ADD_DUP и т.д.
     public function getStatus()
     {
         return $this->status;
+    }
+
+    /*
+     *  Работа с учётками админов
+     */
+    // Проверка входа
+    // @param char[32] $UID Unique ID
+    // @param string $PASS - Password
+    // @return int
+    // 0: wrong pass;
+    // 1: success;
+    // -1: wrong UID
+    public function admCheck($UID, $PASS = null)
+    {
+        $sql = "SELECT UID, password FROM admin WHERE UID=\"$UID\"";
+        $result = $this->conn->query($sql);
+
+        if($result->rowCount() == 0) { // Wrong UID
+            return -1;
+        }
+
+        $row[] = $result->fetch();
+
+        $db_pass = $row[0]['password'];
+
+        if ($db_pass == null && $PASS == null) { // Also when password not set
+            return 1;
+        }
+
+        if (!strcmp($db_pass, md5($PASS))) {
+            return 1;
+        }
+
+        // Работает с PHP 5.5+
+        // if (password_verify($PASS, $db_pass)) {
+        //     return 1;
+        // }
+
+        return 0;
+    }
+
+    // Установка пароля (только в том случае, если он уже не установлен
+    // @param char[32] $UID md5 hash
+    // @param string $pass - пароль
+    // @return int
+    // -1: wrong UID;
+    // 0: password already set;
+    // 1: success
+    public function admSetPass($UID, $pass){
+        $sql = "SELECT password FROM admin WHERE UID = \"$UID\"";
+        $result = $this->conn->query($sql);
+
+        if($result->rowCount() == 0) { // Wrong UID
+            return -1;
+        }
+
+        $row[] = $result->fetch();
+
+        if ($row[0]['password'] != null) {
+            return 0;
+        }
+
+        // Работает с PHP 5.5+
+        // $password = password_hash($pass, PASSWORD_DEFAULT);
+        $password = md5($pass);
+        $sql = "UPDATE admin SET password = \"$password\" WHERE UID = \"$UID\"";
+        $this->conn->exec($sql);
+        return 1;
+    }
+
+    // Получаем данные админа
+    // @param char[32] $UID md5 hash
+    // @return array $row
+    public function admGet($UID) {
+        $sql = "SELECT * FROM admin WHERE UID=\"$UID\"";
+        $result = $this->conn->query($sql);
+        return $result->fetch();
     }
 
     function __destruct()

@@ -6,7 +6,7 @@
         русский, но также приветствуется общение на английском и немецком языках.</p>
 
     <h1>Проживание и питание</h1>
-    <div onclick="showMore(this)">
+    <div class="expandable" onclick="showMore(this)">
         <p>Центр располагается в центральной части Мюнхена (до центральной площади 40-50 минут пешком
             или 15 минут на метро),
             в очень тихом, спокойном районе. В одном квартале от центра расположен огромный прекрасный парк (на
@@ -22,18 +22,18 @@
         <p>В центре GOROD своя кухня (готовят сотрудники Центра) и столовая. Питание четырёхразовое. При организации питания
             мы учитываем информацию о аллергиях, сотрудники кухни предупреждают детей о содержании возможных аллергенов.
             Всегда есть доступ к горячей воде и чаю.</p>
-        <img src="images/gd-1.jpg" alt="GOROD">
+        <img src="images/gd-5.jpg" alt="GOROD">
         <div class="more">
-            <img src="images/gd-2.jpg" alt="GOROD">
-            <img src="images/gd-3.jpg" alt="GOROD">
             <img src="images/gd-4.jpg" alt="GOROD">
-            <img src="images/gd-5.jpg" alt="GOROD">
+            <img src="images/gd-3.jpg" alt="GOROD">
+            <img src="images/gd-2.jpg" alt="GOROD">
+            <img src="images/gd-1.jpg" alt="GOROD">
             <a href="https://www.google.com/maps/place/Hansastra%C3%9Fe+181,+81373+M%C3%BCnchen,+Germany/@48.1219181,11.5286315,17z/data=!4m5!3m4!1s0x479dd8b5e31826f3:0x2fa6785644dd78bd!8m2!3d48.1193537!4d11.5349835?hl=en-US"
                target="_blank"><img src="images/map.JPG" alt="Карта"></a>
         </div>
     </div>
 
-    <div onclick="showMore(this)">
+    <div class="expandable" onclick="showMore(this)">
         <h1>Учебная программа</h1>
         <p>В центре много просторных аудиторий, которые позволяют комфортно разместиться на учебных парах.</p>
         <h3>Примерный режим учебного дня</h3>
@@ -58,7 +58,7 @@
         </div>
     </div>
 
-    <div onclick="showMore(this)">
+    <div class="expandable" onclick="showMore(this)">
         <h1>Досуг и отдых</h1>
         <p>В десяти минутах ходьбы от центра GOROD расположен прекрасный парк. Каждый день после занятий все участники
             лагеря выходят туда гулять после занятий, играть в футбол, волейбол, бадминтон и другие подвижные игры.</p>

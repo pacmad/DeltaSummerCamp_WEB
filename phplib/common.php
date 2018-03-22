@@ -28,7 +28,7 @@ function error($err) {
 
     // Уведомление почтой
     $subject = "Ошибка на сайте Дельты!";
-    $reply_to = "d.ablov@gmail.com";
+    $reply_to = "ablov@cintra.ru";
     $error = "
         <!doctype html>
         <html>
@@ -45,7 +45,7 @@ function error($err) {
         'MIME-Version: 1.0' . "\r\n" .
         'Content-type: text/html; charset=windows-1251' . "\r\n" .
         'From: Delta <delta_mail_robot@cintra.ru>' . "\r\n" .
-        'To: d.ablov@gmail.com_' . "\r\n" .
+        'To: ablov@cintra.ru' . "\r\n" .
 //        'Cc: anna.sem@gmail.com' . "\r\n" .
         'X-Mailer: PHP/' . phpversion();
     mail($reply_to, $subject, $error, $headers);

@@ -2,10 +2,14 @@
 <html>
 <head>
 <meta charset="windows-1251">
+<?php
+include 'phplib/yandex.metrika.php';
+include 'phplib/google.analytics.php';
+?>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Обратная связь</title>
 <link href="CSS/common.css" rel="stylesheet" type="text/css">
-<link href="CSS/form.css" rel="stylesheet" type="text/css">
+<link href="CSS/mycabinet.css" rel="stylesheet" type="text/css">
 <?php
     require_once 'phplib/common.php';
 ?>
@@ -39,7 +43,7 @@ if (isset($_POST["id"])) {
         <div class="col-4">
         	<p>
 	        <b>E-Mail: </b><br>
-            <input name="email" type="email" id="email" class="text-input" value="<?php echo $email?>">
+            <input name="email" type="email" id="email" class="text-input" value="<?php echo $email?>" required>
             </p>
         </div> <!-- col-4 -->
         <div class="col-4">

@@ -136,6 +136,12 @@
 .newsblock a {
     text-decoration: none;
 }
+.expandable {
+    cursor: pointer;
+}
+.expandable:hover {
+    border-color: #CC0000;
+}
 .top { /* Скрытый верх новостной летнты (под титулом страницы) */
     display: block;
     height: 150px;
@@ -197,11 +203,10 @@
 	border: 1px solid darkblue;
 	border-radius: 50px;
 }
-.continue {
+.newsblock .continue {
     display: block;
     color: #606060;
     font-size: smaller;
-    cursor: pointer;
 }
 
 /* Проекты */

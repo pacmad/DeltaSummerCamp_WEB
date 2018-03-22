@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Обратная связь</title>
     <link href="CSS/common.css" rel="stylesheet" type="text/css">
-    <link href="CSS/form.css" rel="stylesheet" type="text/css">
+    <link href="CSS/mycabinet.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 <div class="logo"></div>
@@ -52,7 +52,9 @@ try {
     /*
      * Сообщаем об ошибке
      */
-    error('feedback-status: PHPMailer exception: ' . $e);
+    error('feedback-status: PHPMailer exception: ' . $e .
+        '\n\r Message: ' . $_POST['message'] . '\n\r From: ' .
+        $_POST['email'] . '\n\r Name: ' . $_POST['name']);
     ?>
     <div class="row">
         <div class="col-12">

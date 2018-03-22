@@ -1,5 +1,5 @@
 <h2>&laquo;GOROD&raquo;</h2>
-<span class="logo"><img src="images/gorod_logo.jpg" width="400" height="130" alt="GOROD" /></span><p>Мюнхенский культурный центр &laquo;GOROD&raquo; &ndash; уникальная организация, собирающая под своей крышей русскоязычных
+<span class="logo"><a href="http://www.kulturzentrum-gorod.de/" target="_blank"><img src="images/gorod_logo.jpg" width="400" height="130" alt="GOROD" /></a></span><p>Мюнхенский культурный центр &laquo;GOROD&raquo; &ndash; уникальная организация, собирающая под своей крышей русскоязычных
     людей из самых разных стран. Много лет &laquo;GOROD&raquo; ведёт просветительскую деятельность, организует концерты,
     спектакли, выставки, программы международного обмены и школы. Центр &laquo;GOROD&raquo; сертифицирован на принятие
     и размещение детских групп.</p>

@@ -2,10 +2,15 @@
 <html>
 <head>
     <meta charset="windows-1251">
+    <?php
+    include 'phplib/yandex.metrika.php';
+    include 'phplib/google.analytics.php';
+    ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Регистрация</title>
+    <meta name="title" content="Регистрация в Дельту">
+    <title>Регистрация в Дельту</title>
     <link href="CSS/common.css" rel="stylesheet" type="text/css">
-    <link href="CSS/form.css" rel="stylesheet" type="text/css">
+    <link href="CSS/mycabinet.css" rel="stylesheet" type="text/css">
     <script src="JS/form_functions.js"></script>
     <script src="JS/lib/is.min.js"></script>
 </head>
@@ -99,7 +104,7 @@ if (!isset($_POST["ALL_DONE"])) {
   <p>Дополнительная информация<br>
     <textarea class="text-input" name="notes" cols="60" rows="4" id="notes" title="Замечания"></textarea>
     <br>
-      <span class="explanation">Всё, что Вы ещё хотели бы нам сообщить. Также Вы можете задать свои вопросы письмом на delta@mathbaby.ru</span></p>
+      <span class="explanation">Всё, что Вы ещё хотели бы нам сообщить. Также Вы можете задать свои вопросы письмом на summer.camp.delta@gmail.com</span></p>
   <div class="indented" id="agree">На основании ст.64 п.1 Семейного кодекса РФ даю свое согласие на   обработку указанных выше данных моего ребенка для участия в выездной   школе, получения информации о школе, отъезде, возвращении. Использование   данных для других целей не предусмотрено.<br>
   <b>Согласен</b><span class="required" title="Обязательно для заполнения.">*</span>: 
   <input name="agree" type="checkbox" value="agree" title="Согласие">
@@ -134,13 +139,13 @@ if (!isset($_POST["ALL_DONE"])) {
             $person = $db->getPerson($uniqueID);
             try {
                 sendRegMail($person);
-                $db->dbLog("Выслано подтверждение регистрации, UID=" . $uniqueID);
+                $db->dbLog("Выслано подтверждение регистрации, UID=" . $uniqueID, $uniqueID);
             } catch (PDOException $exception) {
                 error("Error in sendRegMail function, with person UID=" . $uniqueID . ": " . $exception->getMessage());
             } catch (PHPMailer\PHPMailer\Exception $e) {
                 error("Error in sendRegMail function, with person UID=" . $uniqueID . ": " . $e->errorMessage());
             }
-            $db->dbLog("Отправлено письмо-подтверждение регистрации, UniqueId=" . $uniqueID);
+            $db->dbLog("Отправлено письмо-подтверждение регистрации, UniqueId=" . $uniqueID, $uniqueID);
             ?>
             <div class="main">
                 <form id="form" name="form" method="post" action="index.php">
@@ -175,7 +180,7 @@ if (!isset($_POST["ALL_DONE"])) {
             } catch (\PHPMailer\PHPMailer\Exception $e) {
                 error($e->errorMessage());
             }
-            $db->dbLog("Повторно отправлено письмо-подтверждение регистрации, UniqueId=" . $uniqueID);
+            $db->dbLog("Повторно отправлено письмо-подтверждение регистрации, UniqueId=" . $uniqueID, $uniqueID);
             ?>
             <div class="main">
                 <form id="form" name="form" method="post" action="index.php">
@@ -200,24 +205,24 @@ if (!isset($_POST["ALL_DONE"])) {
                     <p><input name="ALL_DONE" type="hidden" id="ALL_DONE" value="Ok"><br>
                     </p>
                 </form>
-                <div class="row"><div class="col-12">
+                <div class="row">
+                    <div class="col-12">
                         <hr>
                         <p>Если у Вас возникли вопросы или Вы заметили неточность в регистрационных данных, пожалуйста воспользуйтесь формой
                             обратной связи или свяжитесь с нами:</p>
-                        <div class="row"><div class="col-6">
+                        <div class="row">
+                            <div class="col-6">
                                 <p><b>Анна Семовская</b><br>
                                     <?php printContact('sem'); ?>
                                 </p></div> <!-- col-6 -->
                             <div class="col-6">
                                 <p><b>Дмитрий Аблов</b><br>
                                     <?php printContact('abl'); ?>
-                                </p></div></div> <!-- col-6, row -->
-                        <div class="row">
-                            <div class="col-8">
-                                <p><input type="submit" value="Вернуться на главную страницу."></p>
+                                </p>
                             </div>
-                        </div> <!-- row --><!-- col-8-->
-                </div></div>  <!-- col-12, row -->
+                        </div> <!-- col-6, row -->
+                    </div>
+                </div>  <!-- col-12, row -->
                 <div class="row"><div class="col-8">
                         <form method="post" action="feedback.php">
                             <p>

@@ -1,0 +1,81 @@
+.photo .ajax-upload-dragdrop {
+    border-style: none;
+    width: fit-content;
+    height: fit-content;
+    border-radius: 0;
+    padding: 0;
+}
+.ajax-upload-dragdrop {
+    display: block;
+    width: 90%;
+    height: 200px;
+    border: darkblue 1px dashed;
+    border-radius: 10px;
+    padding: 20px;
+
+    color: #92AAB0;
+    text-align: center;
+    vertical-align: middle;
+    margin-bottom: 10px;
+    font-size: 200%;
+
+    cursor: default;
+
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.ajax-upload-dragdrop:hover {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.ajax-upload-dragdrop div.or {
+    font-size: 50%;
+    font-weight: bold;
+    color: #C0C0C0;
+    padding: 10px;
+}
+
+.ajax-upload-dragdrop div.browser label {
+    background-color: #5a7bc2;
+    color: white;
+    padding: 6px 0;
+    font-size: 40%;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
+    display: block;
+    width: 300px;
+    margin: 20px auto 0 auto;
+
+    box-shadow: 2px 2px 2px #888888;
+}
+
+.ajax-upload-dragdrop div.browser span {
+    cursor: pointer;
+}
+
+
+.ajax-upload-dragdrop div.browser input {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0;
+    border: solid transparent;
+    border-width: 0 0 100px 200px;
+    opacity: .0;
+    filter: alpha(opacity= 0);
+    -o-transform: translate(250px,-50px) scale(1);
+    -moz-transform: translate(-300px,0) scale(4);
+    direction: ltr;
+    cursor: pointer;
+}
+
+.ajax-upload-dragdrop div.browser label:hover {
+    background-color: #427fed;
+}

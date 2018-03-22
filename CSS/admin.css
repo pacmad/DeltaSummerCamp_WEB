@@ -1,0 +1,129 @@
+@charset "windows-1251";
+.title {
+    display: block;
+    margin: 0 0 20px 0;
+    padding: 10px 10px 10px 30px;
+    width: 100%;
+    background-color: #EEEEEE;
+    border-bottom: darkblue 1px solid;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+}
+.main {
+    display: block;
+    width: 95%;
+    padding: 20px;
+    margin: auto auto 40px auto;
+    align-content:center;
+    background-color:#EEE;
+    border: darkblue 1px solid;
+    border-radius: 15px;
+}
+.table {
+    display: table;
+    width: 100%;
+    border: black 1px solid;
+}
+.table-row {
+    display: table-row;
+}
+.table-row:nth-child(even) {
+    background-color: #BBB;
+}
+.table-cell {
+    display: table-cell;
+    vertical-align: middle;
+}
+.table-cell.l_chk {
+    width: 20px;
+}
+.table-cell.l_photo {
+    width: 105px;
+}
+.table-cell img {
+    height: 100px;
+    width: 100px;
+    padding: 0;
+}
+.table-cell.table-header {
+    font-weight: bold;
+    padding: 5px 0;
+    color: lightgrey;
+    background-color: black;
+}
+.table-header.l_name,
+.table-header.l_owntel,
+.table-header.l_tel,
+.table-header.l_mail {
+    cursor: pointer;
+}
+.l_owntel a, .l_tel a, .l_mail a {
+    font-weight: bold;
+    text-decoration: none;
+    color: #333;
+}
+.l_owntel a:hover, .l_tel a:hover, .l_mail a:hover {
+    color: darkred;
+}
+.mobview {
+    display: none;
+}
+.card img {
+    width: 180px;
+    height: 180px;
+}
+.card textarea {
+    width: 80%;
+    height: 10em;
+}
+@media only screen and (max-width: 850px) {
+    input[type=checkbox] {
+        transform: scale(1.5);
+    }
+    .title {
+        font-size: smaller;
+        border-style: none;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+        margin-bottom: 0;
+    }
+    .title h1{
+        display: none;
+    }
+    .main {
+        display: block;
+        width: 100%;
+        padding: 0;
+        margin: 0;
+        box-shadow: 0 0 3px Grey;
+        align-content: center;
+        background-color: #EEE;
+        border-style: none;
+        border-radius: 0;
+    }
+    .table-cell.table-header {
+        display: none;
+    }
+    .table-cell {
+        display: block;
+        float: left;
+        margin: 5px;
+    }
+    .table-cell.l_chk,
+    .table-cell.l_photo {
+        width: fit-content;
+    }
+    .table-cell.l_name {
+        min-width: 130px;
+        font-size: large;
+    }
+    .table-cell.l_owntel,
+    .table-cell.l_tel {
+        width: 30%;
+        min-width: 130px;
+    }
+    .table-cell.l_mail {
+        width: 100%;
+        height: 2em;
+    }
+}

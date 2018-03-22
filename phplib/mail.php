@@ -16,8 +16,9 @@ require_once 'PHPMailer\Exception.php';
  * Определяем глобальные переменные
  ***/
 $from = 'delta_mail_robot@cintra.ru';
-$cc = 'ablov@cintra.ru';
-$reply_to = 'anna.sem@gmail.com';
+$cc =  'ablov@cintra.ru';
+$bcc = 'ablov@cintra.ru';
+$reply_to = 'summer.camp.delta@gmail.com';
 $domain = 'delta.gorod.de';
 $myCabinet = 'http://' . $domain . '/mycabinet.php';
 
@@ -48,6 +49,7 @@ function sendRegMail($person) {
     global $from;
     $to = $person['Email'];
     global $cc;
+    global $bcc;
     global $reply_to;
     $subject = 'Delta-2018 registration';
     global $myCabinet;
@@ -91,7 +93,8 @@ function sendRegMail($person) {
         <p>Благодарим Вас за регистрацию в летний физико-математический лагерь «Дельта» в Мюнхене!</p>
         <p> Адрес Личного кабинета:</p>
         <p><a href="' . $myCabinet . '?id=' . $id . '">' . $myCabinet . '?id=' . $id . '</a></p>
-        <p><b>Пожалуйста, зайдите в Личный кабинет и скачайте вступительную олимпиаду!</b></p>
+        <p><b>Пожалуйста, зайдите в Личный кабинет и скачайте вступительную олимпиаду!<br>
+        Не теряйте адрес личного кабинета, в дальнейшем в нём будет выкладываться другая важная персональная информация.</b></p>
         <p>Несколько слов о задачах вступительной олимпиады.</p>
         <p>Возможно, вашему ребёнку условия задач покажутся непривычными, отличающимися от школьных задач или задач 
         математических олимпиад. Это не случайно. Так как Дельта – лагерь для детей разных возрастов из разных стран, 
@@ -102,8 +105,11 @@ function sendRegMail($person) {
         <p>Именно поэтому на решение задач даётся две недели. Не стоит решать всё в последний день, лучше подумать 
         над задачами подольше.</p>
         <p>&nbsp;</p>
-        <p>Результаты можно представить в виде сканов (фотографий) работы или в электронном виде в течение <b>двух 
-        недель</b> после регистрации.</p>
+        <p>Для участников прошлых лет решение олимпиады не является обязательным, но оно желательно, так как результаты 
+        учитываются при распределении в учебные группы и проекты.</p>
+        <p>&nbsp;</p>
+        <p>Результаты можно представить в виде сканов (фотографий) работы или в электронном виде по адресу:  
+        summer.camp.delta@gmail.com в течение <b>двух недель</b> после получения олимпиады.</p>
         <p>&nbsp;</p>
         <p>С уважением,<br>
         Анна Семовская<br>
@@ -111,7 +117,8 @@ function sendRegMail($person) {
         <p>+7(903)749-4851<br>
         E-mail: anna@sem@gmail.com<br>
         Skype: aselect1976<br>
-        <a href="https://www.facebook.com/Summer.Camp.Delta">https://www.facebook.com/Summer.Camp.Delta</a> </p>
+        Facebook: <a href="https://www.facebook.com/Summer.Camp.Delta">https://www.facebook.com/Summer.Camp.Delta</a><br>
+        ВКонтакте: <a href="https://vk.com/summer_camp_delta">https://vk.com/summer_camp_delta</a></p>
         </body>
         </html>
     ';
@@ -125,7 +132,7 @@ function sendRegMail($person) {
 
     $mail->setFrom($from, 'Delta Summer Camp');
     $mail->addAddress($to);
-    $mail->addCC($cc);
+    $mail->addBCC($bcc);
     $mail->addReplyTo($reply_to);
 
     $mail->isHTML(true);
@@ -145,7 +152,7 @@ function sendRegMail($person) {
 function sendAssignmentsMail($person) {
     global $from;
     $to = $person['Email'];
-    global $cc;
+    global $bcc;
     global $reply_to;
     $subject = 'Вступительная олимпиада Delta-2018';
     $attachment = 'documents/assignments.pdf';
@@ -168,18 +175,23 @@ function sendAssignmentsMail($person) {
         знаний ребёнка какой-либо академической программе. Нам интересен ход мысли ребёнка, его интересы и способность 
         изложить решение. Некоторые задачи, возможно, будут решены не полностью, а некоторые – совсем не тем способом, 
         который мы предполагали, составляя олимпиаду.</p>
-        <p>Учтите, что решение некоторых задач подтебует определённой исследовательской работы и может занять несколько 
+        <p>Учтите, что решение некоторых задач потребует определённой исследовательской работы и может занять несколько 
         дней. Именно поэтому на решение задач даётся две недели. Не стоит решать всё в последний день, лучше подумать 
         над задачами подольше.</p>
+        <p>&nbsp;</p>
+        <p>Для участников прошлых лет решение олимпиады не является обязательным, но оно желательно, так как результаты 
+        учитываются при распределении в учебные группы и проекты.</p>
+        <p>&nbsp;</p>
         <p>Результаты можно прислать в течение <b>двух недель</b> после получения работы в виде сканов (фотографий) работы 
-        или в электронном виде по адресу anna.sem@gmail.com или загрузить в личном кабинете.</p>
-        <p>&nbsp</p>
+        или в электронном виде по адресу summer.camp.delta@gmail.com или загрузить в личном кабинете.</p>
+        <p>&nbsp;</p>
         <p>С уважением,<br>
         Анна Семовская<br>
         директор лагеря</p>
         <p>+7(903)749-4851<br>
         Skype: aselect1976<br>
-        <a href="https://www.facebook.com/Summer.Camp.Delta">https://www.facebook.com/Summer.Camp.Delta</a> </p>
+        Facebook: <a href="https://www.facebook.com/Summer.Camp.Delta">https://www.facebook.com/Summer.Camp.Delta</a><br>
+        ВКонтакте: <a href="https://vk.com/summer_camp_delta">https://vk.com/summer_camp_delta</a></p>
         <p>P.S.</p>
         <p> Адрес Вашего личного кабинета:</p>
         <p><a href="' . $myCabinet . '?id=' . $person['UniqueId'] . '">http://' . $domain .
@@ -198,7 +210,7 @@ function sendAssignmentsMail($person) {
 
     $mail->setFrom($from, 'Delta Summer Camp');
     $mail->addAddress($to);
-    $mail->addCC($cc);
+    $mail->addBCC($bcc);
     $mail->addReplyTo($reply_to);
 
     $mail->addAttachment($attachment);
@@ -220,7 +232,7 @@ function sendAssignmentsMail($person) {
  */
 function sendFeedbackMail($email, $name, $message){
     $from = 'delta_mail_robot@cintra.ru';
-    $to = 'anna.sem@gmail.com';
+    $to = 'summer.camp.delta@gmail.com';
     $cc = 'ablov@cintra.ru';
     $reply_to = $email;
     $subject = 'Сообщение с формы обратной связи Delta-2018';
@@ -242,5 +254,75 @@ function sendFeedbackMail($email, $name, $message){
     $mail->Subject = $subject;
     $mail->Body = $name . ' say: ' . $message;
 
+    $mail->send();
+}
+
+/***
+ *
+ * Письмо-уведомление о получении решения олимпиады
+ * @param array from delta(registrations)  $person
+ * @throws \PHPMailer\PHPMailer\Exception
+ *
+ */
+function sendComfirmMail($person){
+    global $from;
+    $to = $person['Email'];
+    global $bcc;
+    global $reply_to;
+    $subject = 'Подтверждение получения решения олимпиады Delta-2018';
+    global $domain;
+    global $myCabinet;
+
+    // Сначала высылаем подтверждение
+    $message = '
+        <!doctype html>
+        <html>
+        <head>
+        <meta charset="windows-1251">
+        <title>Подтверждение получения решения олимпиады</title>
+        </head>
+        <body>
+        <p>Здравствуйте!</p>
+        <p>Мы получили решение вступительной олимпиады и в ближайшее время, после проверки работы, свяжемся с Вами.</p>
+        <p>&nbsp;</p>
+        <p>С уважением,<br>
+        Анна Семовская<br>
+        директор лагеря</p>
+        <p>+7(903)749-4851<br>
+        Skype: aselect1976<br>
+        Facebook: <a href="https://www.facebook.com/Summer.Camp.Delta">https://www.facebook.com/Summer.Camp.Delta</a><br>
+        ВКонтакте: <a href="https://vk.com/summer_camp_delta">https://vk.com/summer_camp_delta</a></p>
+        <p>P.S.</p>
+        <p> Адрес Вашего личного кабинета:</p>
+        <p><a href="' . $myCabinet . '?id=' . $person['UniqueId'] . '">http://' . $domain .
+        '/mycabinet.php?id=' . $person['UniqueId'] . '</a></p>
+        </body>
+        </html>
+    ';
+    $mail = new PHPMailer(true);
+
+    $mail->SMTPDebug = 0;
+    $mail->isSMTP();
+    $mail->Host = 'mx.cintra.ru';
+    $mail->SMTPAuth = false;
+    $mail->SMTPAutoTLS = false;
+    $mail->CharSet = 'windows-1251';
+
+    $mail->setFrom($from, 'Delta Summer Camp');
+    $mail->addAddress($to);
+    $mail->addBCC($bcc);
+    $mail->addReplyTo($reply_to);
+
+    $mail->isHTML(true);
+    $mail->Subject = $subject;
+    $mail->Body = $message;
+    $mail->AltBody = 'Здравствуйте! Подтверждаем получение решений вступительной олимпиады в Летний физико-математический лагерь "Дельта" в Мюнхене';
+
+    $mail->send();
+
+    // Теперь посылаем уведомление нам
+    $mail->clearAddresses();
+    $mail->addAddress("summer.camp.delta@gmail.com");
+    $mail->Body = "Загружено решение олимпиады от " . $person['Name'] . " " . $person['Surname'] . ".<br>UID=" . $person['UniqueId'];
     $mail->send();
 }

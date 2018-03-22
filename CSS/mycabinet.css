@@ -36,7 +36,10 @@
 	border: 1px solid darkgrey;
 	box-shadow: 2px 3px grey;
 }
-.text-input {
+.text-input,
+input[type=password],
+input[type=text],
+select {
 	font-size: 16px;
 	box-sizing: border-box;
 	border: 1px solid gray;
@@ -49,7 +52,24 @@
 	resize: none;
 	box-shadow: 0 0 2px #333;
 }
-.text-input:focus {
+select:invalid:not(:focus) {
+    color: gray;
+}
+select:invalid:focus {
+    color: transparent;
+}
+select:focus option {
+    color: initial;
+}
+.opera input[type=password],
+.webkit input[type=password],
+input[type=password] {
+    font: large Verdana,sans-serif;
+    letter-spacing: 1px;
+    padding-left: 12px;
+}
+.text-input:focus,
+input[type=password]:focus{
     border-color: blue;
     background-color: #CFC;
 }
@@ -123,7 +143,7 @@ input[type=radio]:not(old):checked + label > span > span {
 	background-image: -webkit-linear-gradient(rgb(179,217,140),rgb(153,204,102));
 	background-image: linear-gradient(rgb(179,217,140),rgb(153,204,102));
 }
-input[type=submit], button {
+input[type=submit], button, .button, input[type=button] {
 	display: block;
 	width: 300px;
 	height: 70px;
@@ -131,6 +151,20 @@ input[type=submit], button {
 	text-shadow: 0 0 0.015em #063;
 	color: darkgreen;
 	border-radius: 10px;
+	cursor: pointer;
+}
+input[type=submit].smallbtn {
+    display: inline-block;
+    width: 2.65em;
+    height: 2.65em;
+    border-radius: 3px;
+    margin: 0.2em;
+}
+#photo {
+    width: 250px;
+    height: 250px;
+    margin: 20px;
+    padding: 0;
 }
 .hidden_error {
 	display: none;
