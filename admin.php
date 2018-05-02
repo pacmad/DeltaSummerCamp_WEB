@@ -1,7 +1,7 @@
 <?php
 require_once 'phplib/dbConnect.php';
 require_once 'phplib/common.php';
-require_once 'phplib/adminlib.php';
+require_once 'phplib/adminlib.inc';
 
 session_start();
 if (isset($_SESSION['signed_in']) && $_SESSION['signed_in']) {

@@ -48,7 +48,7 @@ if (isset($_POST["id"])) {
         </div> <!-- col-4 -->
         <div class="col-4">
         	<p>
-	        <b>Как звать ребёнка: </b><br>
+	        <b>Как зовут ребёнка: </b><br>
             <input name="name" type="text" id="name" class="text-input" value="<?php echo $name?>">
             </p>
         </div> <!-- col-4 -->

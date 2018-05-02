@@ -12,12 +12,16 @@ if (!isset($UID)) {
 }
 
 /*
- *  Обработка загрузки фото
+ *
+ *  Обработка загрузки фото AJAX
+ *
  */
 
 $targetDir = 'photos/';
 
 if (isset($_FILES['file'])) {
+
+    console_log($_FILES);
 
     define('MIN_FREE_SPACE', 20*1024*1024);
 
@@ -34,60 +38,74 @@ if (isset($_FILES['file'])) {
         }
     }
 
+    $error = false;
     if (!is_array($_FILES['file']['name'])) { // single file
         $fileName = $_FILES['file']['name'];
+        $fileSize = $_FILES['file']['size'];
         $tmpFileName = $_FILES['file']['tmp_name'];
         $error = $_FILES['file']['error'];
     } else { //Multiple files, file[], выбираем первый файл
         $fileCount = count($_FILES['file']['name']);
         if ($fileCount >= 1) {
             $fileName = $_FILES['file']['name'][0];
+            $fileSize = $_FILES['file']['size'][0];
             $tmpFileName = $_FILES['file']['tmp_name'][0];
             $error = $_FILES['file']['error'][0];
         } else {
             $tmpFileName = null;
+            error("Загрузка фотографии, ошибка: '$tmpFileName' = null. " . var_dump($_FILES));
+            exit();
         }
     }
 
     if ($error) {
-        $error("Загрузка фотографии, ошибка " . $error);
+        error("Загрузка фотографии, ошибка " . $error);
         exit();
     }
 
     $fileExt = strrchr($fileName, '.');
+    if ($fileExt === "jpeg") $fileExt = "jpg";
+    $rawFileName = $targetDir . "rawPhoto" . $fileExt;
+    $targetFile = $targetDir . $UID . $fileExt;
+    move_uploaded_file($tmpFileName, $rawFileName);
 
-    list($widht, $height, $type) = getimagesize($tmpFileName);
+    list($width, $height, $type) = getimagesize($rawFileName);
 
-    if ($type == IMG_JPG || $type == IMG_GIF || $type == IMG_PNG) {
+    if ($type != IMG_JPG && $type != IMG_GIF && $type != IMG_PNG) {
+        error("Загружена не фотография (неверный тип файла)");
+        exit();
+    }
+
+    if ($fileSize < 1024*1024) { // На очень больших файлах функция не работает
+        $cropSize = min($width, $height);
+        $x1 = round(($width - $cropSize) / 2.0);
+        $x2 = $x1 + $width;
+        $y1 = round(($height - $cropSize) / 2.0);
+        $y2 = $y1 + $cropSize;
         require_once "phplib/ImageManipulator.php";
         define("AVATAR_SIZE", 400);
         try {
-            $manipulator = new ImageManipulator($tmpFileName);
-            $cropSize = min($widht, $height);
-            $x1 = round(($widht - $cropSize) / 2.0 );
-            $x2 = $x1 + $widht;
-            $y1 = round(($height - $cropSize) / 2.0);
-            $y2 = $y1 + $cropSize;
+            $manipulator = new ImageManipulator($rawFileName);
+            $manipulator->setImageFile($rawFileName);
             $manipulator->crop($x1, $y1, $x2, $y2);
             $manipulator->resample(AVATAR_SIZE, AVATAR_SIZE);
-            $manipulator->save($targetDir . $UID . $fileExt);
-        }
-        catch (InvalidArgumentException $e){
+            $manipulator->save($targetFile);
+        } catch (InvalidArgumentException $e) {
             error("ImageManipulator: invalid argument " . $e);
+            exit();
+        } catch (RuntimeException $e) {
+            error("ImageManipulator: runtime error " . $e);
+            exit();
         }
-        catch (RuntimeException $e) {
-            $error("ImageManipulator: runtime error " . $e);
-        }
-
+    } else {
+        rename($rawFileName, $targetFile . '.toEdit.jpg');
+        copy('photos/toEdit.jpg', $targetFile);
+        error("ToDo: отредактировать фото $targetFile");
     }
-
     $ret[] = $fileName;
     echo json_encode($ret);
 
     $db->dbLog("Загружена фотография", $UID);
-    if ($db->getAppStatus($UID) < 6) {
-        $db->setAppStatus($UID, 6); // Меняем статус на "загружена фотография"
-    }
 
     exit();
 }
@@ -97,15 +115,62 @@ if (isset($_FILES['file'])) {
  */
 
 if (isset($_POST) && is_array($_POST) && count($_POST) > 0) {
-    if ($_POST['form'] === "CertName") {
+    if ($_POST['form'] === "OwnTel") {
         try {
-            $db->setCertName($UID, $_POST['certLang'], $_POST['certName']);
+            $db->setOwnTel($UID, $_POST['ownTel']);
         } catch (PDOException $exception) {
-            error("Error in setCertName(): $exception");
+            error("Error in setOwnTel(): $exception, UID: $UID");
+            exit();
         }
-        header("Content-type: text/html; charset=UTF-8");
-        echo $_POST['certName'];
-
+        $db->dbLog("Загружен телефон ребёнка", $UID);
+    } elseif ($_POST['form'] === "ComingDetails") {
+        try {
+            $db->setComingDetails($UID, $_POST['comingWith'], $_POST['comingDate'], $_POST['comingTime'], $_POST['comingFlight'], $_POST['comingPlace']);
+        } catch (PDOException $exception) {
+            error("Error in setComingDetails(): $exception, UID: $UID");
+            exit();
+        }
+        $db->dbLog("Загружены детали приезда", $UID);
+    } elseif ($_POST['form'] === "LeavingDetails") {
+        try {
+            $db->setLeavingDetails($UID, $_POST['leavingWith'], $_POST['leavingDate'], $_POST['leavingTime'], $_POST['leavingFlight'], $_POST['leavingPlace']);
+        } catch (PDOException $exception) {
+            error("Error in setLeavingDetails(): $exception, UID: $UID");
+            exit();
+        }
+        $db->dbLog("Загружены детали отъезда", $UID);
+    } elseif ($_POST['form'] === "HealthDetails") {
+        try {
+            $db->setHealthDetails($UID, $_POST['healthText']);
+        } catch (PDOException $exception) {
+            error("Error in setHealthDetails(): $exception, UID: $UID");
+            exit();
+        }
+        $db->dbLog("Загружены детали здоровья", $UID);
+    } elseif ($_POST['form'] === "InsuranceDetails") {
+        try {
+            $db->setInshuranceDetails($UID, $_POST['insuranceText']);
+        } catch (PDOException $exception) {
+            error("Error in setInsuranceDetails(): $exception, UID: $UID");
+            exit();
+        }
+        $db->dbLog("Загружены детали страховки", $UID);
+    } elseif ($_POST['form'] === "NotesDetails") {
+        try {
+            $db->setNotesDetails($UID, $_POST['notesText']);
+        } catch (PDOException $exception) {
+            error("Error in setNotesDetails(): $exception, UID: $UID");
+            exit();
+        }
+        $db->dbLog("Загружены детали форс-мажор", $UID);
+    } elseif ($_POST['form'] === "OtherDetails") {
+        try {
+            $db->setOtherDetails($UID, $_POST['certLang'], $_POST['certName'], $_POST['visa'], $_POST['notebook'], $_POST['shirt']);
+        } catch (PDOException $exception) {
+            error("Error in SetOtherDetails(): $exception, UID: $UID");
+            exit();
+        }
+        $db->dbLog("Загружены дополнительные поля", $UID);
     }
 
     exit();
@@ -114,8 +179,10 @@ if (isset($_POST) && is_array($_POST) && count($_POST) > 0) {
 /*
  * Установка фото, если есть, иначе - заглушки.
  */
+$pattern = $targetDir . $UID . '.*';
+$photos = glob($pattern);
 
-if (!empty($photos = glob($targetDir . $UID . '.*'))) {
+if (isset($photos) && $photos != false && $photos !== '') {
     $photo = $photos[0];
 } else {
     if ($row['Gender'] === 'f') {
@@ -129,25 +196,85 @@ if (!empty($photos = glob($targetDir . $UID . '.*'))) {
  * Инициализация полей форм
  */
 try {
-    $result = $db->getCertName($UID);
+    $result = $db->getOwnTel($UID);
 } catch (PDOException $exception) {
-    error("Error in getCertName(): $exception");
+    error("Error in getOwnTel(): $exception");
 }
-
 foreach ($result as $row) {
-    $certLang = $row['CertLang'];
-    $certName = $row['CertName'];
-//    $certName = urldecode($certName);
-//    if ($certLang === "ru") {
-//        $certName = iconv("UTF-8", "WINDOWS-1251", $certName);
-//    }
-//    elseif ($certLang === "de") {
-//        $certName = iconv("UTF-8", "ASCII", $certName);
-//    }
-//    if (mb_check_encoding($certName, 'UTF-8')) $certName = utf8_decode($certName);
+    if(!$ownTel = $row['OwnTel']) $ownTel = "";
     break;
 }
 
+try {
+    $result = $db->getComingDetails($UID);
+} catch (PDOException $exception) {
+    error("Error in getComingDetails(): $exception");
+}
+foreach ($result as $row) {
+    $comingWith = $row['ComingWith']; if($comingWith == null) $comingWith = "";
+    $comingDate = $row['ComingDate']; if($comingDate == null) $comingDate = "";
+    $comingTime = $row['ComingTime']; if($comingTime == null) $comingTime = "";
+    $comingFlight = $row['ComingFlight']; if($comingFlight == null) $comingFlight = "";
+    $comingPlace = $row['ComingPlace']; if($comingPlace == null) $comingPlace = "";
+    break;
+}
+
+try {
+    $result = $db->getLeavingDetails($UID);
+} catch (PDOException $exception) {
+    error("Error in getLeavingDetails(): $exception, UID: $UID");
+}
+foreach ($result as $row) {
+    $leavingWith = $row['LeavingWith']; if($leavingWith == null) $leavingWith = "";
+    $leavingDate = $row['LeavingDate']; if($leavingDate == null) $leavingDate = "";
+    $leavingTime = $row['LeavingTime']; if($leavingTime == null) $leavingTime = "";
+    $leavingFlight = $row['LeavingFlight']; if($leavingFlight == null) $leavingFlight = "";
+    $leavingPlace = $row['LeavingPlace']; if($leavingPlace == null) $leavingPlace = "";
+    break;
+}
+
+try {
+    $result = $db->getHealthDetails($UID);
+} catch (PDOException $exception) {
+    error("Error in getHealthDetails(): $exception, UID: $UID");
+}
+foreach ($result as $row) {
+    $healthDetails = $row['Health'];
+    break;
+}
+
+try {
+    $result = $db->getInsuranceDetails($UID);
+} catch (PDOException $exception) {
+    error("Error in getInsuranceDetails(): $exception, UID: $UID");
+}
+foreach ($result as $row) {
+    $insuranceDetails = $row['Insurance'];
+    break;
+}
+
+try {
+    $result = $db->getNotesDetails($UID);
+} catch (PDOException $exception) {
+    error("Error in getNotesDetails: $exception, UID: $UID");
+}
+foreach ($result as $row) {
+    $notesDetails = $row['NotesText'];
+    break;
+}
+
+try {
+    $result = $db->getOtherDetails($UID);
+} catch (PDOException $exception) {
+    error("Error in getOtherDetails: $exception, UID: $UID");
+}
+foreach ($result as $row) {
+    if(!$certLang = $row['CertLang']) $certLang = "";
+    if(!$certName = $row['CertName']) $certName = "";
+    if(!$visa = $row['Visa']) $visa = "";
+    if(!$notebook = $row['Notebook']) $notebook = "";
+    if(!$shirt = $row['Shirt']) $shirt = "";
+}
 ?>
 
 <div class="row">
@@ -164,100 +291,168 @@ foreach ($result as $row) {
             </div>
         </div>
         <br>
-        <form id="certNameForm" method="post">
-            <input name="form" value="CertName" hidden>
-            <p>Выберите язык сертификата:<br>
-                <select name="certLang" id="certLang" required>
-                    <option value="" hidden disabled
-                        <?php
-                        if ($certName === "") {
-                            echo " selected";
-                        }
-                        ?>
-                    >Выбрать...</option>
-                    <option value="ru"
-                        <?php
-                        if ($certLang === "ru") {
-                            echo " selected";
-                        }
-                        ?>
-                    >Русский</option>
-                    <option value="de"
-                        <?php
-                        if ($certLang === "de") {
-                            echo " selected";
-                        }
-                        ?>
-                    >Deutsch</option>
-                    <option value="en"
-                        <?php
-                        if ($certLang === "en") {
-                            echo " selected";
-                        }
-                        ?>
-                    >English</option>
-                </select>
-            </p>
-            <p>Фамилия и имя участника на языке сертификата:<br>
-                <input id="certName" name="certName" type="text" class="text-input"
-                       <?php if ($certName !== "") {
-                           echo " value='$certName'";
-                       }
-                       ?>
-                       required>
-                <input id="btnCertName" type="submit" value="&#x2714" class="smallbtn"></p>
+        <form id="ownTelForm" method="post" class="questionnaire">
+            <input name="form" value="OwnTel" hidden>
+            <div class="form-title">Номер мобильного телефона ребёнка&nbsp;</div><br>
+            Введите номер телефона, который будет у ребёнка с собой в лагере:<br>
+            <input type="tel" name="ownTel" id="ownTel" class="text-input" value="<?php echo $ownTel ?>" placeholder="+4912345678999" required>
+            <input id="btnOwnTel" type="submit" value="&#x2714" class="smallbtn">
         </form>
     </div>
-    <p><b>Введите, пожалуйста, детали поездки:</b></p>
-    <div class="col-4">
-        <p>В Мюнхен</p>
-        <form>
-            <select name="coming_with" id="coming_with" required>
-                <option value="" hidden disabled selected>С кем приезжает...</option>
-                <option value="DimaAnya">С организаторами, рейс Lufthansa</option>
-                <option value="Dubeniuk">С организаторами, рейс Utair</option>
-                <option value="Singly">Самостоятельно</option>
-                <option value="WithParents">Привозят родители</option>
+    <div class="col-8">
+        <p><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Введите детали поездки:</b></p>
+
+        <div class="col-6">
+        <form id="comeInForm" method="post" class="questionnaire">
+            <div class="form-title">&nbsp;В Мюнхен&nbsp;</div><br>
+            <input name="form" value="ComingDetails" hidden>
+            <select name="comingWith" id="comingWith" required>
+                <option value="" hidden disabled <?php if($comingWith === "") {echo 'selected';}?>>С кем приезжает...</option>
+                <option value="DimaAnya" <?php if($comingWith === "DimaAnya") {echo 'selected';}?>>С организаторами, рейс Lufthansa</option>
+                <option value="Dubeniuk" <?php if($comingWith === "Dubeniuk") {echo 'selected';}?>>С организаторами, рейс Utair</option>
+                <option value="Singly" <?php if($comingWith === "Singly") {echo 'selected';}?>>Надо встретить...</option>
+                <option value="WithParents" <?php if($comingWith === "WithParents") {echo 'selected';}?>>Привозят родители</option>
             </select>
             <br>
-            Дата:<br> <input type="text" name="coming_date" id="coming_date" value="16/07/2018" required><br>
-            Время:<br> <input type="text" name="coming_time" id="coming_time" placeholder="hh:mm" required><br>
-            Номер рейса:<br> <input type="text" name="coming_flightno" id="coming_flightno" required><br>
-            Куда:<br> <select name="coming_place" id="coming_place" required>
-                <option value="" hidden disabled selected>...</option>
-                <option value="MUC">В аэропорт (Мюнхен)</option>
-                <option value="hbf">На вокзал Hauptbahnhof</option>
-                <option value="gorod">В культурный центр GOROD</option>
-                <option value="other">Иное... (свяжитесь с организаторами!)</option>
+            Дата:<br> <input type="text" name="comingDate" id="comingDate" placeholder="dd/mm/yyyy"
+                             value='<?php if($comingDate === "") {echo "16/07/2018";} else {echo "$comingDate";}?>'
+                             <?php if($comingWith === "DimaAnya" || $comingWith === "Dubeniuk") {echo 'disabled';}?> required><br>
+            Время:<br> <input type="text" name="comingTime" id="comingTime" placeholder="hh:mm"
+                            value='<?php echo "$comingTime" ?>'
+                            <?php if($comingWith === "DimaAnya" || $comingWith === "Dubeniuk") {echo 'disabled';}?> required><br>
+            Номер рейса:<br> <input type="text" name="comingFlight" id="comingFlight" value='<?php echo "$comingFlight" ?>'
+                            <?php if($comingWith === "DimaAnya" || $comingWith === "Dubeniuk") {echo 'disabled';}
+                            elseif ($comingWith ==="WithParents") {echo 'value="-" disabled';}?> required><br>
+            Место встречи:<br> <select name="comingPlace" id="comingPlace" required <?php if($comingWith === "DimaAnya" || $comingWith === "Dubeniuk") {echo 'disabled';} ?>>
+                <option value="" hidden disabled <?php if($comingPlace === "") {echo 'selected';}?>>...</option>
+                <option value="MUC" <?php if($comingPlace === "MUC") {echo 'selected';}?>>В аэропорт (Мюнхен)</option>
+                <option value="hbf" <?php if($comingPlace === "hbh") {echo 'selected';}?>>На вокзал Hauptbahnhof</option>
+                <option value="gorod" <?php if($comingPlace === "gorod") {echo 'selected';}?>>В культурный центр GOROD</option>
+                <option value="other" <?php if($comingPlace === "other") {echo 'selected';}?>>Иное... (свяжитесь с организаторами!)</option>
+                <?php
+                if ($comingWith === "DimaAnya") {
+                    echo "<option value='DME' selected>Аэропорт \"Домодедово\"</option>";
+                } elseif ($comingWith === "Dubeniuk") {
+                    echo "<option value='VKO' selected>Аэропорт \"Внуково\"</option>";
+                }
+                ?>
             </select>
-            <br><br>
-            <input type="submit" title="Сохранить" name="coming_submit" id="coming_submit">
+            <input id="btnComingDetails" type="submit" value="&#x2714" class="smallbtn">
+        </form>
+        </div>
+
+        <div class="col-6">
+        <form id="leaveOutForm" method="post" class="questionnaire">
+            <div class="form-title">&nbsp;Из Мюнхена&nbsp;</div><br>
+            <input name="form" value="LeavingDetails" hidden>
+            <select name="leavingWith" id="leavingWith" required>
+                <option value="" hidden disabled <?php if($leavingWith === "") {echo 'selected';}?>>С кем уезжает...</option>
+                <option value="DimaAnya" <?php if($leavingWith === "DimaAnya") {echo 'selected';}?>>С организаторами, рейс Lufthansa</option>
+                <option value="Dubeniuk" <?php if($leavingWith === "Dubeniuk") {echo 'selected';}?>>С организаторами, рейс Utair</option>
+                <option value="Singly" <?php if($leavingWith === "Singly") {echo 'selected';}?>>Надо проводить...</option>
+                <option value="WithParents" <?php if($leavingWith === "WithParents") {echo 'selected';}?>>Забирают родители</option>
+            </select>
+            <br>
+            Дата:<br> <input type="text" name="leavingDate" id="leavingDate" placeholder="dd/mm/yyyy"
+                             value='<?php if($leavingDate === "") {echo "30/07/2018";} else {echo "$leavingDate";}?>'
+                <?php if($leavingWith === "DimaAnya" || $leavingWith === "Dubeniuk") {echo 'disabled';}?> required><br>
+            Время:<br> <input type="text" name="leavingTime" id="leavingTime" placeholder="hh:mm"
+                              value='<?php echo "$leavingTime" ?>'
+                <?php if($leavingWith === "DimaAnya" || $leavingWith === "Dubeniuk") {echo 'disabled';}?> required><br>
+            Номер рейса:<br> <input type="text" name="leavingFlight" id="leavingFlight" value='<?php echo "$leavingFlight" ?>'
+                <?php if($leavingWith === "DimaAnya" || $leavingWith === "Dubeniuk") {echo 'disabled';}
+                elseif ($leavingWith ==="WithParents") {echo 'value="-" disabled';}?> required><br>
+            Место встречи:<br> <select name="leavingPlace" id="leavingPlace" required <?php if($leavingWith === "DimaAnya" || $leavingWith === "Dubeniuk") {echo 'disabled';} ?>>
+                <option value="" hidden disabled <?php if($leavingPlace === "") {echo 'selected';}?>>...</option>
+                <option value="MUC" <?php if($leavingPlace === "MUC") {echo 'selected';}?>>Из аэропорта (Мюнхен)</option>
+                <option value="hbf" <?php if($leavingPlace === "hbh") {echo 'selected';}?>>От вокзала Hauptbahnhof</option>
+                <option value="gorod" <?php if($leavingPlace === "gorod") {echo 'selected';}?>>Из культурного центра GOROD</option>
+                <option value="other" <?php if($leavingPlace === "other") {echo 'selected';}?>>Иное... (свяжитесь с организаторами!)</option>
+                <?php
+                if ($leavingWith === "DimaAnya") {
+                    echo "<option value='DME' selected>Аэропорт \"Домодедово\"</option>";
+                } elseif ($leavingWith === "Dubeniuk") {
+                    echo "<option value='VKO' selected>Аэропорт \"Внуково\"</option>";
+                }
+                ?>
+            </select>
+            <input id="btnLeavingDetails" type="submit" value="&#x2714" class="smallbtn">
+        </form>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-8">
+        <p><b>Заполните важную информацию о ребенке</b></p>
+        <form id="healthForm" method="post" class="questionnaire">
+            <div class="form-title">&nbsp;Здоровье&nbsp;</div><br>
+            Аллергические реакции, другие особенности здоровья, принимаемые медикаменты, ограничения в еде.<br>
+            <input name="form" value="HealthDetails" hidden>
+            <textarea name="healthText" id="healthText"><?php echo $healthDetails ?></textarea>
+            <input id="btnHealthDetails" type="submit" value="&#x2714" class="smallbtn">
+        </form>
+        <br>
+        <form id="insuranceForm" method="post" class="questionnaire">
+            <div class="form-title">&nbsp;Страховка&nbsp;</div><br>
+            Информация о страховом полисе; телефон(ы) и язык страховой компании. Особенности использования конкретного страхового полиса.<br>
+            <input name="form" value="InsuranceDetails" hidden>
+            <textarea name="insuranceText" id="insuranceText"><?php echo $insuranceDetails ?></textarea>
+            <input id="btnInsuranceDetails" type="submit" value="&#x2714" class="smallbtn">
+        </form>
+        <br>
+        <form id="notesForm" method="post" class="questionnaire">
+            <div class="form-title">&nbsp;Форс-мажор&nbsp;</div><br>
+            Дополнительная информация по действиям организаторов в сложных ситуациях: список "горячих телефонов" по которым можно звонить,
+            дополнительные инструкции и т.д.<br>
+            <input name="form" value="NotesDetails" hidden>
+            <textarea name="notesText" id="notesText"><?php echo $notesDetails ?></textarea>
+            <input id="btnNotesDetails" type="submit" value="&#x2714" class="smallbtn">
         </form>
     </div>
     <div class="col-4">
-        <p>Из мюнхена</p>
-        <form>
-            <select name="leaving_with" id="leaving_with" required>
-                <option value="" hidden disabled selected>С кем уезжает...</option>
-                <option value="DimaAnya">С организаторами, рейс Lufthansa</option>
-                <option value="Dubeniuk">С организаторами, рейс Utair</option>
-                <option value="Singly">Самостоятельно</option>
-                <option value="WithParents">Забирают родители</option>
+        <p><b>...и ещё несколько важных вопросов</b></p>
+        <form id="otherForm" method="post" class="questionnaire">
+            <input name="form" value="OtherDetails" hidden>
+            Нужна ли ребёнку виза:<br>
+            <input name="visa" type="radio" required id="visa_yes" value="1" <?php if($visa == 1) echo "checked"; ?>>
+            <label for="visa_yes"><span><span></span></span>нужна</label>&nbsp;&nbsp;
+            <input name="visa" type="radio" required id="visa_no" value="0" <?php if($visa == 0) echo "checked"; ?>>
+            <label for="visa_no"><span><span></span></span>не нужна</label>
+            <br><br>
+            В конце смены все участники получают сертификаты, в которых указаны все курсы и тема проекта участника.<br>
+            Выберите язык сертификата:<br>
+            <select name="certLang" id="certLang" required>
+                <option value="" hidden disabled <?php if ($certName === "") echo " selected"; ?>>Выбрать...</option>
+                <option value="ru" <?php if ($certLang === "ru") echo " selected"; ?>>Русский</option>
+                <option value="de" <?php if ($certLang === "de") echo " selected"; ?>>Deutsch</option>
+                <option value="en" <?php if ($certLang === "en") echo " selected"; ?>>English</option>
             </select>
             <br>
-            Дата:<br> <input type="text" name="leaving_date" id="leaving_date" value="30/07/2018" required><br>
-            Время:<br> <input type="text" name="leaving_time" id="leaving_time" placeholder="hh:mm" required><br>
-            Номер рейса:<br> <input type="text" name="leaving_flightno" id="leaving_flightno" required><br>
-            Откуда:<br> <select name="leaving_place" id="leaving_place" required>
-                <option value="" hidden disabled selected>...</option>
-                <option value="MUC">Из аэропорта (Мюнхен)</option>
-                <option value="hbf">От вокзала Hauptbahnhof</option>
-                <option value="gorod">Из культурный центр GOROD</option>
-                <option value="other">Иное... (свяжитесь с организаторами!)</option>
+            Фамилия и имя участника на языке сертификата:<br>
+            <input id="certName" name="certName" type="text" class="text-input" <?php if ($certName !== "") echo " value='$certName'"; ?> required>
+            <br><br>
+            В некоторых курсах и проектах требуется компьютер.<br>
+            Будет ли у ребёнка с собой ноутбук:<br>
+            <select name="notebook" id="notebook" required>
+                <option value="" hidden disabled <?php if($notebook === "") echo "selected"; ?>>...</option>
+                <option value="win" <?php if($notebook === "win") echo "selected"; ?>>Да, Windows</option>
+                <option value="mac" <?php if($notebook === "mac") echo "selected"; ?>>Да, Mac OS</option>
+                <option value="nix" <?php if($notebook === "nix") echo "selected"; ?>>Да, Linux</option>
+                <option value="no" <?php if($notebook === "no") echo "selected"; ?>>Нет</option>
             </select>
             <br><br>
-            <input type="submit" title="Сохранить" name="leaving_submit" id="leaving_submit">
+            В конце смены участники получают фирменные футболки.<br>
+            Размер футболки:<br>
+            <select name="shirt" id="shirt" required>
+                <option value="" hidden disabled <?php if($shirt === "") echo "selected"; ?>>...</option>
+                <option value="xs" <?php if($shirt === "XS") echo "selected"; ?>>XS</option>
+                <option value="s" <?php if($shirt === "S") echo "selected"; ?>>S</option>
+                <option value="m" <?php if($shirt === "M") echo "selected"; ?>>M</option>
+                <option value="l" <?php if($shirt === "L") echo "selected"; ?>>L</option>
+                <option value="xl" <?php if($shirt === "XL") echo "selected"; ?>>XL</option>
+                <option value="xxl" <?php if($shirt === "XXL") echo "selected"; ?>>XXL</option>
+            </select>
+            <input id="btnOtherDetails" type="submit" value="&#x2714" class="smallbtn">
         </form>
     </div>
 </div>
-

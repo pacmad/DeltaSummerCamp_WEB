@@ -6,6 +6,7 @@
     <title>Уголок администратора</title>
     <link href="CSS/common.css" rel="stylesheet" type="text/css">
     <link href="CSS/admin.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <!-- jQuery  -->
     <script src="https://code.jquery.com/jquery-3.3.0.min.js"
             integrity="sha256-RTQy8VOmNlT6b2PIRur37p6JEBZUE7o8wPgMvu18MC4="
@@ -24,7 +25,7 @@
         $_SESSION['SortBy'] = "Name"; // Сортировка по умолчанию - по фамилиям, переключение на сортировку по имени
     }
     if (!isset($_SESSION['View'])) {
-        $_SESSION['View'] = "List";
+        $_SESSION['View'] = "List"; // Тип вывода: List, Details, Edit
     }
     ?>
 </head>

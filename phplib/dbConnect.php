@@ -89,7 +89,7 @@ class dbConnect
             $_POST["class"] = 0;
         }
         $class = substr(trim(filter_var($_POST["class"], FILTER_SANITIZE_STRING)), 0, 2);
-        $school = substr(trim(filter_var($_POST["school"], FILTER_SANITIZE_STRING)), 0, 30);
+        $school = substr(trim(filter_var($_POST["school"], FILTER_SANITIZE_STRING)), 0, 70);
         $city = substr(trim(filter_var($_POST["city"], FILTER_SANITIZE_STRING)), 0, 40);
         $country = substr(trim(filter_var($_POST["country"], FILTER_SANITIZE_STRING)), 0, 20);
         $langs = substr(trim(filter_var($_POST["langs"], FILTER_SANITIZE_STRING)), 0, 60);
@@ -179,38 +179,187 @@ class dbConnect
             foreach ($result as $row) {
                 return $row["AppStatus"];
             }
-        } else {
-            return -1;
         }
+
+        return -1;
     }
 
-    // Возвращает результат запроса вида 'SELECT $list_of_fields FROM "registations" ORDER BY $sort_by'
-    public function getStudentsList($list_of_fields, $sort_by, $minstatus = 0) {
-        $sql = "SELECT $list_of_fields FROM registrations WHERE AppStatus >= $minstatus ORDER BY $sort_by";
+    // Возвращает результат запроса вида 'SELECT $list_of_fields FROM "registations" ORDER BY $sort_by' с учётом типа статуса
+    // Последний аргумент - порог выдачи по статусу.
+    public function getStudentsList($list_of_fields, $sort_by, $where = 'AppStatus >= 0') {
+        $sql = "SELECT $list_of_fields FROM registrations WHERE $where ORDER BY $sort_by";
         return $this->conn->query($sql);
+    }
+
+    // Возвращает UniqueID следующей записи после $UID в таблице registrations с условием $where, отсортированной по полю $sortBy
+    public function getNextUID($UID, $sort_by, $where = 'AppStatus >= 0'){
+        // Определяем общее число записей
+        $maxRecord = 0;
+        $sql = "SELECT COUNT(*) AS rows FROM registrations WHERE $where";
+        try {
+            $result = $this->conn->query($sql);
+        }
+        catch (PDOException $exception) {
+            error("getNextUID() error in COUNT: $exception");
+        }
+        $row = $result->fetch();
+        $maxRecord = $row['rows'];
+
+        // Определяем порядковый номер записи с данным $UID
+        $sql = "SELECT row FROM (SELECT @rownum := @rownum + 1 row, t.UniqueId FROM registrations t, (SELECT @rownum := 0) r WHERE $where ORDER BY $sort_by) AS rows WHERE UniqueId = '$UID'";
+        try {
+            $result = $this->conn->query($sql);
+        }
+        catch (PDOException $exception) {
+            error("getNextUID() error in SELECT: $exception");
+        }
+        $row = $result->fetch();
+        $record = $row['row'];
+        if ($record >= $maxRecord)
+            return $UID;
+        else $record++;
+
+
+        // Определяем $UID для следующей записи
+        $sql = "SELECT UniqueId FROM (SELECT @rownum := @rownum + 1 row, t.UniqueId FROM registrations t, (SELECT @rownum := 0) r WHERE $where ORDER BY $sort_by) AS rows WHERE row = $record";
+        try {
+            $result = $this->conn->query($sql);
+        }
+        catch (PDOException $exception) {
+            error("getNextUID() error in SELECT: $exception");
+        }
+        $row = $result->fetch();
+
+        return $row['UniqueId'];
+    }
+
+    // Возвращает UniqueID предыдущей записи после $UID в таблице registrations с условием $where, отсортированной по полю $sortBy
+    public function getPrevUID($UID, $sort_by, $where = 'AppStatus >= 0'){
+        // Определяем порядковый номер записи с данным $UID
+        $sql = "SELECT row FROM (SELECT @rownum := @rownum + 1 row, t.UniqueId FROM registrations t, (SELECT @rownum := 0) r WHERE $where ORDER BY $sort_by) AS rows WHERE UniqueId = '$UID'";
+        try {
+            $result = $this->conn->query($sql);
+        }
+        catch (PDOException $exception) {
+            error("getNextUID() error in SELECT: $exception");
+        }
+        $row = $result->fetch();
+        $record = $row['row'];
+        if ($record == 1)
+            return $UID;
+        else $record--;
+
+
+        // Определяем $UID для следующей записи
+        $sql = "SELECT UniqueId FROM (SELECT @rownum := @rownum + 1 row, t.UniqueId FROM registrations t, (SELECT @rownum := 0) r WHERE $where ORDER BY $sort_by) AS rows WHERE row = $record";
+        try {
+            $result = $this->conn->query($sql);
+        }
+        catch (PDOException $exception) {
+            error("getNextUID() error in SELECT: $exception");
+        }
+        $row = $result->fetch();
+
+        return $row['UniqueId'];
     }
 /*
  *
  *  А Н К Е Т А
  *
  */
-    // Запись в базу регистраций из анкеты языка сертификата и написания фамилии и имени на языке сертификата
-    public function setCertName($UID, $cert_lang, $cert_name) {
-        $sql = "UPDATE registrations SET CertLang='$cert_lang', CertName='$cert_name' WHERE UniqueId='$UID'";
-        $this->conn->query($sql);
+    // Запись в базу регистраций телефона ребёнка
+    public function setOwnTel($UID, $ownTel){
+        $ownTel = substr(trim(filter_var($ownTel, FILTER_SANITIZE_STRING)), 0, 20);
+        $sql = "UPDATE registrations SET OwnTel='$ownTel' WHERE UniqueId='$UID'";
+        $this->conn->exec($sql);
     }
 
-    // Вывод данных по языку сертификата для определённого человека
-    public function getCertName($UID) {
-        $sql = "SELECT CertLang, CertName FROM registrations WHERE UniqueId='$UID'";
+    public function getOwnTel($UID) {
+        $sql = "SELECT OwnTel FROM registrations WHERE UniqueId='$UID'";
         return $this->conn->query($sql);
     }
 
-/*
- *
- *  Н О В О С Т И
- *
- */
+    // Запись в базу регистраций деталей прибытия
+    public function setComingDetails($UID, $coming_with, $coming_date, $coming_time, $coming_flight, $coming_place){
+        $coming_date = substr(trim(filter_var($coming_date, FILTER_SANITIZE_STRING)), 0, 20);
+        $coming_time = substr(trim(filter_var($coming_time, FILTER_SANITIZE_STRING)), 0, 20);
+        $coming_flight = substr(trim(filter_var($coming_flight, FILTER_SANITIZE_STRING)), 0, 20);
+        $sql = "UPDATE registrations SET ComingWith='$coming_with', ComingDate='$coming_date', ComingTime='$coming_time',
+          ComingFlight='$coming_flight', ComingPlace='$coming_place' WHERE UniqueId='$UID'";
+        $this->conn->exec($sql);
+    }
+
+    // Вывод данных по прибытию в лагерь
+    public function getComingDetails($UID) {
+        $sql = "SELECT ComingWith, ComingDate, ComingTime, ComingFlight, ComingPlace FROM registrations WHERE UniqueId='$UID'";
+        return $this->conn->query($sql);
+    }
+    
+    // Запись в базу регистраций деталей отбытия
+    public function setLeavingDetails($UID, $leaving_with, $leaving_date, $leaving_time, $leaving_flight, $leaving_place){
+        $leaving_date = substr(trim(filter_var($leaving_date, FILTER_SANITIZE_STRING)), 0, 20);
+        $leaving_time = substr(trim(filter_var($leaving_time, FILTER_SANITIZE_STRING)), 0, 20);
+        $leaving_flight = substr(trim(filter_var($leaving_flight, FILTER_SANITIZE_STRING)), 0, 20);
+        $sql = "UPDATE registrations SET LeavingWith='$leaving_with', LeavingDate='$leaving_date', LeavingTime='$leaving_time',
+          LeavingFlight='$leaving_flight', LeavingPlace='$leaving_place' WHERE UniqueId='$UID'";
+        $this->conn->exec($sql);
+    }
+
+    // Вывод данных по прибытию в лагерь
+    public function getLeavingDetails($UID) {
+        $sql = "SELECT LeavingWith, LeavingDate, LeavingTime, LeavingFlight, LeavingPlace FROM registrations WHERE UniqueId='$UID'";
+        return $this->conn->query($sql);
+    }
+
+    // Здоровье
+    public function setHealthDetails($UID, $health) {
+        $health = filter_var(iconv("UTF-8", "WINDOWS-1251", $health), FILTER_SANITIZE_STRING);
+        $sql = "UPDATE registrations SET Health='$health' WHERE UniqueId='$UID'";
+        $this->conn->exec($sql);
+    }
+    public function getHealthDetails($UID) {
+        $sql = "SELECT Health FROM registrations WHERE UniqueId='$UID'";
+        return $this->conn->query($sql);
+    }
+
+    // Страховка
+    public function setInshuranceDetails($UID, $insurance) {
+        $insurance = filter_var(iconv("UTF-8", "WINDOWS-1251", $insurance), FILTER_SANITIZE_STRING);
+        $sql = "UPDATE registrations SET Insurance='$insurance' WHERE UniqueId='$UID'";
+        $this->conn->exec($sql);
+    }
+    public function getInsuranceDetails($UID) {
+        $sql = "SELECT Insurance FROM registrations WHERE UniqueId='$UID'";
+        return $this->conn->query($sql);
+    }
+
+    // Форс-мажор
+    public function setNotesDetails($UID, $notes) {
+        $notes = filter_var(iconv("UTF-8", "WINDOWS-1251", $notes), FILTER_SANITIZE_STRING);
+        $sql = "UPDATE registrations SET NotesText='$notes' WHERE UniqueId='$UID'";
+        $this->conn->exec($sql);
+    }
+    public function getNotesDetails($UID) {
+        $sql = "SELECT NotesText FROM registrations WHERE UniqueId='$UID'";
+        return $this->conn->query($sql);
+    }
+
+    // Дополнительные данные
+    public function setOtherDetails($UID, $certLang, $certName, $visa, $notebook, $shirt) {
+        $certName = substr(trim(filter_var($certName, FILTER_SANITIZE_STRING)), 0, 255);
+        $sql = "UPDATE registrations SET CertLang='$certLang', CertName='$certName', Visa='$visa', Notebook='$notebook', Shirt='$shirt' WHERE UniqueId='$UID'";
+        $this->conn->exec($sql);
+    }
+    public function getOtherDetails($UID){
+        $sql = "SELECT CertLang, CertName, Visa, Notebook, Shirt FROM registrations WHERE UniqueId='$UID'";
+        return $this->conn->query($sql);
+    }
+
+    /*
+     *
+     *  Н О В О С Т И
+     *
+     */
 
     // Возвращает из таблицы news $newsPerPage новостей для страницы $page
     public function getNews($page, $newsPerPage) {
@@ -238,7 +387,7 @@ class dbConnect
     public function dbLog($text, $UserID = "")
     {
         $text = filter_var($text);
-        $sql = 'INSERT INTO log (UserID, text) VALUES ("' . $UserID . '", "' . $text . '")';
+        $sql = "INSERT INTO log (UserID, text) VALUES ('$UserID' , '$text')";
         try {
             $this->conn->exec($sql);
         }
@@ -254,9 +403,11 @@ class dbConnect
         return $this->status;
     }
 
-    /*
-     *  Работа с учётками админов
-     */
+/*
+ *
+ *  Работа с учётками админов
+ *
+ */
     // Проверка входа
     // @param char[32] $UID Unique ID
     // @param string $PASS - Password
@@ -266,7 +417,7 @@ class dbConnect
     // -1: wrong UID
     public function admCheck($UID, $PASS = null)
     {
-        $sql = "SELECT UID, password FROM admin WHERE UID=\"$UID\"";
+        $sql = "SELECT UID, password FROM admin WHERE UID='$UID'";
         $result = $this->conn->query($sql);
 
         if($result->rowCount() == 0) { // Wrong UID
@@ -301,7 +452,7 @@ class dbConnect
     // 0: password already set;
     // 1: success
     public function admSetPass($UID, $pass){
-        $sql = "SELECT password FROM admin WHERE UID = \"$UID\"";
+        $sql = "SELECT password FROM admin WHERE UID = '$UID'";
         $result = $this->conn->query($sql);
 
         if($result->rowCount() == 0) { // Wrong UID
@@ -317,7 +468,7 @@ class dbConnect
         // Работает с PHP 5.5+
         // $password = password_hash($pass, PASSWORD_DEFAULT);
         $password = md5($pass);
-        $sql = "UPDATE admin SET password = \"$password\" WHERE UID = \"$UID\"";
+        $sql = "UPDATE admin SET password = '$password' WHERE UID = '$UID'";
         $this->conn->exec($sql);
         return 1;
     }
@@ -326,7 +477,7 @@ class dbConnect
     // @param char[32] $UID md5 hash
     // @return array $row
     public function admGet($UID) {
-        $sql = "SELECT * FROM admin WHERE UID=\"$UID\"";
+        $sql = "SELECT * FROM admin WHERE UID='$UID'";
         $result = $this->conn->query($sql);
         return $result->fetch();
     }

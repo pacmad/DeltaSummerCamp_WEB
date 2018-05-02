@@ -1,7 +1,7 @@
 .photo .ajax-upload-dragdrop {
     border-style: none;
-    width: fit-content;
-    height: fit-content;
+    width: auto;
+    height: auto;
     border-radius: 0;
     padding: 0;
 }

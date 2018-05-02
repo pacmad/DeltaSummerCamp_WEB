@@ -49,7 +49,17 @@ function error($err) {
 //        'Cc: anna.sem@gmail.com' . "\r\n" .
         'X-Mailer: PHP/' . phpversion();
     mail($reply_to, $subject, $error, $headers);
+}
 
+/*
+ *
+ * Вывод отладочной информации на консоль браузера
+ *
+ */
+function console_log( $data ){
+    echo '<script>';
+    echo 'console.log('. json_encode( $data ) .')';
+    echo '</script>';
 }
 
 /*

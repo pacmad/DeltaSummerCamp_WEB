@@ -20,6 +20,15 @@
 	border: darkblue 1px solid;
     border-radius: 15px;
 }
+h2 {
+    display: inline-block;
+    font-family: Calibri, Geneva, Arial, Helvetica, sans-serif;
+    font-weight: normal;
+    color: lightcyan;
+    background-color: darkgreen;
+    border-radius: 3px;
+    padding: 5px 15px;
+}
 .explanation {
 	font-size: small;
 }
@@ -36,9 +45,28 @@
 	border: 1px solid darkgrey;
 	box-shadow: 2px 3px grey;
 }
+.form-title {
+    display: inline-block;
+    position: relative;
+    left: 1em;
+    top: -1em;
+    font-weight: bold;
+    background-color: #EEE;
+}
+.questionnaire {
+    border: gray 1px dashed;
+    padding: 5px;
+    border-radius: 15px;
+}
+.questionnaire.active {
+    background-color: #c0fcff;
+    border-style: solid;
+    border-color: darkblue;
+}
 .text-input,
 input[type=password],
 input[type=text],
+textarea,
 select {
 	font-size: 16px;
 	box-sizing: border-box;
@@ -51,6 +79,12 @@ select {
 	padding: 12px 0 12px 5px;
 	resize: none;
 	box-shadow: 0 0 2px #333;
+}
+textarea {
+    width: 90%;
+	max-width: 1024px;
+	overflow: auto;
+	height: 7em;
 }
 select:invalid:not(:focus) {
     color: gray;
@@ -76,6 +110,7 @@ input[type=password]:focus{
 #birthday {
     width: 10em;
 }
+
 /* checkbox and radio styling: http://code.stephenmorley.org/html-and-css/styling-checkboxes-and-radio-buttons/ */
 input[type=checkbox]:not(old),
 input[type=radio]:not(old){
@@ -155,16 +190,18 @@ input[type=submit], button, .button, input[type=button] {
 }
 input[type=submit].smallbtn {
     display: inline-block;
+    vertical-align: top;
     width: 2.65em;
     height: 2.65em;
     border-radius: 3px;
     margin: 0.2em;
 }
-#photo {
+.photo img {
     width: 250px;
     height: 250px;
     margin: 20px;
     padding: 0;
+	float: left;
 }
 .hidden_error {
 	display: none;
@@ -217,7 +254,11 @@ input[type=submit].smallbtn {
         border-radius: unset;
         margin-top: 0;
 	}
-	.text-input {
+	.text-input,
+	input[type=password],
+	input[type=text],
+	textarea,
+	select {
 		width: 100%;
 		font-size: large;
 		padding: 12px 10px;
@@ -226,10 +267,30 @@ input[type=submit].smallbtn {
 		border: 1px solid white;
 		border-radius: 5px;
 	}
+	textarea {
+		width: 100%;
+	}
 	.explanation {
 		font-size: small;
 	}
 	input[type=submit], button {
 		width: 100%;
+	}
+	input[type=submit].smallbtn {
+		display: block;
+		width: 100%;
+		height: 70px;
+		border-radius: 10px;
+		margin-top: 10px;
+		margin-left: 0;
+	}
+    .photo img {
+        float: unset;
+    }
+	.questionnaire {
+		border: gray 1px dashed;
+		padding: 2px;
+		border-radius: 8px;
+		margin-left: 0;
 	}
 }

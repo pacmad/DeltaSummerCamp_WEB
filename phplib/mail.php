@@ -80,7 +80,7 @@ function sendRegMail($person) {
     mail($reply_to, $subject, $debug, $headers);
 
     /*
-     * Теперь основное письмо
+     * Теперь основное письмо (с фразой про резерв!!!)
      */
     $message = '
         <!doctype html>

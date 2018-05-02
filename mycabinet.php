@@ -2,6 +2,7 @@
 <html>
 <head>
 <meta charset="windows-1251">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251" />
 <?php
 include 'phplib/yandex.metrika.php';
 include 'phplib/google.analytics.php';
@@ -75,7 +76,7 @@ if (!isset($_GET["id"])) {
             $surname = $row["Surname"];
             $email = $row["Email"];
             $phone = $row["Tel"];
-            $subTitle = "<b>$name $surname</b><br>e-mail: $email<br>телефон: $phone";
+            $subTitle = "<strong>$name $surname</strong>";
         } elseif ($appStatus < 0) {
             $subTitle = "Регистрация закрыта.";
         } else {
@@ -86,7 +87,7 @@ if (!isset($_GET["id"])) {
         echo "
             <div class=\"title\">
             <h1>Личный кабинет участника летнего физико-математического лагеря \"Дельта\"</h1>
-            <p id=\"subTitle\">$subTitle</p>
+            <h2 id=\"subTitle\">$subTitle</h2>
             </div>
         ";
 
@@ -98,7 +99,7 @@ if (!isset($_GET["id"])) {
             include "mc_01.inc";
         } elseif ($appStatus < 4) { // Прислать результаты
             include "mc_23.inc";
-        } elseif ($appStatus < 10) { // Заполнить анкету
+        } elseif ($appStatus == 15) { // Заполнить анкету
             include "mc_5.inc";
         }
         include "mc_bottom.inc";

@@ -19,10 +19,17 @@
     border: darkblue 1px solid;
     border-radius: 15px;
 }
+
+/*
+    Список
+ */
 .table {
     display: table;
     width: 100%;
     border: black 1px solid;
+}
+.table-header {
+    display: table-header-group;
 }
 .table-row {
     display: table-row;
@@ -40,21 +47,29 @@
 .table-cell.l_photo {
     width: 105px;
 }
+.table-cell.l_name {
+    cursor: pointer;
+}
 .table-cell img {
     height: 100px;
     width: 100px;
     padding: 0;
 }
-.table-cell.table-header {
+.table-header.fixed {
+    position: fixed;
+    top: 0;
+    width: 80%;
+}
+.table-header .table-cell {
     font-weight: bold;
     padding: 5px 0;
     color: lightgrey;
     background-color: black;
 }
-.table-header.l_name,
-.table-header.l_owntel,
-.table-header.l_tel,
-.table-header.l_mail {
+.table-header .l_name,
+.table-header .l_owntel,
+.table-header .l_tel,
+.table-header .l_mail {
     cursor: pointer;
 }
 .l_owntel a, .l_tel a, .l_mail a {
@@ -75,6 +90,87 @@
 .card textarea {
     width: 80%;
     height: 10em;
+}
+
+/*
+    Карточка участника
+ */
+br {
+    display: block;
+    margin: 1.5em 0;
+    content: " ";
+}
+.navigator {
+    display: block;
+    background-color: #404040;
+    margin: 0 0 1em 0;
+    padding-left: 1em;
+}
+.navigator .nav-button {
+    display: inline-block;
+    width: 4em;
+    height: 2em;
+    padding: 0.5em 0;
+    color: wheat;
+    font-size: 1.3em;
+    text-align: center;
+    cursor: pointer;
+}
+.navigator .nav-button:hover {
+    background-color: wheat;
+    color: #404040;
+}
+.full_name {
+    display: block;
+    font-size: large;
+    font-weight: bold;
+    padding-bottom: 0.5em;
+}
+.photo img {
+    width: 200px;
+    height: 200px;
+}
+.o_tel,
+.email,
+.tel {
+    display: block;
+    float: left;
+    font-weight: bold;
+}
+.o_tel a,
+.email a,
+.tel a {
+    text-decoration: none;
+    color: initial;
+}
+.sp_note {
+    border: darkred 2px solid;
+    font-size: larger;
+    font-weight: bold;
+    color: darkred;
+}
+.cablink a {
+    display: inline-block;
+    width: 100%;
+    height: 3em;
+    border: darkblue 1px solid;
+    border-radius: 5px;
+    background-color: #99CCFF;
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+    text-align: center;
+    padding: 1em;
+}
+.cablink a:hover,
+.cablink a:active {
+    background-color: #FDFECF;
+}
+#more_info {
+    display: none;
+}
+.clickable {
+    cursor: pointer;
 }
 @media only screen and (max-width: 850px) {
     input[type=checkbox] {
@@ -101,8 +197,8 @@
         border-style: none;
         border-radius: 0;
     }
-    .table-cell.table-header {
-        display: none;
+    .table-header {
+        background-color: black;
     }
     .table-cell {
         display: block;
@@ -125,5 +221,9 @@
     .table-cell.l_mail {
         width: 100%;
         height: 2em;
+    }
+    .table-header .table-cell {
+        padding: 0.5em;
+        margin: 0;
     }
 }
