@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Dima
- * Date: 21.02.2018
- * Time: 18:57
- */
+
 include "validate.inc";
 include_once "dbConnect.php";
 
@@ -14,6 +9,8 @@ include_once "dbConnect.php";
  */
 $db = new dbConnect();
 if (isset($_POST['View'])) $_SESSION['View'] = $_POST['View'];
+if (!isset($_SESSION['SortBy'])) $_SESSION['SortBy'] = "Surname";
+if (isset($_POST['SortBy'])) $_SESSION['SortBy'] = $_POST['SortBy'];
 if (isset($_POST['ID'])) {
     if ($_POST['ID'] === '+1') {
         $_SESSION['ID'] = $db->getNextUID($_SESSION['ID'], $_SESSION['SortBy']);
@@ -34,73 +31,58 @@ if (isset($_POST['WHERE'])) $_SESSION['WHERE'] = $_POST['WHERE'];
 if ($_SESSION['View'] === "List") {
     $output = '
     <div class="table">
-        <div class="table-header" id="table-header">
-            <div class="table-cell l_chk">&nbsp;</div>
-            <div class="table-cell l_photo">&nbsp;</div>
-            <div class="table-cell l_name" onclick="fetchData(\'Name\')">Как зовут</div>
-            <div class="table-cell l_owntel" onclick="fetchData(\'OwnTel\')">Телефон</div>
-            <div class="table-cell l_tel" onclick="fetchData(\'Tel\')">Телефон родителей</div>
-            <div class="table-cell l_mail" onclick="fetchData(\'Email\')">E-Mail</div>
-        </div>
     ';
 
-    if (!isset($_SESSION['SortBy'])) $_SESSION['SortBy'] = "Name";
-    if (isset($_POST['SortBy'])) {
-        if ($_SESSION['SortBy'] === "Name" && $_POST['SortBy'] === "Name") {
-            $_SESSION['SortBy'] = "Surname";
-        } else {
-            $_SESSION['SortBy'] = $_POST['SortBy'];
-        }
-    }
     try {
         $result = $db->getStudentsList("UniqueId, Surname, Name, Gender, Tel, OwnTel, Email", $_SESSION['SortBy']);
-        if ($result->rowCount() > 0) {
-            foreach ($result as $row) {
-                $UID = $row['UniqueId'];
-                $targetDir = '../photos/';
-                $pattern = $targetDir . $UID . '.*';
-                $photos = glob($pattern);
-
-                if (isset($photos) && $photos != false && $photos !== '') {
-                    $photo = $photos[0];
-                } else {
-                    $photo = $targetDir . $row['Gender'] . ".jpg";
-                }
-
-                $output .= '
-                <div class="table-row" id="tr-'.$row["UniqueId"].'">
-                    <div class="table-cell l_chk"><input type="checkbox" id="cb-'.$row["UniqueId"].'"></div>
-                    <div class="table-cell l_photo" onclick="checkIt(\''.$row["UniqueId"].'\')"><img src="' . $photo . '" alt="Photo"></div>';
-                if ($_SESSION['SortBy'] === 'Name') {
-                    $output .= '<div class="table-cell l_name" onclick="showDetails(\''.$row["UniqueId"].'\');"><b>' . $row["Name"] . '</b><br>' . $row["Surname"] . '</div>';
-                } else {
-                    $output .= '<div class="table-cell l_name" onclick="showDetails(\''.$row["UniqueId"].'\');"><b>' . $row["Surname"] . '</b><br> ' . $row["Name"] . '</div>';
-                }
-                $output .= '<div class="table-cell l_owntel"><div class="mobview">Личный тел.:<br></div><a href="tel:' . $row["OwnTel"] . '">'. $row["OwnTel"] .'</a></div>
-                    <div class="table-cell l_tel"><div class="mobview">Родители:<br></div><a href="tel:'.$row["Tel"].'">' . $row["Tel"] . '</a></div>
-                    <div class="table-cell l_mail"><a href="mailto:'.$row["Email"].'">' . $row["Email"] . '</a></div>
-                </div>
-            ';
-            }
-        } else {
-            $output .= '
-        <tr>
-            <td colspan="4">Данные не найдены</td>
-        </tr>
-        ';
-        }
     } catch (PDOException $exception) {
         error("admFetch error: $exception");
     }
-    $output .= "
+    if ($result->rowCount() > 0) {
+        foreach ($result as $row) {
+            $UID = $row['UniqueId'];
+            $targetDir = '../photos/';
+            $pattern = $targetDir . $UID . '.*';
+            $photos = glob($pattern);
+
+            if (isset($photos) && $photos != false && $photos !== '') {
+                $photo = $photos[0];
+            } else {
+                $photo = $targetDir . $row['Gender'] . ".jpg";
+            }
+
+            $output .= '
+            <div class="row table-row" id="tr-'.$row["UniqueId"].'">
+                <div class="table-cell l_photo" onclick="showDetails(\''.$row["UniqueId"].'\')"><img src="' . $photo . '" alt="Photo"></div>
+                <div class="table-info">
+                    <div class="table-cell l_name" onclick="showDetails(\''.$row["UniqueId"].'\');"><b>' . $row["Surname"] . ' ' . $row["Name"] . '</b></div>
+                    <div class="table-cell l_owntel"><a href="tel:' . $row["OwnTel"] . '">'. $row["OwnTel"] .'</a></div>
+                    <div class="table-cell l_mail"><a href="mailto:'.$row["Email"].'">' . $row["Email"] . '</a></div>
+                    <div class="table-cell l_tel"><p>Родители:</p><a href="tel:'.$row["Tel"].'">' . $row["Tel"] . '</a></div>
+                </div>
+            </div>
+            ';
+        }
+    } else {
+        $output .= 'Данные не найдены';
+    }
+    $output .= '
+    </div>
+    <div class="search-block">
+        <div class="search"><input type="text" name="search_string" id="search_string" autofocus><span class="fa fa-search" onclick="doSearch()"></span></div>
     </div>
     <script>
-    $(function() {
-        $('html, body').animate({
-            scrollTop: $('#tr-" . $_SESSION["ID"] . "').offset().top - 60
-        }, 1000);  
+    $(function() {  // Прокрутка до активной записи при выходе из карточки участника
+        $("html, body").animate({
+            scrollTop: $("#tr-' . $_SESSION["ID"] . '").offset().top - 60
+        }, 500);
     });
-    </script>";
+    $(function() {  // Обработка ввода в поле быстрого поиска по списку
+        if("' . $_POST["Init"] . '" === "Init") {
+            $("#search_string").focus().on("input", search);
+        }      
+    })
+    </script>';
     header("Content-type: text/html; charset=windows-1251");
     echo $output;
 }
@@ -171,7 +153,7 @@ elseif ($_SESSION['View']==="Details") {
                     <span class="fa fa-forward"></span>                    
                 </div>
             </div>
-            <div class="full_name">$name $surname</div>
+            <div class="full_name">$name $surname (<span id="age"></span>)</div>
             <div class="row">
                 <div class="col-2 photo"><img src="$photo" alt="Фотография"></div>
                 <div class="col-10">
@@ -240,6 +222,16 @@ elseif ($_SESSION['View']==="Details") {
                 </div>
             </div>
         </div>
+        <script src="JS/common.js"></script>
+        <script>
+            $(function() { // Вычисляем возраст и заполняем соответствующее поле
+                const bd = new Date("$bDay");
+                let happy = happyBirthday(bd);
+                if(happy !== '')
+                    happy = ", День рождения: " + happy;
+                $("#age").html(age(bd) + ' лет' + happy);
+            });
+        </script>
 OUTPUT;
 
     header("Content-type: text/html; charset=windows-1251");

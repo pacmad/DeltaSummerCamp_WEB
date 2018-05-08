@@ -1,6 +1,6 @@
 // JavaScript functions for registration in Delta Summer Camp '18
 
-var beginday = new Date('2018-07-16');
+// var startDay = new Date('2018-07-16'); - перенесено в common.js
 var MIN_AGE = 11, MAX_AGE = 18;
 var MIN_YEAR = 1950, MAX_YEAR = 2018;
 
@@ -216,18 +216,6 @@ var kdHandler = function (e) {
     return false;
 };
 
-// Возвращает полное число лет от birthday до date
-function age(birthday, beginday) {
-	var years = beginday.getFullYear()-birthday.getFullYear();
-	if ((beginday.getMonth()-birthday.getMonth())<0) {
-	    return years-1;
-    }
-    if ((beginday.getMonth()-birthday.getMonth())==0 && (beginday.getDate()-birthday.getDate())<0) {
-	        return years-1;
-    }
-	return years;
-}
-
 // Проверка на корректность даты
 // @param input field with date value
 // Взято отсюда: https://javascript.ru/forum/events/29223-validnost-daty.html
@@ -258,7 +246,7 @@ function checkDate(dateInput) {
         if (!error && input[2] > MIN_YEAR && input[2] < MAX_YEAR) {
             dateInput.style.border = "solid 1px gray";
             document.getElementById("date_error").classList.remove("showed");
-            var childAge = age(date, beginday);
+            var childAge = age(date, startDay);
             if (childAge < MIN_AGE || childAge > MAX_AGE) {
                 document.getElementById("age").style.color = 'red';
             } else {

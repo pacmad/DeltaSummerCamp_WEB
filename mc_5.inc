@@ -53,7 +53,7 @@ if (isset($_FILES['file'])) {
             $error = $_FILES['file']['error'][0];
         } else {
             $tmpFileName = null;
-            error("Загрузка фотографии, ошибка: '$tmpFileName' = null. " . var_dump($_FILES));
+            error("Загрузка фотографии,  UID: $UID, ошибка: '$tmpFileName' = null. " . var_dump($_FILES));
             exit();
         }
     }
@@ -72,8 +72,9 @@ if (isset($_FILES['file'])) {
     list($width, $height, $type) = getimagesize($rawFileName);
 
     if ($type != IMG_JPG && $type != IMG_GIF && $type != IMG_PNG) {
-        error("Загружена не фотография (неверный тип файла)");
-        exit();
+        rename($rawFileName, $targetFile . 'unknown');
+        copy('photos/toEdit.jpg', $targetFile);
+        error("Загружена не фотография (неверный тип файла $fileExt): $fileName,  UID: $UID");
     }
 
     if ($fileSize < 1024*1024) { // На очень больших файлах функция не работает

@@ -1,9 +1,18 @@
 var Sort = '';
 
+// Инициализация странички
+$(document).ready(function () {
+    // Вывод данных
+    fetchData("Surname");
+});
+
 // Вывод данных участников лагеря в элемент страницы list_data (см. файл admMain.inc)
 function fetchData(SortType) {
     $.post("phplib/admFetch.php",
-        {SortBy: SortType},
+        {
+            SortBy: SortType,
+            Init: "Init"
+        },
         function (data) {
             $("#list_data").html(data);
         },
@@ -42,27 +51,43 @@ function showPrev() {
 
 function showList(ID) {
     $.post("phplib/admFetch.php",
-        {View: "List", ID: ID},
+        {
+            View: "List",
+            ID: ID,
+            Init: "Init"
+        },
         function (data) {
             $("#list_data").html(data);
         },
         "html");
 }
 
-// Инициализация странички
-$(document).ready(function () {
-    fetchData("Name");
-
-});
-
-// Отмечает или снимает отметку строки при тыке
-function checkIt(ID) {
-    var chkBox = document.getElementById('cb-' + ID);
-
-    chkBox.checked = !chkBox.checked;
-}
-
 // Показывает/скрывает дополнительную информацию в карточке участника
 function showMoreInfo() {
     $("#more_info").toggle(300);
+}
+
+// Поиск по списку
+function doSearch() {
+    if($(".search .fa").hasClass("fa-times")) {
+        $("#search_string").val("");
+    }
+    search();
+}
+function search() {
+    var searchString = $("#search_string").focus().val().toLowerCase();
+    if (searchString !== "") {
+        $("[id^='tr-']").filter(function () {
+            var result = this.innerText.toLowerCase().includes(searchString);
+            return !result;
+        }).hide(200);
+        $("[id^='tr-']").filter(function () {
+            var result = this.innerText.toLowerCase().includes(searchString);
+            return result;
+        }).show(200);
+        $(".search .fa.fa-search").removeClass("fa-search").addClass("fa-times");
+    } else {
+        $("[id^='tr-']").show(200);
+        $(".search .fa.fa-times").removeClass("fa-times").addClass("fa-search");
+    }
 }
