@@ -1,6 +1,7 @@
 /*
- *  Установка пользователю UID флага 'ststus' в значение s
+ *  Личный кабинет
  */
+// Установка пользователю UID флага 'status' в значение 2
 function setDateWorkSent(UID) {
 	var xhttp = new XMLHttpRequest();
 	xhttp.open("GET", "mycabinet.php?id=" + UID + "&SetStatus=2", true);
@@ -76,7 +77,6 @@ $(document).ready(function () {
 	Функции заполнения анкеты
 
  */
-    var options = {};
 	$("#btnOwnTel").hide();
 	$("#ownTelForm").removeClass("active");
 	$("#btnComingDetails").hide();
@@ -97,17 +97,27 @@ $(document).ready(function () {
     Блок личного телефонного номера
 
  */
-	options = {
+    let ownTelTimer = 0;
+	let ownTelOptions = {
 	    success: function (data, status) {
             if (status === "success") {
+                if(ownTelTimer !== 0) {
+                    clearTimeout(ownTelTimer);
+                    ownTelTimer = 0;
+                }
                 $("#btnOwnTel").hide();
                 $("#ownTelForm").removeClass("active");
             }
         }
     };
-	$("#ownTelForm").ajaxForm(options);
+	$("#ownTelForm").ajaxForm(ownTelOptions);
 
 	$("#ownTel").on('input', function () {
+        if (ownTelTimer === 0) {
+            ownTelTimer = setTimeout(function () {
+                $("#ownTelForm").ajaxSubmit(ownTelOptions);
+            }, 3500);
+        }
         $("#btnOwnTel").show();
         $("#ownTelForm").addClass("active");
     });
@@ -117,8 +127,8 @@ $(document).ready(function () {
     Блок детали поездки туда
 
  */
-
-    options = {
+    let comeInTimer = 0;
+    let comeInOptions = {
         beforeSubmit: function (arr, $form, options) { // Необходимо передать значения тех полей, которые могут быть disabled
             arr.push(
                 {
@@ -149,17 +159,21 @@ $(document).ready(function () {
         },
         success: function (data, status) {
             if (status === "success") {
+                if(comeInTimer !== 0) {
+                    clearTimeout(comeInTimer);
+                    comeInTimer = 0;
+                }
                 $("#btnComingDetails").hide();
                 $("#comeInForm").removeClass("active");
             }
         }
     };
-    $("#comeInForm").ajaxForm(options);
+    $("#comeInForm").ajaxForm(comeInOptions);
 
     $("#comingWith").on('change', function () {
         if (this.value === "DimaAnya") {
             $("#comingDate").val("15/07/2018").attr('disabled', 'disabled');
-            $("#comingTime").val("13:10").attr('disabled', 'disabled');
+            $("#comingTime").val("13:15").attr('disabled', 'disabled');
             $("#comingPlace").append(new Option('Аэропорт "Домодедово"', 'DME', false, true)).attr('disabled', 'disabled');
             $("#comingFlight").val("LH2529").attr('disabled', 'disabled');
         } else if (this.value === "Dubeniuk") {
@@ -180,26 +194,51 @@ $(document).ready(function () {
             $("#comingPlace option[value='DME']").remove();
             $("#comingPlace option[value='VKO']").remove();
         }
+        if (comeInTimer === 0) {
+            comeInTimer = setTimeout(function () {
+                $("#comeInForm").ajaxSubmit(comeInOptions);
+            }, 3500);
+        }
         $("#btnComingDetails").show();
         $("#comeInForm").addClass("active");
     });
 
     $("#comingDate").on('input', function () {
+        if (comeInTimer === 0) {
+            comeInTimer = setTimeout(function () {
+                $("#comeInForm").ajaxSubmit(comeInOptions);
+            }, 3500);
+        }
         $("#btnComingDetails").show();
         $("#comeInForm").addClass("active");
     });
     
     $("#comingTime").on('input', function () {
+        if (comeInTimer === 0) {
+            comeInTimer = setTimeout(function () {
+                $("#comeInForm").ajaxSubmit(comeInOptions);
+            }, 3500);
+        }
         $("#btnComingDetails").show();
         $("#comeInForm").addClass("active");
     });
     
     $("#comingFlight").on('input', function () {
+        if (comeInTimer === 0) {
+            comeInTimer = setTimeout(function () {
+                $("#comeInForm").ajaxSubmit(comeInOptions);
+            }, 3500);
+        }
         $("#btnComingDetails").show();
         $("#comeInForm").addClass("active");
     });
     
     $("#comingPlace").on('change', function () {
+        if (comeInTimer === 0) {
+            comeInTimer = setTimeout(function () {
+                $("#comeInForm").ajaxSubmit(comeInOptions);
+            }, 3500);
+        }
         $("#btnComingDetails").show();
         $("#comeInForm").addClass("active");
     });
@@ -209,8 +248,8 @@ $(document).ready(function () {
     Блок деталей поездки обратно
 
  */
-
-    options = {
+    let leaveOutTimer = 0;
+    let leaveOutOptions = {
         beforeSubmit: function (arr, $form, options) { // Необходимо передать значения тех полей, которые могут быть disabled
             arr.push(
                 {
@@ -241,12 +280,16 @@ $(document).ready(function () {
         },
         success: function (data, status) {
             if (status === "success") {
+                if(leaveOutTimer !== 0) {
+                    clearTimeout(leaveOutTimer);
+                    leaveOutTimer = 0;
+                }
                 $("#btnLeavingDetails").hide();
                 $("#leaveOutForm").removeClass("active");
             }
         }
     };
-    $("#leaveOutForm").ajaxForm(options);
+    $("#leaveOutForm").ajaxForm(leaveOutOptions);
 
     $("#leavingWith").on('change', function () {
         if (this.value === "DimaAnya") {
@@ -272,26 +315,51 @@ $(document).ready(function () {
             $("#leavingPlace option[value='DME']").remove();
             $("#leavingPlace option[value='VKO']").remove();
         }
+        if (leaveOutTimer === 0) {
+            leaveOutTimer = setTimeout(function () {
+                $("#leaveOutForm").ajaxSubmit(leaveOutOptions);
+            }, 3500);
+        }
         $("#btnLeavingDetails").show();
         $("#leaveOutForm").addClass("active");
     });
 
     $("#leavingDate").on('input', function () {
+        if (leaveOutTimer === 0) {
+            leaveOutTimer = setTimeout(function () {
+                $("#leaveOutForm").ajaxSubmit(leaveOutOptions);
+            }, 3500);
+        }
         $("#btnLeavingDetails").show();
         $("#leaveOutForm").addClass("active");
     });
 
     $("#leavingTime").on('input', function () {
+        if (leaveOutTimer === 0) {
+            leaveOutTimer = setTimeout(function () {
+                $("#leaveOutForm").ajaxSubmit(leaveOutOptions);
+            }, 3500);
+        }
         $("#btnLeavingDetails").show();
         $("#leaveOutForm").addClass("active");
     });
 
     $("#leavingFlight").on('input', function () {
+        if (leaveOutTimer === 0) {
+            leaveOutTimer = setTimeout(function () {
+                $("#leaveOutForm").ajaxSubmit(leaveOutOptions);
+            }, 3500);
+        }
         $("#btnLeavingDetails").show();
         $("#leaveOutForm").addClass("active");
     });
 
     $("#leavingPlace").on('change', function () {
+        if (leaveOutTimer === 0) {
+            leaveOutTimer = setTimeout(function () {
+                $("#leaveOutForm").ajaxSubmit(leaveOutOptions);
+            }, 3500);
+        }
         $("#btnLeavingDetails").show();
         $("#leaveOutForm").addClass("active");
     });
@@ -301,53 +369,83 @@ $(document).ready(function () {
     Блоки "здоровье", "Страховка", "Указания" и "Другое"
 
  */
-
-    options = {
+    let healthTimer = 0;
+    let healthOptions = {
         success: function (data, status) {
             if (status === "success") {
                 $("#btnHealthDetails").hide();
                 $("#healthForm").removeClass("active");
+                if(healthTimer !== 0) {
+                    clearTimeout(healthTimer);
+                    healthTimer = 0;
+                }
             }
         }
     };
-    $("#healthForm").ajaxForm(options);
+    $("#healthForm").ajaxForm(healthOptions);
 
     $("#healthText").on('input', function () {
+        if (healthTimer === 0) {
+            healthTimer = setTimeout(function () {
+                $("#healthForm").ajaxSubmit(healthOptions);
+            }, 3500);
+        }
         $("#btnHealthDetails").show();
         $("#healthForm").addClass("active");
     });
 
-    options = {
+    let insuranceTimer = 0;
+    let insuranceOptions = {
         success: function (data, status) {
             if (status === "success") {
                 $("#btnInsuranceDetails").hide();
                 $("#insuranceForm").removeClass("active");
+                if(insuranceTimer !== 0) {
+                    clearTimeout(insuranceTimer);
+                    insuranceTimer = 0;
+                }
             }
         }
     };
-    $("#insuranceForm").ajaxForm(options);
+    $("#insuranceForm").ajaxForm(insuranceOptions);
 
     $("#insuranceText").on('input', function () {
+        if (insuranceTimer === 0) {
+            insuranceTimer = setTimeout(function () {
+                $("#insuranceForm").ajaxSubmit(insuranceOptions);
+            }, 3500);
+        }
         $("#btnInsuranceDetails").show();
         $("#insuranceForm").addClass("active");
     });
 
-    options = {
+    let notesTimer = 0;
+    let notesOptions = {
         success: function (data, status) {
             if (status === "success") {
                 $("#btnNotesDetails").hide();
                 $("#notesForm").removeClass("active");
+                if(notesTimer !== 0) {
+                    clearTimeout(notesTimer);
+                    notesTimer = 0;
+                }
             }
         }
     };
-    $("#notesForm").ajaxForm(options);
+    $("#notesForm").ajaxForm(notesOptions);
 
     $("#notesText").on('input', function () {
+        if (notesTimer === 0) {
+            notesTimer = setTimeout(function () {
+                $("#notesForm").ajaxSubmit(notesOptions);
+            }, 3500);
+        }
         $("#btnNotesDetails").show();
         $("#notesForm").addClass("active");
     });
 
-    options = {
+    let otherTimer = 0;
+    let otherOptions = {
         beforeSubmit: function (arr, $form, options) {
             arr[3].value = encodeHtmlEntity($("#certName").val());  // Важно! Сменить индекс при изменении полей формы!
         },
@@ -355,39 +453,90 @@ $(document).ready(function () {
             if (status === "success") {
                 $("#btnOtherDetails").hide();
                 $("#otherForm").removeClass("active");
+                if(otherTimer !== 0) {
+                    clearTimeout(otherTimer);
+                    otherTimer = 0;
+                }
             }
         }
     };
-    $("#otherForm").ajaxForm(options);
+    $("#otherForm").ajaxForm(otherOptions);
 
     $("#certLang").on('change', function () {
+        if (otherTimer === 0) {
+            otherTimer = setTimeout(function () {
+                $("#otherForm").ajaxSubmit(otherOptions);
+            }, 3500);
+        }
         if ($("#certName").val() !== "") {
             $("#btnOtherDetails").show();
         }
         $("#otherForm").addClass("active");
     });
     $("#certName").on('input', function () {
+        if (otherTimer === 0) {
+            otherTimer = setTimeout(function () {
+                $("#otherForm").ajaxSubmit(otherOptions);
+            }, 3500);
+        }
         if ($("#certName").val() !== "") {
-            $("#btnCertName").show();
+            $("#btnOtherDetails").show();
         } else {
-            $("#btnCertName").hide();
+            $("#btnOtherDetails").hide();
         }
         $("#otherForm").addClass("active");
     });
     $("#visa_no").on('change', function () {
+        if (otherTimer === 0) {
+            otherTimer = setTimeout(function () {
+                $("#otherForm").ajaxSubmit(otherOptions);
+            }, 3500);
+        }
         $("#btnOtherDetails").show();
         $("#otherForm").addClass("active");
     });
     $("#visa_yes").on('change', function () {
+        if (otherTimer === 0) {
+            otherTimer = setTimeout(function () {
+                $("#otherForm").ajaxSubmit(otherOptions);
+            }, 3500);
+        }
         $("#btnOtherDetails").show();
         $("#otherForm").addClass("active");
     });
     $("#notebook").on('change', function () {
+        if (otherTimer === 0) {
+            otherTimer = setTimeout(function () {
+                $("#otherForm").ajaxSubmit(otherOptions);
+            }, 3500);
+        }
         $("#btnOtherDetails").show();
         $("#otherForm").addClass("active");
     });
     $("#shirt").on('change', function () {
+        if (otherTimer === 0) {
+            otherTimer = setTimeout(function () {
+                $("#otherForm").ajaxSubmit(otherOptions);
+            }, 3500);
+        }
         $("#btnOtherDetails").show();
         $("#otherForm").addClass("active");
     });
 });
+
+// Генератор "Приложения 2" к Договору
+function createPDF(UID) {
+    $.get(
+        "mycabinet.php",
+        {
+            id: UID,
+            app: "true"
+        },
+        function (text) {
+            alert("Письмо отправлено!");
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            alert("Возникли проблемы с отправкой файла-приложения. Свяжитесь, пожалуйста, с организаторами!");
+        })
+    ;
+}

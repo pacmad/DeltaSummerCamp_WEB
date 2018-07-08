@@ -16,11 +16,11 @@ include 'phplib/google.analytics.php';
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 <!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 <![endif]-->
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="JS/lib/jquery.form.min.js"></script>
 <!-- Для загрузки файлов используем ужасную библиотеку jquery.uploadfile.js -->
 <!-- В дальнейшем надо обязательно переписать!!! -->
@@ -36,7 +36,9 @@ require_once 'phplib/mail.php';
 require_once 'phplib/common.php';
 
 if (!isset($_GET["id"])) {
-    include 'mc_err_empty.php';
+    include 'mc_err_empty.inc';
+    http_response_code(404);
+    exit();
 } else {
     $UID = $_GET["id"];
     /*
@@ -50,6 +52,14 @@ if (!isset($_GET["id"])) {
             $db->setWorkDaySent($UID);
             $db->dbLog("Открыта вступительная олимпиада", $UID);
         }
+        exit();
+    }
+
+    /*
+     * Отработка AJAX-запроса на генерацию и отсылку "Приложения 2" по анкете
+     */
+    if (isset($_GET["app"])) {
+        include 'mc_app2gen.inc';
         exit();
     }
 
@@ -99,7 +109,7 @@ if (!isset($_GET["id"])) {
             include "mc_01.inc";
         } elseif ($appStatus < 4) { // Прислать результаты
             include "mc_23.inc";
-        } elseif ($appStatus == 15) { // Заполнить анкету
+        } elseif ($appStatus < 25) { // Заполнить анкету (статус = 15) и сгенерировать приложение к договору (статус = 20)
             include "mc_5.inc";
         }
         include "mc_bottom.inc";
@@ -129,12 +139,12 @@ if (!isset($_GET["id"])) {
                     document.getElementById("sendStatus").style.opacity = "1";
                     </script>
                 ';
-                error("Unable to send file assignments.pdf to " . $row['Email']);
+                error("Unable to send file assignments.pdf to " . $row['Email'] . " UID=" . $UID);
             }
         }
 
     } else { // Обработка запроса с неверным UID
-        include "mc_err_unknown_id.php";
+        include "mc_err_unknown_id.inc";
     }
 }
 ?>

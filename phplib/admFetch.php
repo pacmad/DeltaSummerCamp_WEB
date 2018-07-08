@@ -18,7 +18,7 @@ if (isset($_POST['ID'])) {
     elseif ($_POST['ID'] === '-1') {
         $_SESSION['ID'] = $db->getPrevUID($_SESSION['ID'], $_SESSION['SortBy']);
     }
-    else {
+    elseif ($_POST['ID'] !== '0') {
         $_SESSION['ID'] = $_POST['ID'];
     }
 }
@@ -59,6 +59,7 @@ if ($_SESSION['View'] === "List") {
                     <div class="table-cell l_owntel"><a href="tel:' . $row["OwnTel"] . '">'. $row["OwnTel"] .'</a></div>
                     <div class="table-cell l_mail"><a href="mailto:'.$row["Email"].'">' . $row["Email"] . '</a></div>
                     <div class="table-cell l_tel"><p>Родители:</p><a href="tel:'.$row["Tel"].'">' . $row["Tel"] . '</a></div>
+                    <div class="hidden">' . $UID . '</div>
                 </div>
             </div>
             ';
@@ -141,12 +142,12 @@ elseif ($_SESSION['View']==="Details") {
     }
 
     $output = <<<OUTPUT
-        <div class="details">
+        <div class="details" id="details">
             <div class="row navigator">
                 <div class="nav-button" onclick='showPrev()'>
                     <span class="fa fa-backward"></span>
                 </div>
-                <div class="nav-button" onclick='showList("$UID")'>
+                <div class="nav-button" onclick='history.back()'>
                     <span class="fa fa-eject"></span>
                 </div>
                 <div class="nav-button" onclick='showNext()'>
@@ -157,25 +158,22 @@ elseif ($_SESSION['View']==="Details") {
             <div class="row">
                 <div class="col-2 photo"><img src="$photo" alt="Фотография"></div>
                 <div class="col-10">
-                <div class="row">
-                    <div class="col-2 o_tel"><a href="tel:$oTel">Личный телефон:<br>$oTel</a></div>
-                    <div class="col-2 email"><a href="mailto:$email">E-mail:<br>$email</a></div>
-                    <div class="col-2 tel">
-                        <a href="tel:$tel">Телефон родителей:<br>$tel</a><br>
-                        <a href="whatsapp:$tel">WhatsApp</a>
-                    </div>    
-                    <div class="col-6 sp_note">Действия в форс-мажорном случае:<br>$specialNote</div>                
-                </div>
-                <div class="row">
-                    <div class="col-12">Статус: $status</div>
-                </div>               
+                    <div class="row infoblock">
+                        <div class="col-2 o_tel"><a href="tel:$oTel">Личный телефон:<br>$oTel</a></div>
+                        <div class="col-2 email"><a href="mailto:$email">E-mail:<br>$email</a></div>
+                        <div class="col-2 tel">
+                            <a href="tel:$tel">Телефон родителей:<br>$tel</a><br>
+                            <a href="whatsapp:$tel">WhatsApp</a>
+                        </div>    
+                        <div class="col-6 sp_note">Действия в форс-мажорном случае:<br>$specialNote</div>                
+                    </div>
                 </div>
             </div>
-            <div class="row">
+            <div class="row infoblock">
                 <div class="col-6"><strong>Сведения о здоровье:</strong><br>$health</div>
                 <div class="col-6"><strong>Страховка:</strong><br>$insurance</div>
             </div>
-            <div class="row">
+            <div class="row infoblock">
                 <div class="col-6">
                     <strong>Детали приезда:</strong><br>
                     С кем: <strong>$cWith</strong><br>
@@ -194,27 +192,26 @@ elseif ($_SESSION['View']==="Details") {
                 <div class="col-9"></div>
             </div>
             <hr>
-            <p onclick="showMoreInfo()" class="clickable"><strong>Дополнительная информация...</strong></p>
-            <div class="row" id="more_info">
+            <p><strong>Дополнительная информация...</strong></p>
+            <div class="row infoblock">
                 <div class="col-4">
-                День рождения: <strong>$bDay</strong><br>
-                Место жительства: <strong>$city, $country</strong><br>
-                
+                    День рождения: <strong>$bDay</strong><br>
+                    Место жительства: <strong>$city, $country</strong>
                 </div>
                 <div class="col-4">
-                Ноутбук: <strong>$notebook</strong><br>
-                Футболка: <strong>$shirt</strong>
+                    Ноутбук: <strong>$notebook</strong><br>
+                    Футболка: <strong>$shirt</strong>
                 </div>
                 <div class="col-4">
-                Виза: <strong>$visa</strong><br>
-                Сертификат ($certLang): <strong>$certName</strong>                    
+                    Виза: <strong>$visa</strong><br>
+                    Сертификат ($certLang): <strong>$certName</strong>                    
                 </div>                    
             </div>
             <div class="row navigator">
                 <div class="nav-button" onclick='showPrev()'>
                     <span class="fa fa-backward"></span>
                 </div>
-                <div class="nav-button" onclick='showList("$UID")'>
+                <div class="nav-button" onclick='history.back()'>
                     <span class="fa fa-eject"></span>
                 </div>
                 <div class="nav-button" onclick='showNext()'>

@@ -21,6 +21,9 @@ body {
     display: block;
     border: darkred 1px solid;
 }
+.hidden {
+    display: none;
+}
 .copy {
     display: block;
     padding: 2px;

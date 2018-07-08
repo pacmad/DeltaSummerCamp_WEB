@@ -326,3 +326,69 @@ function sendComfirmMail($person){
     $mail->Body = "Загружено решение олимпиады от " . $person['Name'] . " " . $person['Surname'] . ".<br>UID=" . $person['UniqueId'];
     $mail->send();
 }
+
+/***
+ * Отсылка письма с "Приложением 2" к Договору
+ * @param array from delta(registrations)  $person
+ * @param string as attachment $attachment
+ * @throws \PHPMailer\PHPMailer\Exception
+ */
+function sendApp2Mail($person, $attachment) {
+    global $from;
+    $to = $person['Email'];
+    $cc = 'summer.camp.delta@gmail.com';
+    global $bcc;
+    global $reply_to;
+    $subject = 'Приложение 2 к Договору на сопровождение Delta-2018';
+    global $domain;
+    global $myCabinet;
+
+    $message = '
+        <!doctype html>
+        <html>
+        <head>
+        <meta charset="windows-1251">
+        <title>Приложение 2 к Договору на сопровождение Delta-2018</title>
+        </head>
+        <body>
+        <p>Здравствуйте!</p>
+        <p>В приложении к этому письму - Приложение 2 к Договору на сопровождение Delta-2018.</p>
+        <p>&nbsp;</p>
+        <p>С уважением,<br>
+        Анна Семовская<br>
+        директор лагеря</p>
+        <p>+7(903)749-4851<br>
+        Skype: aselect1976<br>
+        Facebook: <a href="https://www.facebook.com/Summer.Camp.Delta">https://www.facebook.com/Summer.Camp.Delta</a><br>
+        ВКонтакте: <a href="https://vk.com/summer_camp_delta">https://vk.com/summer_camp_delta</a></p>
+        <p>P.S.</p>
+        <p> Адрес Вашего личного кабинета:</p>
+        <p><a href="' . $myCabinet . '?id=' . $person['UniqueId'] . '">http://' . $domain .
+        '/mycabinet.php?id=' . $person['UniqueId'] . '</a></p>
+        </body>
+        </html>
+    ';
+    $mail = new PHPMailer(true);
+
+    $mail->SMTPDebug = 0;
+    $mail->isSMTP();
+    $mail->Host = 'mx.cintra.ru';
+    $mail->SMTPAuth = false;
+    $mail->SMTPAutoTLS = false;
+    $mail->CharSet = 'windows-1251';
+
+    $mail->setFrom($from, 'Delta Summer Camp');
+    $mail->addAddress($to);
+    $mail->addCC($cc);
+    $mail->addBCC($bcc);
+    $mail->addReplyTo($reply_to);
+
+    $mail->addStringAttachment($attachment, 'app2.pdf', 'base64', 'application/pdf');
+
+    $mail->isHTML(true);
+    $mail->Subject = $subject;
+    $mail->Body = $message;
+    $mail->AltBody = 'Приложение 2 к Договору на сопровождение Delta-2018';
+
+    $mail->send();
+}

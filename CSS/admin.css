@@ -19,13 +19,71 @@
     border: darkblue 1px solid;
     border-radius: 15px;
 }
+.debug {
+    border: #0acf00 1px solid;
+}
+
+/*
+    Иконки в шапке
+ */
+.icons {
+    display: block;
+    position: absolute;
+    top: 40px;
+    right: 40px;
+    z-index: 20;
+}
+.iconbox {
+    display: table;
+    float: left;
+    border: darkblue 1px solid;
+    border-radius: 5px;
+    width: 40px;
+    height: 40px;
+    margin: 0 10px;
+}
+.icon {
+    display: table-cell !important;
+    vertical-align: middle;
+    text-align: center;
+    text-decoration: none;
+    color: #2F4F4F;
+    font-size: xx-large !important;
+}
+.icon.big {
+    font-size: 40px;
+    color: #EEEEEE;
+}
+.iconbox:hover .icon {
+    color: red;
+}
+/* Подсказки к иконкам */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    bottom: 110%;
+    left: 50%;
+    margin-left: -60px;
+    color: #2F4F4F;
+    text-align: center;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 20;
+}
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}
 
 /*
     Список
  */
 .table {
     width: 100%;
-    border: black 1px solid;
+    border: darkblue 1px solid;
     border-collapse: collapse;
 }
 .search-block {
@@ -84,7 +142,8 @@
 .table-cell.l_name,
 .table-cell.l_owntel,
 .table-cell.l_tel,
-.table-cell.l_mail {
+.table-cell.l_mail,
+.table-cell.l_submit{
     display: inline-block;
     width: 20%;
 }
@@ -114,9 +173,9 @@
 /*
     Карточка участника
  */
-br {
+.details br {
     display: block;
-    margin: 1.5em 0;
+    margin-top: 0.3em;
     content: " ";
 }
 .navigator {
@@ -149,12 +208,18 @@ br {
     width: 200px;
     height: 200px;
 }
+.infoblock {
+    border: gray 1px dashed;
+    padding: 5px;
+    border-radius: 5px;
+}
 .o_tel,
 .email,
 .tel {
     display: block;
     float: left;
     font-weight: bold;
+    font-size: larger;
 }
 .o_tel a,
 .email a,
@@ -191,51 +256,250 @@ br {
 .clickable {
     cursor: pointer;
 }
+
+/*
+    Преподаватели
+ */
+.tch-row {
+    height: auto;
+    padding: 1em;
+}
+.tch-row .table-cell {
+    line-height: 2em;
+    font-size: large;
+}
+.tch-add {
+    padding: 10px;
+    height: 100px;
+}
+.tch-add input[type=text],
+.tch-add input[type=tel] {
+    padding: 2px;
+    height: 2em;
+    font-size: large;
+}
+.tch-add input[type=submit] {
+    width: 110px;
+    height: 30px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+/*
+    Курсы и проекты
+ */
+.courses-table {
+    display: block;
+    border-collapse: collapse;
+}
+.course-block {
+    border: darkblue 1px solid;
+}
+.course-title {
+    font-size: 1.7em;
+}
+.course-authors {
+    font-weight: bold;
+    font-style: italic;
+}
+.course-icon {
+    display: block;
+    width: 9em;
+    height: 6em;
+    margin: 0;
+    padding: 0;
+}
+.course-icon table,
+.course-icon td,
+.course-icon tr {
+    border: darkblue 1px solid;
+    border-collapse: collapse;
+}
+.course-icon-row {
+    display: block;
+    width: 9em;
+    height: 2em;
+}
+.course-icon td {
+    height: 2em;
+    width: 3em;
+}
+.course-icon-project {
+    background-color: coral;
+}
+.course-icon-1 {
+    background-color: gold;
+}
+.course-icon-2 {
+    background-color: aquamarine;
+}
+.course-icon-3 {
+    background-color: violet;
+}
+.add-form {
+    padding: 2em;
+    margin-top: 1em;
+}
+.add-form .course-icon {
+    cursor: pointer;
+}
+.add-form .course-icon td:hover {
+    border-width: 2px;
+}
+.add-form ul {
+    height: 9em;
+    overflow: auto;
+    width: 100%;
+    list-style-type: none;
+    overflow-x: hidden;
+    font-size: 1em;
+    box-sizing: border-box;
+    border: 1px solid gray;
+    border-radius: 3px;
+    background-color: white;
+    margin: 8px 0 8px 0;
+    padding: 12px 0 12px 5px;
+    resize: none;
+    box-shadow: 0 0 2px #333;
+}
+#change-block ul{
+    height: 30em !important;
+}
+.add-form li {
+    margin: 0;
+    padding: 5px 0;
+}
+.add-form input[type=checkbox]:not(old){
+    width: 3em;
+    -ms-transform: scale(2, 2);
+    -webkit-transform: scale(2, 2);
+    transform: scale(2, 2);
+}
+.add-form label {
+    display: block;
+    color: WindowText;
+    background-color: Window;
+    font-size: 1.7em;
+    margin: 0;
+    padding: 0;
+}
+.add-form label:hover {
+    background-color: Highlight;
+    color: HighlightText;
+}
+.add-form input[type=text],
+.add-form select,
+.add-form option {
+    font-size: 1em;
+    box-sizing: border-box;
+    border: 1px solid gray;
+    border-radius: 3px;
+    background-color: white;
+    width: 100%;
+    margin: 8px 0 8px 0;
+    padding: 12px 0 12px 5px;
+    resize: none;
+    box-shadow: 0 0 2px #333;
+}
+input[type=submit],
+button,
+.button,
+input[type=button] {
+    display: block;
+    width: 300px;
+    height: 70px;
+    font-size:18px;
+    text-shadow: 0 0 0.015em #063;
+    color: darkgreen;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 2em;
+}
+
+/*
+    Студенты в курсе
+ */
+.student {
+    width: 100px;
+    height: 120px;
+    display: inline-block;
+    margin: 5px;
+}
+.student img {
+    width: 100px;
+}
 @media only screen and (max-width: 850px) {
     .title {
+        position: relative;
+        top: 0;
+        left: 0;
+        margin: 0;
+        padding: 5px 5px 5px 15px;
+        height: 60px;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+    .title h1 {
         display: none;
     }
     .main {
-        display: block;
+        position: relative;
+        top: 0;
+        left: 0;
         width: 100%;
         padding: 0;
-        margin: 0;
-        box-shadow: 0 0 3px Grey;
+        margin: 0 !important;
         align-content: center;
-        background-color: #EEE;
         border-style: none;
         border-radius: 0;
     }
+    .main h3 {
+        margin-top: 0;
+    }
+    .icons {
+        top: 15px;
+        right: 15px;
+    }
+    .iconbox {
+        width: 30px;
+        height: 30px;
+        margin: 0 10px;
+    }
+    .icon {
+        font-size: large !important;
+    }
+    .iconbox:hover .icon {
+        color: red;
+    }
+    /* Подсказки к иконкам */
+    .tooltip .tooltiptext {
+        display: none;
+    }
+    .table {
+        border: darkblue 1px none;
+    }
     .table-row {
-        position: relative;
         padding-left: 50px;
         padding-bottom: 10px;
-        width: 100%;
         height: unset;
         min-height: 50px;
-        border-bottom: #333 1px solid;
-    }
-    .table-row:nth-child(even) {
-        background-color: #BBB;
-    }
-    .table-cell {
-        display: block;
-        vertical-align: middle;
     }
     .table-cell.l_photo {
         width: 50px;
         max-width: 50px;
-        position: absolute;
-        left: 0;
         top: 5px;
     }
     .table-cell img {
         height: 50px;
         width: 50px;
+    }
+    .infoblock {
+        border-style: none;
         padding: 0;
+        border-radius: 0;
     }
     .table-info {
-        width: 100%;
         margin-left: 10px;
         font-size: small;
         line-height: 1.6;

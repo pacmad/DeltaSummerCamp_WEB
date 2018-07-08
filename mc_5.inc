@@ -64,7 +64,7 @@ if (isset($_FILES['file'])) {
     }
 
     $fileExt = strrchr($fileName, '.');
-    if ($fileExt === "jpeg") $fileExt = "jpg";
+    if (!strcasecmp($fileExt, ".jpeg")) $fileExt = ".jpg";
     $rawFileName = $targetDir . "rawPhoto" . $fileExt;
     $targetFile = $targetDir . $UID . $fileExt;
     move_uploaded_file($tmpFileName, $rawFileName);
@@ -201,81 +201,68 @@ try {
 } catch (PDOException $exception) {
     error("Error in getOwnTel(): $exception");
 }
-foreach ($result as $row) {
-    if(!$ownTel = $row['OwnTel']) $ownTel = "";
-    break;
-}
+$row = $result->fetch();
+if(!$ownTel = $row['OwnTel']) $ownTel = "";
 
 try {
     $result = $db->getComingDetails($UID);
 } catch (PDOException $exception) {
     error("Error in getComingDetails(): $exception");
 }
-foreach ($result as $row) {
-    $comingWith = $row['ComingWith']; if($comingWith == null) $comingWith = "";
-    $comingDate = $row['ComingDate']; if($comingDate == null) $comingDate = "";
-    $comingTime = $row['ComingTime']; if($comingTime == null) $comingTime = "";
-    $comingFlight = $row['ComingFlight']; if($comingFlight == null) $comingFlight = "";
-    $comingPlace = $row['ComingPlace']; if($comingPlace == null) $comingPlace = "";
-    break;
-}
+$row = $result->fetch();
+$comingWith = $row['ComingWith']; if($comingWith == null) $comingWith = "";
+$comingDate = $row['ComingDate']; if($comingDate == null) $comingDate = "";
+$comingTime = $row['ComingTime']; if($comingTime == null) $comingTime = "";
+$comingFlight = $row['ComingFlight']; if($comingFlight == null) $comingFlight = "";
+$comingPlace = $row['ComingPlace']; if($comingPlace == null) $comingPlace = "";
 
 try {
     $result = $db->getLeavingDetails($UID);
 } catch (PDOException $exception) {
     error("Error in getLeavingDetails(): $exception, UID: $UID");
 }
-foreach ($result as $row) {
-    $leavingWith = $row['LeavingWith']; if($leavingWith == null) $leavingWith = "";
-    $leavingDate = $row['LeavingDate']; if($leavingDate == null) $leavingDate = "";
-    $leavingTime = $row['LeavingTime']; if($leavingTime == null) $leavingTime = "";
-    $leavingFlight = $row['LeavingFlight']; if($leavingFlight == null) $leavingFlight = "";
-    $leavingPlace = $row['LeavingPlace']; if($leavingPlace == null) $leavingPlace = "";
-    break;
-}
+$row = $result->fetch();
+$leavingWith = $row['LeavingWith']; if($leavingWith == null) $leavingWith = "";
+$leavingDate = $row['LeavingDate']; if($leavingDate == null) $leavingDate = "";
+$leavingTime = $row['LeavingTime']; if($leavingTime == null) $leavingTime = "";
+$leavingFlight = $row['LeavingFlight']; if($leavingFlight == null) $leavingFlight = "";
+$leavingPlace = $row['LeavingPlace']; if($leavingPlace == null) $leavingPlace = "";
 
 try {
     $result = $db->getHealthDetails($UID);
 } catch (PDOException $exception) {
     error("Error in getHealthDetails(): $exception, UID: $UID");
 }
-foreach ($result as $row) {
-    $healthDetails = $row['Health'];
-    break;
-}
+$row = $result->fetch();
+$healthDetails = $row['Health'];
 
 try {
     $result = $db->getInsuranceDetails($UID);
 } catch (PDOException $exception) {
     error("Error in getInsuranceDetails(): $exception, UID: $UID");
 }
-foreach ($result as $row) {
-    $insuranceDetails = $row['Insurance'];
-    break;
-}
+$row = $result->fetch();
+$insuranceDetails = $row['Insurance'];
 
 try {
     $result = $db->getNotesDetails($UID);
 } catch (PDOException $exception) {
     error("Error in getNotesDetails: $exception, UID: $UID");
 }
-foreach ($result as $row) {
-    $notesDetails = $row['NotesText'];
-    break;
-}
+$row = $result->fetch();
+$notesDetails = $row['NotesText'];
 
 try {
     $result = $db->getOtherDetails($UID);
 } catch (PDOException $exception) {
     error("Error in getOtherDetails: $exception, UID: $UID");
 }
-foreach ($result as $row) {
-    if(!$certLang = $row['CertLang']) $certLang = "";
-    if(!$certName = $row['CertName']) $certName = "";
-    if(!$visa = $row['Visa']) $visa = "";
-    if(!$notebook = $row['Notebook']) $notebook = "";
-    if(!$shirt = $row['Shirt']) $shirt = "";
-}
+$row = $result->fetch();
+if(!$certLang = $row['CertLang']) $certLang = "";
+if(!$certName = $row['CertName']) $certName = "";
+if(!$visa = $row['Visa']) $visa = "";
+if(!$notebook = $row['Notebook']) $notebook = "";
+if(!$shirt = $row['Shirt']) $shirt = "";
 ?>
 
 <div class="row">
@@ -326,9 +313,9 @@ foreach ($result as $row) {
                             elseif ($comingWith ==="WithParents") {echo 'value="-" disabled';}?> required><br>
             Место встречи:<br> <select name="comingPlace" id="comingPlace" required <?php if($comingWith === "DimaAnya" || $comingWith === "Dubeniuk") {echo 'disabled';} ?>>
                 <option value="" hidden disabled <?php if($comingPlace === "") {echo 'selected';}?>>...</option>
-                <option value="MUC" <?php if($comingPlace === "MUC") {echo 'selected';}?>>В аэропорт (Мюнхен)</option>
-                <option value="hbf" <?php if($comingPlace === "hbh") {echo 'selected';}?>>На вокзал Hauptbahnhof</option>
-                <option value="gorod" <?php if($comingPlace === "gorod") {echo 'selected';}?>>В культурный центр GOROD</option>
+                <option value="MUC" <?php if($comingPlace === "MUC") {echo 'selected';}?>>В аэропорту (Мюнхен)</option>
+                <option value="hbf" <?php if($comingPlace === "hbf") {echo 'selected';}?>>На вокзал Hauptbahnhof</option>
+                <option value="gorod" <?php if($comingPlace === "gorod") {echo 'selected';}?>>В культурном центре GOROD</option>
                 <option value="other" <?php if($comingPlace === "other") {echo 'selected';}?>>Иное... (свяжитесь с организаторами!)</option>
                 <?php
                 if ($comingWith === "DimaAnya") {
@@ -456,4 +443,9 @@ foreach ($result as $row) {
             <input id="btnOtherDetails" type="submit" value="&#x2714" class="smallbtn">
         </form>
     </div>
+    <?php
+        if($appStatus === "20") { // Появляется кнопка формирования .pfd-файла
+            echo ('<button onclick="createPDF(\'' . $UID . '\')">Сформировать "Приложение №2" к Договору</button>');
+        }
+    ?>
 </div>

@@ -20,7 +20,7 @@
     $db = new dbConnect();
     $row = $db->admGet($_SESSION['UID']);
     $name = $row['Name'];
-    $sname = $row['Surname'];
+    $surname = $row['Surname'];
     if (!isset($_SESSION['SortBy'])) {
         $_SESSION['SortBy'] = "Name"; // Сортировка по умолчанию - по фамилиям, переключение на сортировку по имени
     }
@@ -32,7 +32,27 @@
 
 <body>
 <div class="title">
-    <h1>Привет, <?php echo "$name $sname!"?></h1>
+    <div class="row">
+        <div class="col-6">
+            <h1>Привет, <?php echo "$name $surname!"?></h1>
+        </div>
+        <div class="col-6">
+            <div class="icons">
+                <div class="tooltip">
+                    <a href="teachers.php">
+                        <div class="iconbox"><span class="fa fa-user icon"></span></div>
+                        <span class="tooltiptext">Преподаватели</span>
+                    </a>
+                </div>
+                <div class="tooltip">
+                    <a href="courses.php">
+                        <div class="iconbox"><span class="fa fa-graduation-cap icon"></span></div>
+                        <span class="tooltiptext">Курсы и проекты</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 <div class="main">
     <div id="list_data"></div>

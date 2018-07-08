@@ -1,4 +1,7 @@
 <?php
+/*
+ * Модуль входа в админку. Основной файл админки - admFetch.php
+ */
 require_once 'phplib/dbConnect.php';
 require_once 'phplib/common.php';
 require_once 'phplib/adminlib.inc';

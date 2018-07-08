@@ -120,9 +120,7 @@ class dbConnect
         try {
             $result = $this->conn->query($sql);
             if ($result->rowCount() == 1) {
-                foreach ($result as $row) {
-                    return $row;
-                }
+                return $result->fetch();
             } else {
                 $this->status = DB_NOT_FOUND;
             }
@@ -156,7 +154,7 @@ class dbConnect
             $date = date("Y-m-d");
         }
 
-        $sql = "UPDATE registrations SET AppStatus=\"2\", DateOfWorkSent=\"$date\" WHERE UniqueId=\"$UID\"";
+        $sql = "UPDATE registrations SET AppStatus='2', DateOfWorkSent='$date' WHERE UniqueId='$UID'";
         try {
             $this->conn->query($sql);
         }
@@ -167,7 +165,7 @@ class dbConnect
 
     // Возвращает статус зарегистрировавшегося
     public function getAppStatus($UID) {
-        $sql = "SELECT AppStatus FROM registrations WHERE UniqueId=\"$UID\"";
+        $sql = "SELECT AppStatus FROM registrations WHERE UniqueId='$UID'";
         try {
             $result = $this->conn->query($sql);
         }
@@ -234,7 +232,7 @@ class dbConnect
     }
 
     // Возвращает UniqueID предыдущей записи после $UID в таблице registrations с условием $where, отсортированной по полю $sortBy
-    public function getPrevUID($UID, $sort_by, $where = 'AppStatus >= 0'){
+    public function getPrevUID($UID, $sort_by, $where = 'AppStatus >= 10'){
         // Определяем порядковый номер записи с данным $UID
         $sql = "SELECT row FROM (SELECT @rownum := @rownum + 1 row, t.UniqueId FROM registrations t, (SELECT @rownum := 0) r WHERE $where ORDER BY $sort_by) AS rows WHERE UniqueId = '$UID'";
         try {
@@ -269,7 +267,7 @@ class dbConnect
  */
     // Запись в базу регистраций телефона ребёнка
     public function setOwnTel($UID, $ownTel){
-        $ownTel = substr(trim(filter_var($ownTel, FILTER_SANITIZE_STRING)), 0, 20);
+        $ownTel = substr(trim(filter_var(iconv("UTF-8", "WINDOWS-1251", $ownTel), FILTER_SANITIZE_STRING)), 0, 20);
         $sql = "UPDATE registrations SET OwnTel='$ownTel' WHERE UniqueId='$UID'";
         $this->conn->exec($sql);
     }
@@ -281,9 +279,9 @@ class dbConnect
 
     // Запись в базу регистраций деталей прибытия
     public function setComingDetails($UID, $coming_with, $coming_date, $coming_time, $coming_flight, $coming_place){
-        $coming_date = substr(trim(filter_var($coming_date, FILTER_SANITIZE_STRING)), 0, 20);
-        $coming_time = substr(trim(filter_var($coming_time, FILTER_SANITIZE_STRING)), 0, 20);
-        $coming_flight = substr(trim(filter_var($coming_flight, FILTER_SANITIZE_STRING)), 0, 20);
+        $coming_date = substr(trim(filter_var(iconv("UTF-8", "WINDOWS-1251", $coming_date), FILTER_SANITIZE_STRING)), 0, 20);
+        $coming_time = substr(trim(filter_var(iconv("UTF-8", "WINDOWS-1251", $coming_time), FILTER_SANITIZE_STRING)), 0, 20);
+        $coming_flight = substr(trim(filter_var(iconv("UTF-8", "WINDOWS-1251", $coming_flight), FILTER_SANITIZE_STRING)), 0, 20);
         $sql = "UPDATE registrations SET ComingWith='$coming_with', ComingDate='$coming_date', ComingTime='$coming_time',
           ComingFlight='$coming_flight', ComingPlace='$coming_place' WHERE UniqueId='$UID'";
         $this->conn->exec($sql);
@@ -297,9 +295,9 @@ class dbConnect
     
     // Запись в базу регистраций деталей отбытия
     public function setLeavingDetails($UID, $leaving_with, $leaving_date, $leaving_time, $leaving_flight, $leaving_place){
-        $leaving_date = substr(trim(filter_var($leaving_date, FILTER_SANITIZE_STRING)), 0, 20);
-        $leaving_time = substr(trim(filter_var($leaving_time, FILTER_SANITIZE_STRING)), 0, 20);
-        $leaving_flight = substr(trim(filter_var($leaving_flight, FILTER_SANITIZE_STRING)), 0, 20);
+        $leaving_date = substr(trim(filter_var(iconv("UTF-8", "WINDOWS-1251", $leaving_date), FILTER_SANITIZE_STRING)), 0, 20);
+        $leaving_time = substr(trim(filter_var(iconv("UTF-8", "WINDOWS-1251", $leaving_time), FILTER_SANITIZE_STRING)), 0, 20);
+        $leaving_flight = substr(trim(filter_var(iconv("UTF-8", "WINDOWS-1251", $leaving_flight), FILTER_SANITIZE_STRING)), 0, 20);
         $sql = "UPDATE registrations SET LeavingWith='$leaving_with', LeavingDate='$leaving_date', LeavingTime='$leaving_time',
           LeavingFlight='$leaving_flight', LeavingPlace='$leaving_place' WHERE UniqueId='$UID'";
         $this->conn->exec($sql);
@@ -324,7 +322,8 @@ class dbConnect
 
     // Страховка
     public function setInshuranceDetails($UID, $insurance) {
-        $insurance = filter_var(iconv("UTF-8", "WINDOWS-1251", $insurance), FILTER_SANITIZE_STRING);
+        $s = filter_var(iconv("UTF-8", "WINDOWS-1251", $insurance), FILTER_SANITIZE_STRING);
+        if($s) $insurance = $s;
         $sql = "UPDATE registrations SET Insurance='$insurance' WHERE UniqueId='$UID'";
         $this->conn->exec($sql);
     }
@@ -347,7 +346,27 @@ class dbConnect
     // Дополнительные данные
     public function setOtherDetails($UID, $certLang, $certName, $visa, $notebook, $shirt) {
         $certName = substr(trim(filter_var($certName, FILTER_SANITIZE_STRING)), 0, 255);
-        $sql = "UPDATE registrations SET CertLang='$certLang', CertName='$certName', Visa='$visa', Notebook='$notebook', Shirt='$shirt' WHERE UniqueId='$UID'";
+        $sql = "UPDATE registrations SET";
+        $comma = 0;
+        if ($certLang !== "") {
+            $sql .= " CertLang='$certLang', CertName='$certName'";
+            $comma = 1;
+        }
+        if ($visa !== "") {
+            if ($comma == 1) $sql .= ",";
+            $sql .= " Visa='$visa'";
+            $comma = 1;
+        }
+        if ($notebook !== "") {
+            if ($comma == 1) $sql .= ",";
+            $sql .= " Notebook='$notebook'";
+            $comma = 1;
+        }
+        if ($shirt !== "") {
+            if ($comma == 1) $sql .= ",";
+            $sql .= " Shirt='$shirt'";
+        }
+        $sql .= " WHERE UniqueId='$UID'";
         $this->conn->exec($sql);
     }
     public function getOtherDetails($UID){
@@ -381,26 +400,6 @@ class dbConnect
             $row[] = $sth->fetch(PDO::FETCH_ASSOC);
         }
         return $row;
-    }
-
-    // Внутренний журнал
-    public function dbLog($text, $UserID = "")
-    {
-        $text = filter_var($text);
-        $sql = "INSERT INTO log (UserID, text) VALUES ('$UserID' , '$text')";
-        try {
-            $this->conn->exec($sql);
-        }
-        catch (PDOException $exception) {
-            error("dbLog error: " . $exception);
-        }
-    }
-
-    // результат работы с базой данных
-    // DB_NOT_FOUND, DB_ADD_OK, DB_ADD_DUP и т.д.
-    public function getStatus()
-    {
-        return $this->status;
     }
 
 /*
@@ -480,6 +479,281 @@ class dbConnect
         $sql = "SELECT * FROM admin WHERE UID='$UID'";
         $result = $this->conn->query($sql);
         return $result->fetch();
+    }
+
+/*
+*
+*   Преподаватели
+*
+*/
+
+    // regTeacher() - put registration data from _POST array into the 'teachers' table
+    // and return Unique ID
+    public function regTeacher()
+    {
+        // Наличие всех ожидаемых полей
+        if (!isset($_POST["surname"], $_POST["name"], $_POST["email"], $_POST["phone"])) {
+            error("No data found: " . print_r($_POST));
+        }
+
+        // Уникальный ключ, проверка: если есть, значит регистрация уже была
+        $UID = md5($_POST["surname"] . $_POST["name"] . $_POST["email"] . $_POST["phone"]);
+        $sql = "SELECT UID, Surname, Name FROM teachers WHERE UID='$UID'";
+        if (!($result = $this->conn->query($sql))) {
+            error("<br>Something wrong");
+        } elseif ($result->rowCount() != 0) {
+            $this->status = DB_ADD_DUP;
+            return $UID;
+        }
+        // Причёсываем поля
+        $surname = substr(trim(filter_var($_POST["surname"], FILTER_SANITIZE_STRING)), 0, 30);
+        $name = substr(trim(filter_var($_POST["name"], FILTER_SANITIZE_STRING)), 0, 30);
+        $email = filter_var($_POST["email"], FILTER_VALIDATE_EMAIL);
+        if (!$email) {
+            error("<br>Invalid e-mail");
+            $email = "noemail@found.com";
+        } else {
+            $email = substr(trim($email), 0, 50);
+        }
+        $phone = substr(trim(filter_var($_POST["phone"], FILTER_SANITIZE_STRING)), 0, 20);
+        // Записываем в базу
+        $sql = "INSERT INTO teachers (UID, Surname, Name, Phone, Email)
+              VALUES ('$UID', '$surname', '$name', '$phone', '$email')";
+        try {
+            $this->conn->exec($sql);
+            $this->dbLog("Новый преподаватель: $name $surname $email", $UID);
+            $this->status = DB_ADD_OK;
+        }
+        catch (PDOException $exception) {
+            error("Error in database 'teachers' update: " . $exception);
+        }
+        return $UID;
+    }
+
+    // Возвращает список всех преподавателей
+    public function getTeachers() {
+        $sql = "SELECT * FROM teachers ORDER BY Surname;";
+        return $this->conn->query($sql);
+    }
+
+    // Возвращает данные конкретного преподавателя
+    public function getTeacher($UID) {
+        $sql = "SELECT * FROM teachers WHERE UID='$UID';";
+        return $this->conn->query($sql);
+    }
+
+/*
+ *  Проекты и курсы
+ */
+    // Таблица курсов
+    public function getCoursesTable()
+    {
+        $sql = "SELECT * FROM teachers_and_courses";
+        return $this->conn->query($sql);
+    }
+    // Регистрация курса
+    public function addCourse($courseRus, $courseGer, $courseEng) {
+        $courseRus = substr(trim(filter_var($courseRus, FILTER_SANITIZE_STRING)), 0, 255);
+        $courseGer = substr(trim(filter_var($courseGer, FILTER_SANITIZE_STRING)), 0, 255);
+        $courseEng = substr(trim(filter_var($courseEng, FILTER_SANITIZE_STRING)), 0, 255);
+
+        if (($courseRus . $courseGer . $courseEng) == "") {
+            exit();
+        }
+
+        $fields = "";
+        $values = "";
+        if ($courseRus != "") {
+            $values .= "'$courseRus'";
+            $fields .= "NameRus";
+            if ($courseGer != "" || $courseEng != "") {
+                $values .= ", ";
+                $fields .= ", ";
+            }
+        }
+
+        if ($courseGer != "") {
+            $values .= "'$courseGer'";
+            $fields .= "NameGer";
+            if ($courseEng != "") {
+                $values .= ", ";
+                $fields .= ", ";
+            }
+        }
+
+        if ($courseEng != "") {
+            $values .= "'$courseEng'";
+            $fields .= "NameEng";
+        }
+
+        $sql = "INSERT INTO courses ($fields) VALUES ($values)";
+        try {
+            $this->conn->exec($sql);
+            $CID = $this->conn->lastInsertId();
+            $this->dbLog("Добавлен курс: $courseRus");
+        } catch (PDOException $exception) {
+            error("Error in courses update: $courseRus");
+        }
+        return $CID; // Возвращает афтосгенерированный ключ
+    }
+
+    // Добавление преподавателя (TID) к курсу (CID)
+    public function addTeacherToCourse($CID, $TID) {
+        $sql = "INSERT INTO teach2course (Teacher_ID, Course_ID) VALUES ('$TID', '$CID')";
+        try {
+            $this->conn->exec($sql);
+            $this->dbLog("Добавлен преподаватель $TID к курсу $CID");
+        } catch (PDOException $exception) {
+            error("Error in addTeacherToCourse: $exception");
+        }
+    }
+
+    // Добавление курса в расписание
+    public function addCourseToTimetable($CID, $time) {
+        $sql = "INSERT INTO timetable (Course_ID, Time) VALUES ('$CID', '$time')";
+        try {
+            $this->conn->exec($sql);
+            $this->dbLog("Добавлен курс $CID, время: $time");
+        } catch (PDOException $exception) {
+            error("Error in addCourseToTimetable: $exception");
+        }
+    }
+
+    // Изменение расписания для курса
+    public function updateCourseToTimetable ($CID, $T0, $T11, $T21, $T31, $T12, $T22, $T32) {
+        try {
+            $this->conn->exec("DELETE FROM timetable WHERE Course_ID = '$CID'");
+            if ($T0) $this->conn->exec("INSERT INTO timetable (Course_ID, Time) VALUES ('$CID', '0')");
+            if ($T11) $this->conn->exec("INSERT INTO timetable (Course_ID, Time) VALUES ('$CID', '11')");
+            if ($T21) $this->conn->exec("INSERT INTO timetable (Course_ID, Time) VALUES ('$CID', '21')");
+            if ($T31) $this->conn->exec("INSERT INTO timetable (Course_ID, Time) VALUES ('$CID', '31')");
+            if ($T12) $this->conn->exec("INSERT INTO timetable (Course_ID, Time) VALUES ('$CID', '12')");
+            if ($T22) $this->conn->exec("INSERT INTO timetable (Course_ID, Time) VALUES ('$CID', '22')");
+            if ($T32) $this->conn->exec("INSERT INTO timetable (Course_ID, Time) VALUES ('$CID', '32')");
+        } catch (PDOException $exception) {
+            error("Error in update CourseToTimetable: $exception");
+        }
+    }
+
+    // Детали курса; возвращает массив вида [имя_рус, имя_гер, имя_анг, [массив_преподавателей "Teachers[]"], [массив_пар "TimeSlots[]']]
+    public function getCourseDetails($CID)
+    {
+        $course = array();
+
+        $sql = "SELECT * FROM courses WHERE ID='$CID'";
+        try {
+            $result = $this->conn->query($sql);
+        } catch (PDOException $exception) {
+            error("Error in getCourseDetails 1: $exception");
+        }
+        if($result->rowCount() == 0) return $course; // Если неверный CID - возвращаем пустой массив
+        $row = $result->fetch();
+        $course["NameRus"] = $row["NameRus"];
+        $course["NameGer"] = $row["NameGer"];
+        $course["NameEng"] = $row["NameEng"];
+
+        $course["Teachers"] = array();
+        $sql = "SELECT * FROM teach2course WHERE Course_ID='$CID'";
+        try {
+            $result = $this->conn->query($sql);
+            foreach ($result as $row) $course["Teachers"][] = $row['Teacher_ID'];
+        } catch (PDOException $exception) {
+            error("Error in getCourseDetails 2: $exception");
+        }
+
+        $course["TimeSlots"] = array();
+        $sql = "SELECT * FROM timetable WHERE Course_ID='$CID'";
+        try {
+            $result = $this->conn->query($sql);
+            foreach ($result as $row) $course["TimeSlots"][] = $row["Time"];
+        } catch (PDOException $exception) {
+            error("Error in getCourseDetails 4: $exception");
+        }
+
+        return $course;
+    }
+
+    // Изменение описания курса (удаление, если все описания нулевые)
+    public function updateCourse($id, $courseRus, $courseGer, $courseEng) {
+        $courseRus = substr(trim(filter_var($courseRus, FILTER_SANITIZE_STRING)), 0, 255);
+        $courseGer = substr(trim(filter_var($courseGer, FILTER_SANITIZE_STRING)), 0, 255);
+        $courseEng = substr(trim(filter_var($courseEng, FILTER_SANITIZE_STRING)), 0, 255);
+
+        if($courseRus !== "" || $courseGer !== "" || $courseEng !== "") {
+            $sql = "UPDATE courses SET NameRus = '$courseRus', NameGer = '$courseGer', NameEng = '$courseEng' WHERE ID = '$id'";
+        } else {
+            $sql = "DELETE FROM courses WHERE ID = '$id'";
+        }
+        try {
+            $this->conn->exec($sql);
+            $this->dbLog("Изменён курс: $courseRus");
+        } catch (PDOException $exception) {
+            error("Error in courses update: $courseRus");
+        }
+    }
+
+    // Возвращает true, если студент (UID) записан на курс (CID) на время (Time)
+    // иначе возвращает false
+    public function isStudentInCourse($UID, $CID, $Time)
+    {
+        $sql = "SELECT COUNT(*) FROM student_in_course WHERE UID = '$UID' AND CID = '$CID' AND Time = '$Time'";
+        try {
+            $result = $this->conn->query($sql)->fetch();
+            if($result['COUNT(*)'] == 1) return true;
+        } catch (PDOException $exception) {
+            error("Error in isStudentInCourse: $exception");
+        }
+        return false;
+    }
+
+    // Отчистка расписания (timeSlot) для данного курса (CID)
+    public function cleanCourse($CID, $timeSlot)
+    {
+        try {
+            $result = $this->conn->query("SELECT ID FROM timetable WHERE Course_ID = '$CID' AND Time = '$timeSlot'");
+            $TID = $result->fetch();
+            $TID = $TID['ID'];
+            $this->conn->exec("DELETE FROM student2time WHERE Time_ID = $TID");
+        } catch (PDOException $exception) {
+            error("Error in cleanCourse: $exception");
+        }
+    }
+
+    // Записать студента (UID) на курс (CID) в расписании(timeSlot)
+    public function addStudentToCourse($UID, $CID, $timeSlot)
+    {
+        try {
+            $result = $this->conn->query("SELECT ID FROM timetable WHERE Course_ID = '$CID' AND Time = '$timeSlot'");
+            $TID = $result->fetch();
+            $TID = $TID['ID'];
+            $this->conn->exec("INSERT INTO student2time (Student_ID, Time_ID) VALUES ('$UID', '$TID')");
+        } catch (PDOException $exception) {
+            error("Error in addStudentToCourse: $exception");
+        }
+    }
+
+/*
+ *  Tools
+ */
+
+    // Внутренний журнал
+    public function dbLog($text, $UserID = "")
+    {
+        $text = filter_var($text);
+        $sql = "INSERT INTO log (UserID, text) VALUES ('$UserID' , '$text')";
+        try {
+            $this->conn->exec($sql);
+        }
+        catch (PDOException $exception) {
+            error("dbLog error: " . $exception);
+        }
+    }
+
+    // результат работы с базой данных
+    // DB_NOT_FOUND, DB_ADD_OK, DB_ADD_DUP и т.д.
+    public function getStatus()
+    {
+        return $this->status;
     }
 
     function __destruct()
