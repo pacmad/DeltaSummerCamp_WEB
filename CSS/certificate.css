@@ -1,0 +1,38 @@
+body {
+    margin: 0;
+    font-family: "Times New Roman", Times, serif;
+    padding: 2em 10em;
+}
+
+.title {
+    display: block;
+    text-align: center;
+    font-size: 2em;
+    line-height: 1.7em;
+}
+
+.name {
+    display: block;
+    text-align: center;
+    font-size: 2.5em;
+    font-weight: bold;
+    line-height: 2.5em;
+    text-decoration-line: underline;
+}
+
+.project {
+    font-weight: bold;
+    margin-left: 1em;
+}
+
+.director {
+    font-weight: bold;
+}
+
+.teachers {
+    list-style-type: none;
+}
+
+.plain {
+    font-size: 1.2em;
+}

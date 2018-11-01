@@ -1,6 +1,6 @@
 /*
-Подготовка ленты новостей. Скрываем все блоки "more",
-Вместо них вставляем метку "далее..."
+РџРѕРґРіРѕС‚РѕРІРєР° Р»РµРЅС‚С‹ РЅРѕРІРѕСЃС‚РµР№. РЎРєСЂС‹РІР°РµРј РІСЃРµ Р±Р»РѕРєРё "more",
+Р’РјРµСЃС‚Рѕ РЅРёС… РІСЃС‚Р°РІР»СЏРµРј РјРµС‚РєСѓ "РґР°Р»РµРµ..."
  */
 document.addEventListener("DOMContentLoaded", function (e) {
     var blocks = document.getElementsByClassName('more');
@@ -14,14 +14,14 @@ document.addEventListener("DOMContentLoaded", function (e) {
             if (arr.indexOf(style) == -1) {
                 blocks[n].parentNode.className += " " + style;
             }
-            cont.innerHTML = "<p>&#9660;далее...</p>";
+            cont.innerHTML = "<p>&#9660;РґР°Р»РµРµ...</p>";
             cont.className = ' continue';
             blocks[n].style.display = 'none';
         }
     }
 });
 /*
-Инициализация библиотеки Masonry, используется при выводе проектов
+РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ Р±РёР±Р»РёРѕС‚РµРєРё Masonry, РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РїСЂРё РІС‹РІРѕРґРµ РїСЂРѕРµРєС‚РѕРІ
  */
 var msnry;
 window.addEventListener("load", function (e) {
@@ -35,7 +35,7 @@ window.addEventListener("load", function (e) {
     }
 });
 /*
-Раскрываем новость
+Р Р°СЃРєСЂС‹РІР°РµРј РЅРѕРІРѕСЃС‚СЊ
  */
 function showMore(el) {
     el.querySelector('p.continue').style.display = 'none';

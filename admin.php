@@ -1,6 +1,6 @@
 <?php
 /*
- * Ìîäóëü âõîäà â àäìèíêó. Îñíîâíîé ôàéë àäìèíêè - admFetch.php
+ * ÐœÐ¾Ð´ÑƒÐ»ÑŒ Ð²Ñ…Ð¾Ð´Ð° Ð² Ð°Ð´Ð¼Ð¸Ð½ÐºÑƒ. ÐžÑÐ½Ð¾Ð²Ð½Ð¾Ð¹ Ñ„Ð°Ð¹Ð» Ð°Ð´Ð¼Ð¸Ð½ÐºÐ¸ - admFetch.php
  */
 require_once 'phplib/dbConnect.php';
 require_once 'phplib/common.php';
@@ -15,7 +15,7 @@ if (isset($_SESSION['signed_in']) && $_SESSION['signed_in']) {
         admWrongUID();
         exit();
     }
-} elseif (isset($_GET["id"])) { // Íà÷àëüíûé âõîä ïî ìåòîäó GET
+} elseif (isset($_GET["id"])) { // ÐÐ°Ñ‡Ð°Ð»ÑŒÐ½Ñ‹Ð¹ Ð²Ñ…Ð¾Ð´ Ð¿Ð¾ Ð¼ÐµÑ‚Ð¾Ð´Ñƒ GET
     $UID = $_GET["id"];
     try {
         $db = new dbConnect();
@@ -26,13 +26,13 @@ if (isset($_SESSION['signed_in']) && $_SESSION['signed_in']) {
     }
 
     switch ($res) {
-        case -1: // Íåâåðíûé UID
+        case -1: // ÐÐµÐ²ÐµÑ€Ð½Ñ‹Ð¹ UID
             admWrongUID($UID);
             break;
-        case 1: // Ïåðâûé âõîä (ïóñòîé ïàðîëü), òðåáóåì óñòàíîâèòü ïàðîëü
+        case 1: // ÐŸÐµÑ€Ð²Ñ‹Ð¹ Ð²Ñ…Ð¾Ð´ (Ð¿ÑƒÑÑ‚Ð¾Ð¹ Ð¿Ð°Ñ€Ð¾Ð»ÑŒ), Ñ‚Ñ€ÐµÐ±ÑƒÐµÐ¼ ÑƒÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð¿Ð°Ñ€Ð¾Ð»ÑŒ
             admNewPass($UID);
             break;
-        case 0: // Ïàðîëü óñòàíîâëåí, îáðàáîòêà âõîäà
+        case 0: // ÐŸÐ°Ñ€Ð¾Ð»ÑŒ ÑƒÑÑ‚Ð°Ð½Ð¾Ð²Ð»ÐµÐ½, Ð¾Ð±Ñ€Ð°Ð±Ð¾Ñ‚ÐºÐ° Ð²Ñ…Ð¾Ð´Ð°
             admLogin($UID);
             break;
     }

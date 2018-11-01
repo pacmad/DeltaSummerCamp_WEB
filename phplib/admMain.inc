@@ -1,9 +1,9 @@
 <!doctype html>
 <html lang="ru">
 <head>
-    <meta charset="windows-1251">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Уголок администратора</title>
+    <title>РЈРіРѕР»РѕРє Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂР°</title>
     <link href="CSS/common.css" rel="stylesheet" type="text/css">
     <link href="CSS/admin.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -21,11 +21,12 @@
     $row = $db->admGet($_SESSION['UID']);
     $name = $row['Name'];
     $surname = $row['Surname'];
+    $_SESSION['ReadOnly'] = $row['ReadOnly'];
     if (!isset($_SESSION['SortBy'])) {
-        $_SESSION['SortBy'] = "Name"; // Сортировка по умолчанию - по фамилиям, переключение на сортировку по имени
+        $_SESSION['SortBy'] = "Name"; // РЎРѕСЂС‚РёСЂРѕРІРєР° РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ - РїРѕ С„Р°РјРёР»РёСЏРј, РїРµСЂРµРєР»СЋС‡РµРЅРёРµ РЅР° СЃРѕСЂС‚РёСЂРѕРІРєСѓ РїРѕ РёРјРµРЅРё
     }
     if (!isset($_SESSION['View'])) {
-        $_SESSION['View'] = "List"; // Тип вывода: List, Details, Edit
+        $_SESSION['View'] = "List"; // РўРёРї РІС‹РІРѕРґР°: List, Details, Edit
     }
     ?>
 </head>
@@ -34,20 +35,26 @@
 <div class="title">
     <div class="row">
         <div class="col-6">
-            <h1>Привет, <?php echo "$name $surname!"?></h1>
+            <h1>РџСЂРёРІРµС‚, <?php echo "$name $surname!"?></h1>
         </div>
         <div class="col-6">
             <div class="icons">
                 <div class="tooltip">
+                    <a href="_2018/admin.php">
+                        <div class="iconbox"><span class="fa fa-calendar icon"></span></div>
+                        <span class="tooltiptext">РђРґРјРёРЅРєР° 2018</span>
+                    </a>
+                </div>
+                <div class="tooltip">
                     <a href="teachers.php">
                         <div class="iconbox"><span class="fa fa-user icon"></span></div>
-                        <span class="tooltiptext">Преподаватели</span>
+                        <span class="tooltiptext">РџСЂРµРїРѕРґР°РІР°С‚РµР»Рё</span>
                     </a>
                 </div>
                 <div class="tooltip">
                     <a href="courses.php">
                         <div class="iconbox"><span class="fa fa-graduation-cap icon"></span></div>
-                        <span class="tooltiptext">Курсы и проекты</span>
+                        <span class="tooltiptext">РљСѓСЂСЃС‹ Рё РїСЂРѕРµРєС‚С‹</span>
                     </a>
                 </div>
             </div>

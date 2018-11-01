@@ -4,8 +4,8 @@ include "validate.inc";
 include_once "dbConnect.php";
 
 /*
- * Проверяем тип вывода (список, детали, редактирование и т.д.)
- * и сохраняем его в $_SESSION
+ * РџСЂРѕРІРµСЂСЏРµРј С‚РёРї РІС‹РІРѕРґР° (СЃРїРёСЃРѕРє, РґРµС‚Р°Р»Рё, СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ Рё С‚.Рґ.)
+ * Рё СЃРѕС…СЂР°РЅСЏРµРј РµРіРѕ РІ $_SESSION
  */
 $db = new dbConnect();
 if (isset($_POST['View'])) $_SESSION['View'] = $_POST['View'];
@@ -26,7 +26,7 @@ if (!isset($_SESSION['WHERE'])) $_SESSION['WHERE'] = 'AppStatus >= 0';
 if (isset($_POST['WHERE'])) $_SESSION['WHERE'] = $_POST['WHERE'];
 
 /*
- * Вывод списка
+ * Р’С‹РІРѕРґ СЃРїРёСЃРєР°
  */
 if ($_SESSION['View'] === "List") {
     $output = '
@@ -58,14 +58,14 @@ if ($_SESSION['View'] === "List") {
                     <div class="table-cell l_name" onclick="showDetails(\''.$row["UniqueId"].'\');"><b>' . $row["Surname"] . ' ' . $row["Name"] . '</b></div>
                     <div class="table-cell l_owntel"><a href="tel:' . $row["OwnTel"] . '">'. $row["OwnTel"] .'</a></div>
                     <div class="table-cell l_mail"><a href="mailto:'.$row["Email"].'">' . $row["Email"] . '</a></div>
-                    <div class="table-cell l_tel"><p>Родители:</p><a href="tel:'.$row["Tel"].'">' . $row["Tel"] . '</a></div>
+                    <div class="table-cell l_tel"><p>Р РѕРґРёС‚РµР»Рё:</p><a href="tel:'.$row["Tel"].'">' . $row["Tel"] . '</a></div>
                     <div class="hidden">' . $UID . '</div>
                 </div>
             </div>
             ';
         }
     } else {
-        $output .= 'Данные не найдены';
+        $output .= 'Р”Р°РЅРЅС‹Рµ РЅРµ РЅР°Р№РґРµРЅС‹';
     }
     $output .= '
     </div>
@@ -73,12 +73,12 @@ if ($_SESSION['View'] === "List") {
         <div class="search"><input type="text" name="search_string" id="search_string" autofocus><span class="fa fa-search" onclick="doSearch()"></span></div>
     </div>
     <script>
-    $(function() {  // Прокрутка до активной записи при выходе из карточки участника
+    $(function() {  // РџСЂРѕРєСЂСѓС‚РєР° РґРѕ Р°РєС‚РёРІРЅРѕР№ Р·Р°РїРёСЃРё РїСЂРё РІС‹С…РѕРґРµ РёР· РєР°СЂС‚РѕС‡РєРё СѓС‡Р°СЃС‚РЅРёРєР°
         $("html, body").animate({
             scrollTop: $("#tr-' . $_SESSION["ID"] . '").offset().top - 60
         }, 500);
     });
-    $(function() {  // Обработка ввода в поле быстрого поиска по списку
+    $(function() {  // РћР±СЂР°Р±РѕС‚РєР° РІРІРѕРґР° РІ РїРѕР»Рµ Р±С‹СЃС‚СЂРѕРіРѕ РїРѕРёСЃРєР° РїРѕ СЃРїРёСЃРєСѓ
         if("' . $_POST["Init"] . '" === "Init") {
             $("#search_string").focus().on("input", search);
         }      
@@ -88,14 +88,14 @@ if ($_SESSION['View'] === "List") {
     echo $output;
 }
 /*
- * Вывод детальной информации
+ * Р’С‹РІРѕРґ РґРµС‚Р°Р»СЊРЅРѕР№ РёРЅС„РѕСЂРјР°С†РёРё
  */
 elseif ($_SESSION['View']==="Details") {
     try {
         $result = $db->getStudentsList("*", $_SESSION['SortBy'], 'UniqueId="'.$_SESSION["ID"].'"');
         if ($result->rowCount() != 1) {
             header("Content-type: text/html; charset=windows-1251");
-            echo '<h1>Данные не найдены</h1>';
+            echo '<h1>Р”Р°РЅРЅС‹Рµ РЅРµ РЅР°Р№РґРµРЅС‹</h1>';
             exit();
         }
         $row = $result->fetch();
@@ -156,56 +156,107 @@ elseif ($_SESSION['View']==="Details") {
             </div>
             <div class="full_name">$name $surname (<span id="age"></span>)</div>
             <div class="row">
-                <div class="col-2 photo"><img src="$photo" alt="Фотография"></div>
+                <div class="col-2 photo"><img src="$photo" alt="Р¤РѕС‚РѕРіСЂР°С„РёСЏ"></div>
                 <div class="col-10">
                     <div class="row infoblock">
-                        <div class="col-2 o_tel"><a href="tel:$oTel">Личный телефон:<br>$oTel</a></div>
+                        <div class="col-2 o_tel"><a href="tel:$oTel">Р›РёС‡РЅС‹Р№ С‚РµР»РµС„РѕРЅ:<br>$oTel</a></div>
                         <div class="col-2 email"><a href="mailto:$email">E-mail:<br>$email</a></div>
                         <div class="col-2 tel">
-                            <a href="tel:$tel">Телефон родителей:<br>$tel</a><br>
+                            <a href="tel:$tel">РўРµР»РµС„РѕРЅ СЂРѕРґРёС‚РµР»РµР№:<br>$tel</a><br>
                             <a href="whatsapp:$tel">WhatsApp</a>
                         </div>    
-                        <div class="col-6 sp_note">Действия в форс-мажорном случае:<br>$specialNote</div>                
+                        <div class="col-6 sp_note">Р”РµР№СЃС‚РІРёСЏ РІ С„РѕСЂСЃ-РјР°Р¶РѕСЂРЅРѕРј СЃР»СѓС‡Р°Рµ:<br>$specialNote</div>                
                     </div>
                 </div>
             </div>
             <div class="row infoblock">
-                <div class="col-6"><strong>Сведения о здоровье:</strong><br>$health</div>
-                <div class="col-6"><strong>Страховка:</strong><br>$insurance</div>
+                <div class="col-6"><strong>РЎРІРµРґРµРЅРёСЏ Рѕ Р·РґРѕСЂРѕРІСЊРµ:</strong><br>$health</div>
+                <div class="col-6"><strong>РЎС‚СЂР°С…РѕРІРєР°:</strong><br>$insurance</div>
             </div>
             <div class="row infoblock">
                 <div class="col-6">
-                    <strong>Детали приезда:</strong><br>
-                    С кем: <strong>$cWith</strong><br>
-                    Когда: <strong>$cDate в $cTime</strong><br>
-                    Рейс: <strong>$cFlight</strong>, куда: <strong>$cPlace</strong>
+                    <strong>Р”РµС‚Р°Р»Рё РїСЂРёРµР·РґР°:</strong><br>
+                    РЎ РєРµРј: <strong>$cWith</strong><br>
+                    РљРѕРіРґР°: <strong>$cDate РІ $cTime</strong><br>
+                    Р РµР№СЃ: <strong>$cFlight</strong>, РєСѓРґР°: <strong>$cPlace</strong>
                 </div>
                 <div class="col-6">
-                    <strong>Детали отъезда:</strong><br>
-                    С кем: <strong>$lWith</strong><br>
-                    Когда: <strong>$lDate в $lTime</strong><br>
-                    Рейс: <strong>$lFlight</strong>, куда: <strong>$lPlace</strong>
+                    <strong>Р”РµС‚Р°Р»Рё РѕС‚СЉРµР·РґР°:</strong><br>
+                    РЎ РєРµРј: <strong>$lWith</strong><br>
+                    РљРѕРіРґР°: <strong>$lDate РІ $lTime</strong><br>
+                    Р РµР№СЃ: <strong>$lFlight</strong>, РєСѓРґР°: <strong>$lPlace</strong>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-3 cablink"><a href="mycabinet.php?id=$UID" >Личный кабинет</a></div>
-                <div class="col-9"></div>
+OUTPUT;
+
+        if(!$_SESSION['ReadOnly']) {
+            $output .= "
+            <div class='row'>
+                <div class='col-3 cablink'><a href='mycabinet.php?id=$UID' >Р›РёС‡РЅС‹Р№ РєР°Р±РёРЅРµС‚</a></div>
+                <div class='col-9'></div>
             </div>
+            ";
+        }
+            
+    $output .= <<<OUTPUT
             <hr>
-            <p><strong>Дополнительная информация...</strong></p>
+            <p><strong>Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅР°СЏ РёРЅС„РѕСЂРјР°С†РёСЏ...</strong></p>
             <div class="row infoblock">
                 <div class="col-4">
-                    День рождения: <strong>$bDay</strong><br>
-                    Место жительства: <strong>$city, $country</strong>
+                    Р”РµРЅСЊ СЂРѕР¶РґРµРЅРёСЏ: <strong>$bDay</strong><br>
+                    РњРµСЃС‚Рѕ Р¶РёС‚РµР»СЊСЃС‚РІР°: <strong>$city, $country</strong>
                 </div>
                 <div class="col-4">
-                    Ноутбук: <strong>$notebook</strong><br>
-                    Футболка: <strong>$shirt</strong>
+                    РќРѕСѓС‚Р±СѓРє: <strong>$notebook</strong><br>
+                    Р¤СѓС‚Р±РѕР»РєР°: <strong>$shirt</strong>
                 </div>
                 <div class="col-4">
-                    Виза: <strong>$visa</strong><br>
-                    Сертификат ($certLang): <strong>$certName</strong>                    
+                    Р’РёР·Р°: <strong>$visa</strong><br>
+                    РЎРµСЂС‚РёС„РёРєР°С‚ ($certLang): <strong>$certName</strong>                    
                 </div>                    
+            </div>
+            <div class="row infoblock">
+                <div class="col-11" 
+OUTPUT;
+
+    $output .= "<ul>";
+    if ($result = $db->getCoursesForStudent($UID)) {
+        foreach ($result as $row) {
+            switch ($row['Time']) {
+                case 0:
+                    $course = "РџСЂРѕРµРєС‚";
+                    break;
+                case 11:
+                    $course = "I С‚СЂРѕР№РєР°, 1 РїР°СЂР°";
+                    break;
+                case 12:
+                    $course = "I С‚СЂРѕР№РєР°, 2 РїР°СЂР°";
+                    break;
+                case 21:
+                    $course = "II С‚СЂРѕР№РєР°, 1 РїР°СЂР°";
+                    break;
+                case 22:
+                    $course = "II С‚СЂРѕР№РєР°, 2 РїР°СЂР°";
+                    break;
+                case 31:
+                    $course = "III С‚СЂРѕР№РєР°, 1 РїР°СЂР°";
+                    break;
+                case 32:
+                    $course = "III С‚СЂРѕР№РєР°, 2 РїР°СЂР°";
+                    break;
+            }
+            $output .= "<p><b>" . $course . ":</b> " . $row['NameRus'] . "</p>";
+        }
+    }
+    $output .= "</ul>";
+
+    $output .= <<<OUTPUT
+                </div>
+                <div class="col-1">
+                    <a href="certificate.php?UID=$UID" target="_blank">
+                        <div class="iconbox"><span class="fa  fa-sign-in icon"></span></div>
+                    </a>
+                </div>
             </div>
             <div class="row navigator">
                 <div class="nav-button" onclick='showPrev()'>
@@ -221,12 +272,12 @@ elseif ($_SESSION['View']==="Details") {
         </div>
         <script src="JS/common.js"></script>
         <script>
-            $(function() { // Вычисляем возраст и заполняем соответствующее поле
+            $(function() { // Р’С‹С‡РёСЃР»СЏРµРј РІРѕР·СЂР°СЃС‚ Рё Р·Р°РїРѕР»РЅСЏРµРј СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РµРµ РїРѕР»Рµ
                 const bd = new Date("$bDay");
                 let happy = happyBirthday(bd);
                 if(happy !== '')
-                    happy = ", День рождения: " + happy;
-                $("#age").html(age(bd) + ' лет' + happy);
+                    happy = ", Р”РµРЅСЊ СЂРѕР¶РґРµРЅРёСЏ: " + happy;
+                $("#age").html(age(bd) + ' Р»РµС‚' + happy);
             });
         </script>
 OUTPUT;

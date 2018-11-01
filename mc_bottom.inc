@@ -1,16 +1,16 @@
 
 <div class="row"><div class="col-12">
         <hr>
-        <p>Если у Вас возникли вопросы или Вы заметили неточность в регистрационных данных, пожалуйста, воспользуйтесь формой
-            обратной связи или свяжитесь с нами:</p>
+        <p>Р•СЃР»Рё Сѓ Р’Р°СЃ РІРѕР·РЅРёРєР»Рё РІРѕРїСЂРѕСЃС‹ РёР»Рё Р’С‹ Р·Р°РјРµС‚РёР»Рё РЅРµС‚РѕС‡РЅРѕСЃС‚СЊ РІ СЂРµРіРёСЃС‚СЂР°С†РёРѕРЅРЅС‹С… РґР°РЅРЅС‹С…, РїРѕР¶Р°Р»СѓР№СЃС‚Р°, РІРѕСЃРїРѕР»СЊР·СѓР№С‚РµСЃСЊ С„РѕСЂРјРѕР№
+            РѕР±СЂР°С‚РЅРѕР№ СЃРІСЏР·Рё РёР»Рё СЃРІСЏР¶РёС‚РµСЃСЊ СЃ РЅР°РјРё:</p>
     </div>
 </div>  <!-- col-12, row -->
 <div class="row"><div class="col-6">
-        <p><b>Анна Семовская</b><br>
+        <p><b>РђРЅРЅР° РЎРµРјРѕРІСЃРєР°СЏ</b><br>
             <?php printContact('sem');?>
         </p></div> <!-- col-6 -->
     <div class="col-6">
-        <p><b>Дмитрий Аблов</b><br>
+        <p><b>Р”РјРёС‚СЂРёР№ РђР±Р»РѕРІ</b><br>
             <?php printContact('abl');?>
         </p>
     </div>
@@ -21,7 +21,7 @@
                 <input name="id" type="hidden" id="id" value="<?php echo $row['UniqueId'] ?>">
                 <input name="name" type="hidden" id="name" value="<?php echo $row['Name'] . ' ' . $row['Surname'] ?>">
                 <input name="email" type="hidden" id="email" value="<?php echo $row['Email'] ?>">
-                <input type="submit" value="Связь с организаторами">
+                <input type="submit" value="РЎРІСЏР·СЊ СЃ РѕСЂРіР°РЅРёР·Р°С‚РѕСЂР°РјРё">
             </p>
             <p>&nbsp; </p>
         </form>

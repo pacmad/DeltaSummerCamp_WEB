@@ -1,6 +1,6 @@
 <?php
 /**
- * Страница для работы с курсами и проектами.
+ * РЎС‚СЂР°РЅРёС†Р° РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РєСѓСЂСЃР°РјРё Рё РїСЂРѕРµРєС‚Р°РјРё.
  * Date: 24.06.2018
  * Time: 16:39
  */
@@ -13,7 +13,7 @@ include_once "phplib/dbConnect.php";
 <head>
     <meta charset="windows-1251">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Курсы и проекты</title>
+    <title>РљСѓСЂСЃС‹ Рё РїСЂРѕРµРєС‚С‹</title>
     <link href="CSS/common.css" rel="stylesheet" type="text/css">
     <link href="CSS/admin.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -29,10 +29,10 @@ include_once "phplib/dbConnect.php";
     $name = $_SESSION['Name'] = $row['Name'];
     $surname = $_SESSION['Surname'] = $row['Surname'];
 
-    // Обработка добавления курса
+    // РћР±СЂР°Р±РѕС‚РєР° РґРѕР±Р°РІР»РµРЅРёСЏ РєСѓСЂСЃР°
     if (isset($_POST['AddCourse'])) {
         $CID = $db->addCourse($_POST['NameRus'], $_POST['NameGer'], $_POST['NameEng']);
-        $db->addCourseToTimetable($CID, 99); // Заглушка, просто маркер того, что курс зарегистрирован
+        $db->addCourseToTimetable($CID, 99); // Р—Р°РіР»СѓС€РєР°, РїСЂРѕСЃС‚Рѕ РјР°СЂРєРµСЂ С‚РѕРіРѕ, С‡С‚Рѕ РєСѓСЂСЃ Р·Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅ
         foreach ($_POST as $key => $TID) {
             if (strpos($key, 'TID-') === 0) {
                 $db->addTeacherToCourse($CID, $TID);
@@ -47,42 +47,32 @@ include_once "phplib/dbConnect.php";
         if($_POST['t32'] == 1) $db->addCourseToTimetable($CID, 32);
     }
 
-    // Обработка изменения курса
+    // РћР±СЂР°Р±РѕС‚РєР° РёР·РјРµРЅРµРЅРёСЏ РєСѓСЂСЃР°
     elseif (isset($_POST['ChangeCourse'])) {
         $CID = $_POST['ChangeCourse'];
         $db->updateCourse($CID, $_POST['NameRus'], $_POST['NameGer'], $_POST['NameEng']);
-        $db->updateCourseToTimetable($CID,
-            $_POST['t0'],
-            $_POST['t11'],
-            $_POST['t21'],
-            $_POST['t31'],
-            $_POST['t12'],
-            $_POST['t22'],
-            $_POST['t32']
-        );
-    }
 
-    try {
-        $result = $db->getCoursesTable();
-    } catch (PDOException $exception) {
-        error("getCoursesTable error: $exception");
-    }
-
-    // Формируем массив курсов вида: [имя_курса, [массив_преподавателей "Teachers[]"], [массив_пар "TimeSlots[]']]
-    $courses = array();
-    if ($result->rowCount() > 0) {
-        foreach ($result as $row) {
-            $courseID = intval($row['Course_ID']);
-            if (!isset($courses[$courseID])) {
-                $courses[$courseID] = ["NameRus" => $row['NameRus'], "Teachers" => array($row['Surname'] . ' ' . $row['Name']), "TimeSlots" => array(intval($row['Time']))];
-            } else {
-                array_push($courses[$courseID]["Teachers"], $row['Surname'] . ' ' . $row['Name']);
-                array_push($courses[$courseID]["TimeSlots"], intval($row['Time']));
+        if (strlen($_POST['NameRus'] . $_POST['NameGer'] . $_POST['NameEng']) != 0) {
+            $db->cleanTeachersFromCourse($CID);
+            foreach ($_POST as $key => $TID) {
+                if (strpos($key, 'TID-') === 0) {
+                    $db->addTeacherToCourse($CID, $TID);
+                }
             }
-            $courses[$courseID]["Teachers"] = array_unique($courses[$courseID]["Teachers"]);
-            $courses[$courseID]["TimeSlots"] = array_unique($courses[$courseID]["TimeSlots"]);
+            $db->updateCourseToTimetable($CID,
+                $_POST['t0'],
+                $_POST['t11'],
+                $_POST['t21'],
+                $_POST['t31'],
+                $_POST['t12'],
+                $_POST['t22'],
+                $_POST['t32']
+            );
         }
     }
+
+    // Р¤РѕСЂРјРёСЂСѓРµРј РјР°СЃСЃРёРІ РєСѓСЂСЃРѕРІ РІРёРґР°: [РёРјСЏ_РєСѓСЂСЃР°, [РјР°СЃСЃРёРІ_РїСЂРµРїРѕРґР°РІР°С‚РµР»РµР№ "Teachers[]"], [РјР°СЃСЃРёРІ_РїР°СЂ "TimeSlots[]']]
+    $courses = $db->getCoursesTable();
     ?>
 </head>
 
@@ -90,20 +80,20 @@ include_once "phplib/dbConnect.php";
 <div class="title">
     <div class="row">
         <div class="col-6">
-            <h1>Привет, <?php echo "$name $surname!"?></h1>
+            <h1>РџСЂРёРІРµС‚, <?php echo "$name $surname!"?></h1>
         </div>
         <div class="col-6">
             <div class="icons">
                 <div class="tooltip">
                     <a href="admin.php">
                         <div class="iconbox"><span class="fa fa-child icon"></span></div>
-                        <span class="tooltiptext">Дети</span>
+                        <span class="tooltiptext">Р”РµС‚Рё</span>
                     </a>
                 </div>
                 <div class="tooltip">
                     <a href="teachers.php">
                         <div class="iconbox"><span class="fa fa-user icon"></span></div>
-                        <span class="tooltiptext">Преподаватели</span>
+                        <span class="tooltiptext">РџСЂРµРїРѕРґР°РІР°С‚РµР»Рё</span>
                     </a>
                 </div>
             </div>
@@ -111,11 +101,11 @@ include_once "phplib/dbConnect.php";
     </div>
 </div>
 <div class="main">
-    <h3>Проекты и курсы:</h3>
+    <h3>РџСЂРѕРµРєС‚С‹ Рё РєСѓСЂСЃС‹:</h3>
     <div class="courses-table">
 <?php
     foreach ($courses as $CID=>$course) {
-        // Название курса и преподаватели
+        // РќР°Р·РІР°РЅРёРµ РєСѓСЂСЃР° Рё РїСЂРµРїРѕРґР°РІР°С‚РµР»Рё
         $result = "
             <div class='row course-block'>
                 <div class='col-4 course-title'>
@@ -123,7 +113,9 @@ include_once "phplib/dbConnect.php";
                 </div>
                 <div class='col-4 course-authors'>
                 ";
-            foreach($course["Teachers"] as $teacher) {
+            foreach($course["Teachers"] as $TID) {
+                $row = $db->getTeacher($TID)->fetch();
+                $teacher = $row['Name'] . ' ' . $row['Surname'];
                 $result .= "<p>" . $teacher . "</p>";
             };
             $result .= "
@@ -131,7 +123,7 @@ include_once "phplib/dbConnect.php";
                 <div class='col-2'>
             ";
 
-            // Таблица - разсписание. Помеченные участки при клике мышки ведут на страницу расписания курса
+            // РўР°Р±Р»РёС†Р° - СЂР°Р·СЃРїРёСЃР°РЅРёРµ. РџРѕРјРµС‡РµРЅРЅС‹Рµ СѓС‡Р°СЃС‚РєРё РїСЂРё РєР»РёРєРµ РјС‹С€РєРё РІРµРґСѓС‚ РЅР° СЃС‚СЂР°РЅРёС†Сѓ СЂР°СЃРїРёСЃР°РЅРёСЏ РєСѓСЂСЃР°
             $result .= '
             <div class="course-icon">
                 <table>
@@ -193,7 +185,7 @@ include_once "phplib/dbConnect.php";
                 </table>
             </div>
             ';
-            // "Шестерёнка" - изменение курса
+            // "РЁРµСЃС‚РµСЂС‘РЅРєР°" - РёР·РјРµРЅРµРЅРёРµ РєСѓСЂСЃР°
             $result .= "
                 </div>
                 <div class='col-2 hidden' id='CID-$CID'>
@@ -207,57 +199,67 @@ include_once "phplib/dbConnect.php";
     }
 ?>
     </div>
-    <button onclick="showChange()" id="change_button">Изменить...</button>
-    <div class="row course-block add-form hidden" id="add_course">
-        <h2>Добавить курс / проект</h2>
-        <form method="post" id="add_course_form">
-            <p class="course-title">Название курса (рус): <input type="text" name="NameRus" id="course-rus"></p>
-            <p class="course-title">Kursname (ger): <input type="text" name="NameGer" id="course-ger"></p>
-            <p class="course-title">Course name (eng): <input type="text" name="NameEng" id="course-eng"></p>
-            <div class="row">
-                <div class="col-8">
-                    <p class="course-title">Преподаватели:</p>
-                    <ul>
-                        <?php
-                            foreach ($db->getTeachers() as $teacher) {
-                                echo '<li><label for="TID-' . $teacher['UID'] . '"><input type="checkbox" name="TID-' . $teacher['UID'] . '" id="TID-' . $teacher['UID'] . '" value="' . $teacher['UID'] . '">' . $teacher['Name'] . ' ' . $teacher['Surname'] . '</li>';
-                            }
-                        ?>
-                    </ul>
-                </div>
-                <div class="col-1"></div>
-                <div class="col-2">
-                    <p class="course-title">Расписание:</p>
-                    <div class="course-icon">
-                        <table>
-                            <tr>
-                                <td id="t11"></td>
-                                <td id="t21"></td>
-                                <td id="t31"></td>
-                            </tr>
-                            <tr>
-                                <td id="t12"></td>
-                                <td id="t22"></td>
-                                <td id="t32"></td>
-                            </tr>
-                            <tr>
-                                <td colspan="3" id="t0"></td>
-                            </tr>
-                        </table>
+    <?php
+    if(!$_SESSION['ReadOnly']) {
+        $output = '        
+        <button onclick="showChange()" id="change_button">РР·РјРµРЅРёС‚СЊ...</button>
+        <div class="row course-block add-form hidden" id="add_course">
+            <h2>Р”РѕР±Р°РІРёС‚СЊ РєСѓСЂСЃ / РїСЂРѕРµРєС‚</h2>
+            <form method="post" id="add_course_form">
+                <p class="course-title">РќР°Р·РІР°РЅРёРµ РєСѓСЂСЃР° (СЂСѓСЃ): <input type="text" name="NameRus" id="course-rus"></p>
+                <p class="course-title">Kursname (ger): <input type="text" name="NameGer" id="course-ger"></p>
+                <p class="course-title">Course name (eng): <input type="text" name="NameEng" id="course-eng"></p>
+                <div class="row">
+                    <div class="col-8">
+                        <p class="course-title">РџСЂРµРїРѕРґР°РІР°С‚РµР»Рё:</p>
+                        <ul>
+        ';
+        foreach ($db->getTeachers() as $teacher) {
+            $output .= '<li><label for="TID-' . $teacher['UID'] . '"><input type="checkbox" name="TID-' . $teacher['UID'] .
+                '" id="TID-' . $teacher['UID'] . '" value="' . $teacher['UID'] . '">' . $teacher['Name'] . ' ' .
+                $teacher['Surname'] . '</li>';
+        };
+        $output .= '
+
+                        </ul>
+                    </div>
+                    <div class="col-1"></div>
+                    <div class="col-2">
+                        <p class="course-title">Р Р°СЃРїРёСЃР°РЅРёРµ:</p>
+                        <div class="course-icon">
+                            <table>
+                                <tr>
+                                    <td id="t11"></td>
+                                    <td id="t21"></td>
+                                    <td id="t31"></td>
+                                </tr>
+                                <tr>
+                                    <td id="t12"></td>
+                                    <td id="t22"></td>
+                                    <td id="t32"></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" id="t0"></td>
+                                </tr>
+                            </table>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <input type="hidden" id="tt0" name="t0" value="0">
-            <input type="hidden" id="tt11" name="t11" value="0">
-            <input type="hidden" id="tt21" name="t21" value="0">
-            <input type="hidden" id="tt31" name="t31" value="0">
-            <input type="hidden" id="tt12" name="t12" value="0">
-            <input type="hidden" id="tt22" name="t22" value="0">
-            <input type="hidden" id="tt32" name="t32" value="0">
-            <input type="hidden" name="AddCourse">
-            <input type="submit" value="Добавить">
-        </form>
-    </div>
+                <input type="hidden" id="tt0" name="t0" value="0">
+                <input type="hidden" id="tt11" name="t11" value="0">
+                <input type="hidden" id="tt21" name="t21" value="0">
+                <input type="hidden" id="tt31" name="t31" value="0">
+                <input type="hidden" id="tt12" name="t12" value="0">
+                <input type="hidden" id="tt22" name="t22" value="0">
+                <input type="hidden" id="tt32" name="t32" value="0">
+                <input type="hidden" name="AddCourse">
+                <input type="submit" value="Р”РѕР±Р°РІРёС‚СЊ">
+            </form>
+        </div>
+        ';
+        echo $output;
+    }
+    ?>
 </div>
 </body>
 </html>

@@ -18,8 +18,8 @@ if ($result == 1) {
     session_start();
     $_SESSION['signed_in'] = true;
     $_SESSION['UID'] = $_POST['UID'];
-    $db->dbLog("Выполнен вход в админку", $_POST['UID']);
+    $db->dbLog("Р’С‹РїРѕР»РЅРµРЅ РІС…РѕРґ РІ Р°РґРјРёРЅРєСѓ", $_POST['UID']);
 } else if ($result == 0) {
     http_response_code(401); //Wrong password
-    $db->dbLog("Попытка входа в админку с неправильным паролем \"" . $_POST['PASS'] ."\"", $_POST['UID']);
+    $db->dbLog("РџРѕРїС‹С‚РєР° РІС…РѕРґР° РІ Р°РґРјРёРЅРєСѓ СЃ РЅРµРїСЂР°РІРёР»СЊРЅС‹Рј РїР°СЂРѕР»РµРј \"" . $_POST['PASS'] ."\"", $_POST['UID']);
 }

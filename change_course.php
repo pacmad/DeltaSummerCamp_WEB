@@ -1,6 +1,6 @@
 <?php
 /**
- * Страница для работы с курсами и проектами.
+ * РЎС‚СЂР°РЅРёС†Р° РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РєСѓСЂСЃР°РјРё Рё РїСЂРѕРµРєС‚Р°РјРё.
  * Date: 24.06.2018
  * Time: 16:39
  */
@@ -13,7 +13,7 @@ include_once "phplib/dbConnect.php";
 <head>
     <meta charset="windows-1251">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Курсы и проекты</title>
+    <title>РљСѓСЂСЃС‹ Рё РїСЂРѕРµРєС‚С‹</title>
     <link href="CSS/common.css" rel="stylesheet" type="text/css">
     <link href="CSS/admin.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -34,20 +34,20 @@ include_once "phplib/dbConnect.php";
 <div class="title">
     <div class="row">
         <div class="col-6">
-            <h1>Привет, <?php echo "$name $surname!"?></h1>
+            <h1>РџСЂРёРІРµС‚, <?php echo "$name $surname!"?></h1>
         </div>
         <div class="col-6">
             <div class="icons">
                 <div class="tooltip">
                     <a href="admin.php">
                         <div class="iconbox"><span class="fa fa-child icon"></span></div>
-                        <span class="tooltiptext">Дети</span>
+                        <span class="tooltiptext">Р”РµС‚Рё</span>
                     </a>
                 </div>
                 <div class="tooltip">
                     <a href="teachers.php">
                         <div class="iconbox"><span class="fa fa-user icon"></span></div>
-                        <span class="tooltiptext">Преподаватели</span>
+                        <span class="tooltiptext">РџСЂРµРїРѕРґР°РІР°С‚РµР»Рё</span>
                     </a>
                 </div>
             </div>
@@ -56,14 +56,14 @@ include_once "phplib/dbConnect.php";
 </div>
 <div class="main">
     <div class="row course-block add-form">
-        <h2>Изменить курс / проект</h2>
+        <h2>РР·РјРµРЅРёС‚СЊ РєСѓСЂСЃ / РїСЂРѕРµРєС‚</h2>
         <form method="post" action="courses.php" id="add_course_form">
-            <p class="course-title">Название курса (рус): <input type="text" name="NameRus" id="course-rus" value="<?php echo $course["NameRus"] ?>"></p>
+            <p class="course-title">РќР°Р·РІР°РЅРёРµ РєСѓСЂСЃР° (СЂСѓСЃ): <input type="text" name="NameRus" id="course-rus" value="<?php echo $course["NameRus"] ?>"></p>
             <p class="course-title">Kursname (ger): <input type="text" name="NameGer" id="course-ger" value="<?php echo $course["NameGer"] ?>"></p>
             <p class="course-title">Course name (eng): <input type="text" name="NameEng" id="course-eng" value="<?php echo $course["NameEng"] ?>"></p>
             <div class="row">
                 <div class="col-8">
-                    <p class="course-title">Преподаватели:</p>
+                    <p class="course-title">РџСЂРµРїРѕРґР°РІР°С‚РµР»Рё:</p>
                     <ul>
                         <?php
                             foreach ($db->getTeachers() as $teacher) {
@@ -79,7 +79,7 @@ include_once "phplib/dbConnect.php";
                 <?php
                 $output = '                
                 <div class="col-2">
-                    <p class="course-title">Расписание:</p>
+                    <p class="course-title">Р Р°СЃРїРёСЃР°РЅРёРµ:</p>
                     <div class="course-icon">
                         <table>
                             <tr>
@@ -115,7 +115,7 @@ include_once "phplib/dbConnect.php";
             echo $output;
             ?>
             <input type="hidden" name="ChangeCourse" value="<?php echo$_GET['CID'] ?>">
-            <input type="submit" value="Изменить">
+            <input type="submit" value="РР·РјРµРЅРёС‚СЊ">
         </form>
     </div>
 </div>

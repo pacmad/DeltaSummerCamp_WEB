@@ -4,10 +4,12 @@ function showChange() {
     $("#add_course").removeClass('hidden');
 }
 
-// Иммитация POST-запроса
-// Взято отсюда: https://developer.mozilla.org/en-US/docs/Learn/HTML/Forms/Sending_forms_through_JavaScript
-// data - массив пар имя:дата
-// url - адрес запроса
+/* РќРµ РїРѕРЅР°РґРѕР±РёР»РѕСЃСЊ, РЅРѕ СЃРѕС…СЂР°РЅРёРј РЅР° Р±СѓРґСѓС‰РµРµ...
+
+// РРјРјРёС‚Р°С†РёСЏ POST-Р·Р°РїСЂРѕСЃР°
+// Р’Р·СЏС‚Рѕ РѕС‚СЃСЋРґР°: https://developer.mozilla.org/en-US/docs/Learn/HTML/Forms/Sending_forms_through_JavaScript
+// data - РјР°СЃСЃРёРІ РїР°СЂ РёРјСЏ:РґР°С‚Р°
+// url - Р°РґСЂРµСЃ Р·Р°РїСЂРѕСЃР°
 // Usage: onclick="postDataToUrl({test:'ok'}, 'http://www.test.com')
 function postDataToUrl(data, url) {
     var XHR = new XMLHttpRequest();
@@ -47,10 +49,11 @@ function postDataToUrl(data, url) {
 function goToTimetable(CID) {
     postDataToUrl({CID:CID}, 'timetable.php');
 }
+ */
 
 $(document).ready(function () {
 
-    // Валидация формы
+    // Р’Р°Р»РёРґР°С†РёСЏ С„РѕСЂРјС‹
     $('#add_course_form').on('submit', function (e) {
         e.preventDefault();
 
@@ -62,18 +65,18 @@ $(document).ready(function () {
             .join("");
         let teachers = $("input[type='checkbox']:checked");
         if (names === "") {
-            alert('Нет названия курса');
+            alert('РќРµС‚ РЅР°Р·РІР°РЅРёСЏ РєСѓСЂСЃР°');
             return;
         }
         if (teachers.length === 0) {
-            alert('Не выделено ни одного преподавателя');
+            alert('РќРµ РІС‹РґРµР»РµРЅРѕ РЅРё РѕРґРЅРѕРіРѕ РїСЂРµРїРѕРґР°РІР°С‚РµР»СЏ');
             return;
         }
 
         this.submit();
     });
 
-    // Изменения в таблице расписания
+    // РР·РјРµРЅРµРЅРёСЏ РІ С‚Р°Р±Р»РёС†Рµ СЂР°СЃРїРёСЃР°РЅРёСЏ
     $('#t0').on('click', function (e) {
         if (Number($('#tt0').val()) === 0) {
             $('#t0').addClass('course-icon-project');

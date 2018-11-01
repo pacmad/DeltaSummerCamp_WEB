@@ -1,15 +1,37 @@
+<!--?php header('Content-type: text/html; charset=windows-1251'); ?-->
 <!doctype html>
 <html>
 <head>
-<meta charset="windows-1251">
+<!--meta charset="windows-1251"-->
+<meta charset="UTF-8">
 <?php
 include 'phplib/yandex.metrika.php';
 include 'phplib/google.analytics.php';
 ?>
+
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="title" content="&Delta;elta - летний физико-математический лагерь в Мюнхене">
-<meta name="description" content="Международный летний детский лагерь в Мюнхене. Отдых со смыслом: математика, физика, программирование. Сроки: 16-30.07.2018. Стоимость: 750 Евро.">
-<title>&Delta;elta - летний физико-математический лагерь в Мюнхене</title>
+<?php
+if (isset($_GET['page'])) {
+    if ($_GET['page'] == 'founders') {
+        echo '<title>&Delta;elta - РѕСЂРіР°РЅРёР·Р°С‚РѕСЂС‹</title>';
+    }
+    elseif ($_GET['page'] == 'team') {
+        echo '<title>&Delta;elta - РєРѕРјР°РЅРґР°</title>';
+    }
+    elseif ($_GET['page'] == 'projects') {
+        echo '<title>&Delta;elta - РєСѓСЂСЃС‹ Рё РїСЂРѕРµРєС‚С‹</title>';
+    }
+    elseif ($_GET['page'] == 'environment') {
+        echo '<title>&Delta;elta - Р¶РёР·РЅСЊ РІ Р»Р°РіРµСЂРµ</title>';
+    }
+    elseif ($_GET['page'] == 'photos') {
+        echo '<title>&Delta;elta - С„РѕС‚РѕР°Р»СЊР±РѕРјС‹</title>';
+    }
+} else {
+    echo '<title>&Delta;elta - Р»РµС‚РЅРёР№ С„РёР·РёРєРѕ-РјР°С‚РµРјР°С‚РёС‡РµСЃРєРёР№ Р»Р°РіРµСЂСЊ РІ РњСЋРЅС…РµРЅРµ</title>';
+}
+?>
+<meta name="description" content="РњРµР¶РґСѓРЅР°СЂРѕРґРЅС‹Р№ Р»РµС‚РЅРёР№ РґРµС‚СЃРєРёР№ Р»Р°РіРµСЂСЊ РІ РњСЋРЅС…РµРЅРµ. РћС‚РґС‹С… СЃРѕ СЃРјС‹СЃР»РѕРј: РјР°С‚РµРјР°С‚РёРєР°, С„РёР·РёРєР°, РїСЂРѕРіСЂР°РјРјРёСЂРѕРІР°РЅРёРµ. РЎСЂРѕРєРё: 22 РёСЋР»СЏ - 5 Р°РІРіСѓСЃС‚Р° 2019 Рі. РЎС‚РѕРёРјРѕСЃС‚СЊ: 850 Р•РІСЂРѕ.">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link href="CSS/common.css" rel="stylesheet" type="text/css">
 <link href="CSS/index.css" rel="stylesheet" type="text/css">
@@ -26,49 +48,53 @@ require_once 'phplib/news.php';
         <div class="tooltip">
             <a href="https://www.facebook.com/Summer.Camp.Delta/" target="_blank">
             <div class="iconbox"><span class="icon fa fa-facebook"></span></div>
-            <span class="tooltiptext">Мы на Facebook</span>
+            <span class="tooltiptext">РњС‹ РЅР° Facebook</span>
             </a>
         </div>
+        <?php
+        /*
         <div class="tooltip">
             <a href="https://www.instagram.com/delta.summer.camp/" target="_blank">
             <div class="iconbox"><span class="icon fa fa-instagram"></span></div>
-            <span class="tooltiptext">Мы в Instagram</span>
+            <span class="tooltiptext">РњС‹ РІ Instagram</span>
             </a>
         </div>
+        */
+        ?>
         <div class="tooltip">
             <a href="https://vk.com/summer_camp_delta" target="_blank">
             <div class="iconbox"><span class="icon fa fa-vk"></span></div>
-            <span class="tooltiptext">Группа в ВК</span>
+            <span class="tooltiptext">Р“СЂСѓРїРїР° РІ Р’Рљ</span>
             </a>
         </div>
         <div class="tooltip">
             <a href="feedback.php">
             <div class="iconbox"><span class="icon fa fa-envelope-o"></span></div>
-            <span class="tooltiptext">Обратная связь</span>
+            <span class="tooltiptext">РћР±СЂР°С‚РЅР°СЏ СЃРІСЏР·СЊ</span>
             </a>
         </div>
         <div class="tooltip">
             <a href="feedback.php#persons">
             <div class="iconbox"><span class="icon fa fa-phone"></span></div>
-            <span class="tooltiptext">Обратная связь</span>
+            <span class="tooltiptext">РћР±СЂР°С‚РЅР°СЏ СЃРІСЏР·СЊ</span>
             </a>
         </div>
         <div class="tooltip">
             <a href="feedback.php#persons">
             <div class="iconbox"><span class="icon fa fa-skype"></span></div>
-            <span class="tooltiptext">Обратная связь</span>
+            <span class="tooltiptext">РћР±СЂР°С‚РЅР°СЏ СЃРІСЏР·СЊ</span>
             </a>
         </div>
         <div class="tooltip">
             <a href="feedback.php#persons">
             <div class="iconbox"><span class="icon fa fa-whatsapp"></span></div>
-            <span class="tooltiptext">Обратная связь</span>
+            <span class="tooltiptext">РћР±СЂР°С‚РЅР°СЏ СЃРІСЏР·СЊ</span>
             </a>
         </div>
         <div class="tooltip">
             <a href="feedback.php#persons">
             <div class="iconbox"><span class="icon fa fa-telegram"></span></div>
-            <span class="tooltiptext">Обратная связь</span>
+            <span class="tooltiptext">РћР±СЂР°С‚РЅР°СЏ СЃРІСЏР·СЊ</span>
             </a>
         </div>
     </div>
@@ -80,22 +106,22 @@ require_once 'phplib/news.php';
 <div class="bgrass">
     <div class="buttonholder">
         <a href="registration.php">
-            <div class="hot button"><p>Регистрация</p></div>
+            <div class="hot button"><p>Р РµРіРёСЃС‚СЂР°С†РёСЏ</p></div>
         </a>
         <a href="index.php?page=founders">
-            <div class="button"><p>Организаторы</p></div>
+            <div class="button"><p>РћСЂРіР°РЅРёР·Р°С‚РѕСЂС‹</p></div>
         </a>
         <a href="index.php?page=team">
-            <div class="button"><p>Преподаватели</p></div>
+            <div class="button"><p>РџСЂРµРїРѕРґР°РІР°С‚РµР»Рё</p></div>
         </a>
         <a href="index.php?page=projects">
-            <div class="button"><p>Курсы и<br>проекты</p></div>
+            <div class="button"><p>РљСѓСЂСЃС‹ Рё<br>РїСЂРѕРµРєС‚С‹</p></div>
         </a>
         <a href="index.php?page=environment">
-            <div class="button"><p>Жизнь в<br>лагере</p></div>
+            <div class="button"><p>Р–РёР·РЅСЊ РІ<br>Р»Р°РіРµСЂРµ</p></div>
         </a>
         <a href="index.php?page=photos">
-            <div class="button"><p>Фотоальбом</p></div>
+            <div class="button"><p>Р¤РѕС‚РѕР°Р»СЊР±РѕРј</p></div>
         </a>
     </div>
     <div class="news">
@@ -133,20 +159,20 @@ require_once 'phplib/news.php';
         }
         $isNext = showNewsFeed($page);
 
-        // Вывод внизу ссылок на предыдущую/следующую страницы
+        // Р’С‹РІРѕРґ РІРЅРёР·Сѓ СЃСЃС‹Р»РѕРє РЅР° РїСЂРµРґС‹РґСѓС‰СѓСЋ/СЃР»РµРґСѓСЋС‰СѓСЋ СЃС‚СЂР°РЅРёС†С‹
         echo '<div class="newsblock">';
         if ($page > 1) {
             $page--;
-            echo '<a href="index.php?page=' . $page . '">&lt; назад</a>';
+            echo '<a href="index.php?page=' . $page . '">&lt; РЅР°Р·Р°Рґ</a>';
         } else {
-            echo '<span class="inactive">&lt; назад</span>';
+            echo '<span class="inactive">&lt; РЅР°Р·Р°Рґ</span>';
         }
         echo ' | ';
         if ($isNext) {
             $page++;
-            echo '<a href="index.php?page=' . $page . '">вперёд &gt;</a>';
+            echo '<a href="index.php?page=' . $page . '">РІРїРµСЂС‘Рґ &gt;</a>';
         } else {
-            echo '<span class="inactive">вперёд &gt;</span>';
+            echo '<span class="inactive">РІРїРµСЂС‘Рґ &gt;</span>';
         }
         echo '</div>';
         ?>

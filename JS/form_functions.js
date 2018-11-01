@@ -1,44 +1,56 @@
 // JavaScript functions for registration in Delta Summer Camp '18
 
-// var startDay = new Date('2018-07-16'); - перенесено в common.js
-var MIN_AGE = 11, MAX_AGE = 18;
-var MIN_YEAR = 1950, MAX_YEAR = 2018;
+// var startDay = new Date('2018-07-16'); - РїРµСЂРµРЅРµСЃРµРЅРѕ РІ common.js
+const MIN_AGE = 11, MAX_AGE = 18;
+const MIN_YEAR = 1950, MAX_YEAR = 2019;
 
-// Вешаем обработчики событий (с проверкой IE > 9)
+// Р’РµС€Р°РµРј РѕР±СЂР°Р±РѕС‚С‡РёРєРё СЃРѕР±С‹С‚РёР№ (СЃ РїСЂРѕРІРµСЂРєРѕР№ IE > 9)
 document.addEventListener("DOMContentLoaded", function (e) {
     if (is.not.ie() || is.ie(9)) {
         bdayInput = document.getElementById("birthday");
         bdayInput.onkeydown = kdHandler;
         bdayInput.onfocus = focus;
         bdayInput.onblur = blur;
+
+
+        document.getElementById("surname").onchange = chSurname;
+        document.getElementById("name").onchange = chName;
     }
 });
 
-var focus = function(e) {
-    if (e.target.value == "") {
+const focus = function(e) {
+    if (e.target.value === "") {
         e.target.value = "__/__/____";
         setCaretPosition(e.target, 0);
     }
 };
 
-var blur = function(e) {
+const blur = function(e) {
     checkDate(e.target);
 };
 
-// Возвращает позицию курсора в текстовом поле ввода
-// Взято тут: https://stackoverflow.com/questions/10761508/change-html-textbox-overwrite-instead-of-insert-as-user-types
+const chSurname = function (e) {
+    chkRegistered(this.value ,1);
+};
+
+const chName = function (e) {
+    chkRegistered(this.value ,2);
+};
+
+// Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕР·РёС†РёСЋ РєСѓСЂСЃРѕСЂР° РІ С‚РµРєСЃС‚РѕРІРѕРј РїРѕР»Рµ РІРІРѕРґР°
+// Р’Р·СЏС‚Рѕ С‚СѓС‚: https://stackoverflow.com/questions/10761508/change-html-textbox-overwrite-instead-of-insert-as-user-types
 function getCaret(elem) {
     if (elem.selectionStart) {
         return elem.selectionStart;
     } else if (document.selection) {
         elem.focus();
 
-        var r = document.selection.createRange();
+        let r = document.selection.createRange();
         if (r == null) {
             return 0;
         }
 
-        var re = elem.createTextRange(),
+        let re = elem.createTextRange(),
             rc = re.duplicate();
         re.moveToBookmark(r.getBookmark());
         rc.setEndPoint('EndToStart', re);
@@ -48,32 +60,32 @@ function getCaret(elem) {
     return 0;
 }
 
-// Устанавливает курсор в определённую позицию текстового поля
-// Взято тут: https://stackoverflow.com/questions/10761508/change-html-textbox-overwrite-instead-of-insert-as-user-types
+// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ РєСѓСЂСЃРѕСЂ РІ РѕРїСЂРµРґРµР»С‘РЅРЅСѓСЋ РїРѕР·РёС†РёСЋ С‚РµРєСЃС‚РѕРІРѕРіРѕ РїРѕР»СЏ
+// Р’Р·СЏС‚Рѕ С‚СѓС‚: https://stackoverflow.com/questions/10761508/change-html-textbox-overwrite-instead-of-insert-as-user-types
 function setCaretPosition(elem, caretPos) {
     if (elem != null) {
         if ('selectionStart' in elem) {
             elem.focus();
             elem.setSelectionRange(caretPos, caretPos);
         } else { // IE 9-
-            var range = elem.createTextRange();
+            let range = elem.createTextRange();
             range.move('character', caretPos);
             range.select();
         }
     }
 }
 
-// Обработка ввода символов в поле Дня рождения
-// В режиме замены формирует строку даты dd/mm/yyyy
-// По следам https://stackoverflow.com/questions/10761508/change-html-textbox-overwrite-instead-of-insert-as-user-types
-var kdHandler = function (e) {
-    var key = e.key;
-    var text = e.target.value;
-    var caret = getCaret(e.target);
+// РћР±СЂР°Р±РѕС‚РєР° РІРІРѕРґР° СЃРёРјРІРѕР»РѕРІ РІ РїРѕР»Рµ Р”РЅСЏ СЂРѕР¶РґРµРЅРёСЏ
+// Р’ СЂРµР¶РёРјРµ Р·Р°РјРµРЅС‹ С„РѕСЂРјРёСЂСѓРµС‚ СЃС‚СЂРѕРєСѓ РґР°С‚С‹ dd/mm/yyyy
+// РџРѕ СЃР»РµРґР°Рј https://stackoverflow.com/questions/10761508/change-html-textbox-overwrite-instead-of-insert-as-user-types
+const kdHandler = function (e) {
+    let key = e.key;
+    let text = e.target.value;
+    let caret = getCaret(e.target);
 
-    // Для Safary и IE 8-
+    // Р”Р»СЏ Safary Рё IE 8-
     if (key === undefined) {
-        var code = e.keyCode;
+        let code = e.keyCode;
         switch (code) {
             case 37:
                 key = "ArrowLeft";
@@ -120,9 +132,9 @@ var kdHandler = function (e) {
         }
     }
 
-    // 1. Убираем разделители и корректируем положение курсора
-    var parts = text.match(/[\d_]+/g);
-    var i;
+    // 1. РЈР±РёСЂР°РµРј СЂР°Р·РґРµР»РёС‚РµР»Рё Рё РєРѕСЂСЂРµРєС‚РёСЂСѓРµРј РїРѕР»РѕР¶РµРЅРёРµ РєСѓСЂСЃРѕСЂР°
+    let parts = text.match(/[\d_]+/g);
+    let i;
 
     text = "";
     for (i = 0; i < parts.length; ++i) {
@@ -133,18 +145,18 @@ var kdHandler = function (e) {
     } else if (caret > 2) {
         caret--;
     }
-    var output = text; // то, что потом выводим
+    let output = text; // С‚Рѕ, С‡С‚Рѕ РїРѕС‚РѕРј РІС‹РІРѕРґРёРј
 
-    // 2. Анализ введённого символа
-    // 2.1 Если нажата цифра - вводим её в режиме замены
+    // 2. РђРЅР°Р»РёР· РІРІРµРґС‘РЅРЅРѕРіРѕ СЃРёРјРІРѕР»Р°
+    // 2.1 Р•СЃР»Рё РЅР°Р¶Р°С‚Р° С†РёС„СЂР° - РІРІРѕРґРёРј РµС‘ РІ СЂРµР¶РёРјРµ Р·Р°РјРµРЅС‹
     if (/[0-9]/.test(key)) {
         output = text.substring(0, caret);
-        // 2.1.1 Если цифра на нулевой позиции и > 3 - переделываем день в '0x'
+        // 2.1.1 Р•СЃР»Рё С†РёС„СЂР° РЅР° РЅСѓР»РµРІРѕР№ РїРѕР·РёС†РёРё Рё > 3 - РїРµСЂРµРґРµР»С‹РІР°РµРј РґРµРЅСЊ РІ '0x'
         if (caret == 0 && key > 3) {
             caret = 2;
             output = '0' + key + text.substring(caret);
         }
-        // 2.1.2 Если цифра на позиции 2 и > 1 - переделываем месяц в '0x'
+        // 2.1.2 Р•СЃР»Рё С†РёС„СЂР° РЅР° РїРѕР·РёС†РёРё 2 Рё > 1 - РїРµСЂРµРґРµР»С‹РІР°РµРј РјРµСЃСЏС† РІ '0x'
         else if (caret == 2 && key > 1) {
             caret = 4;
             output += '0' + key + text.substring(caret);
@@ -154,7 +166,7 @@ var kdHandler = function (e) {
         }
     }
 
-    // 2.2 Если нажат разделитель - анализируем день и месяц: если введена лишь первая цифра, ставим перед ней "0"
+    // 2.2 Р•СЃР»Рё РЅР°Р¶Р°С‚ СЂР°Р·РґРµР»РёС‚РµР»СЊ - Р°РЅР°Р»РёР·РёСЂСѓРµРј РґРµРЅСЊ Рё РјРµСЃСЏС†: РµСЃР»Рё РІРІРµРґРµРЅР° Р»РёС€СЊ РїРµСЂРІР°СЏ С†РёС„СЂР°, СЃС‚Р°РІРёРј РїРµСЂРµРґ РЅРµР№ "0"
     else if (/[\/\-\.]/.test(key) || key == "Divide" || key == "Substract" || key == "Decimal") {
         if (caret == 1) {
             output = '0' + text.substring(0, 1) + text.substring(2);
@@ -166,42 +178,42 @@ var kdHandler = function (e) {
 
     }
 
-    // 2.3 Если нажата стрелка влево - переводим курсор влево, если не на нулевой позиции
+    // 2.3 Р•СЃР»Рё РЅР°Р¶Р°С‚Р° СЃС‚СЂРµР»РєР° РІР»РµРІРѕ - РїРµСЂРµРІРѕРґРёРј РєСѓСЂСЃРѕСЂ РІР»РµРІРѕ, РµСЃР»Рё РЅРµ РЅР° РЅСѓР»РµРІРѕР№ РїРѕР·РёС†РёРё
     else if ((key == "ArrowLeft" || key == "Left") && caret > 0) {
         caret--;
     }
 
-    // 2.4 Если нажата стрелка вправо - преводим курсор вправо, если не в конце строки
+    // 2.4 Р•СЃР»Рё РЅР°Р¶Р°С‚Р° СЃС‚СЂРµР»РєР° РІРїСЂР°РІРѕ - РїСЂРµРІРѕРґРёРј РєСѓСЂСЃРѕСЂ РІРїСЂР°РІРѕ, РµСЃР»Рё РЅРµ РІ РєРѕРЅС†Рµ СЃС‚СЂРѕРєРё
     else if ((key == "ArrowRight" || key == "Right") && caret < 8) {
         caret++;
     }
 
-    // 2.3.1 Если нажата кнопка 'Home' - переводим курсор влево в нулевую позицию
+    // 2.3.1 Р•СЃР»Рё РЅР°Р¶Р°С‚Р° РєРЅРѕРїРєР° 'Home' - РїРµСЂРµРІРѕРґРёРј РєСѓСЂСЃРѕСЂ РІР»РµРІРѕ РІ РЅСѓР»РµРІСѓСЋ РїРѕР·РёС†РёСЋ
     else if (key == "Home") {
         caret = 0;
     }
 
-    // 2.4.1 Если нажата кнопка 'End' - преводим курсор вправо в 8-ю позицию
+    // 2.4.1 Р•СЃР»Рё РЅР°Р¶Р°С‚Р° РєРЅРѕРїРєР° 'End' - РїСЂРµРІРѕРґРёРј РєСѓСЂСЃРѕСЂ РІРїСЂР°РІРѕ РІ 8-СЋ РїРѕР·РёС†РёСЋ
     else if (key == "End") {
         caret = 8;
     }
 
-    // 2.5 Если нажата клавиша "забой" - заменяем текущий сивол на "_" и сдвигаем курсор влево, если не на нулевой позиции
+    // 2.5 Р•СЃР»Рё РЅР°Р¶Р°С‚Р° РєР»Р°РІРёС€Р° "Р·Р°Р±РѕР№" - Р·Р°РјРµРЅСЏРµРј С‚РµРєСѓС‰РёР№ СЃРёРІРѕР» РЅР° "_" Рё СЃРґРІРёРіР°РµРј РєСѓСЂСЃРѕСЂ РІР»РµРІРѕ, РµСЃР»Рё РЅРµ РЅР° РЅСѓР»РµРІРѕР№ РїРѕР·РёС†РёРё
     else if (key == "Backspace" && caret > 0) {
         caret--;
         output = text.substring(0, caret) + "_" + text.substring(caret+1);
     }
 
-    // 2.6 Если нажата клавиша "Del" - заменяем текущий символ на "_"
+    // 2.6 Р•СЃР»Рё РЅР°Р¶Р°С‚Р° РєР»Р°РІРёС€Р° "Del" - Р·Р°РјРµРЅСЏРµРј С‚РµРєСѓС‰РёР№ СЃРёРјРІРѕР» РЅР° "_"
     else if (key == "Del" || key == "Delete") {
         output = text.substring(0, caret) + "_" + text.substring(caret+1);
     }
 
-    // 2.7 Если нажаты клавишы "Tab", "Shift-Tab" или "Enter" - причёсываем и возвращаем true
+    // 2.7 Р•СЃР»Рё РЅР°Р¶Р°С‚С‹ РєР»Р°РІРёС€С‹ "Tab", "Shift-Tab" РёР»Рё "Enter" - РїСЂРёС‡С‘СЃС‹РІР°РµРј Рё РІРѕР·РІСЂР°С‰Р°РµРј true
     else if (key == "Enter" || key == "Tab") {
         return true;
     }
-    // 3. Восстанавливаем разделители и корректируем положение курсора
+    // 3. Р’РѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµРј СЂР°Р·РґРµР»РёС‚РµР»Рё Рё РєРѕСЂСЂРµРєС‚РёСЂСѓРµРј РїРѕР»РѕР¶РµРЅРёРµ РєСѓСЂСЃРѕСЂР°
     output = output.substring(0, 2) + "/" + output.substring(2, 4) + "/" + output.substring(4);
     if (caret > 3) {
         caret += 2;
@@ -216,44 +228,44 @@ var kdHandler = function (e) {
     return false;
 };
 
-// Проверка на корректность даты
+// РџСЂРѕРІРµСЂРєР° РЅР° РєРѕСЂСЂРµРєС‚РЅРѕСЃС‚СЊ РґР°С‚С‹
 // @param input field with date value
-// Взято отсюда: https://javascript.ru/forum/events/29223-validnost-daty.html
+// Р’Р·СЏС‚Рѕ РѕС‚СЃСЋРґР°: https://javascript.ru/forum/events/29223-validnost-daty.html
 function checkDate(dateInput) {
-    var input = dateInput.value.match(/\d+/g);
-    var error =  false;
+    let input = dateInput.value.match(/\d+/g);
+    let error =  false;
 
-    if (input.length != 3) {
+    if (input.length !== 3) {
         error = true;
     }
 
     if (!error) {
-        // Для извращенцев, написавших год одной или двумя цифрами
-        if (input[2] < 10) {
+        // Р”Р»СЏ РёР·РІСЂР°С‰РµРЅС†РµРІ, РЅР°РїРёСЃР°РІС€РёС… РіРѕРґ РѕРґРЅРѕР№ РёР»Рё РґРІСѓРјСЏ С†РёС„СЂР°РјРё
+        if (input[2].length === 1 && input[2] < 10) {
             input[2] = '200' + input[2];
         } else if (input[2] < 50) {
             input[2] = '20' + input[2];
         } else if (input[2] < 100) {
             input[2] = '19' + input[2];
         }
-        var date = new Date(input[2], input[1] - 1, input[0]);
+        let date = new Date(input[2], input[1] - 1, input[0]);
         if (date.getFullYear() != input[2] || date.getDate() != input[0] || date.getMonth() != input[1] - 1) {
             error = true;
-        } else { // Если смогли дату распознать, строим канонический вид даты dd/mm/yyyy и помещаем его в поле формы
+        } else { // Р•СЃР»Рё СЃРјРѕРіР»Рё РґР°С‚Сѓ СЂР°СЃРїРѕР·РЅР°С‚СЊ, СЃС‚СЂРѕРёРј РєР°РЅРѕРЅРёС‡РµСЃРєРёР№ РІРёРґ РґР°С‚С‹ dd/mm/yyyy Рё РїРѕРјРµС‰Р°РµРј РµРіРѕ РІ РїРѕР»Рµ С„РѕСЂРјС‹
             dateInput.value = ('0' + input[0]).slice(-2) + '/' + ('0' + input[1]).slice(-2) + '/' + input[2];
         }
 
         if (!error && input[2] > MIN_YEAR && input[2] < MAX_YEAR) {
             dateInput.style.border = "solid 1px gray";
             document.getElementById("date_error").classList.remove("showed");
-            var childAge = age(date, startDay);
+            let childAge = age(date, startDay);
             if (childAge < MIN_AGE || childAge > MAX_AGE) {
                 document.getElementById("age").style.color = 'red';
             } else {
                 document.getElementById("age").style.color = '';
             }
-            document.getElementById("age").innerHTML = "<br>Возраст на начало лагеря: " + childAge;
-            document.getElementById("ALL_DONE").value = "Ok";
+            document.getElementById("age").innerHTML = "<br>Р’РѕР·СЂР°СЃС‚ РЅР° РЅР°С‡Р°Р»Рѕ Р»Р°РіРµСЂСЏ: " + childAge;
+            chkRegistered(dateInput.value ,4); // РџСЂРѕРІРµСЂРєР° РЅР° РїСЂРѕС€Р»СѓСЋ СЂРµРіРёСЃС‚СЂР°С†РёСЋ
         } else {
             error = true;
         }
@@ -264,62 +276,203 @@ function checkDate(dateInput) {
             document.getElementById("age").innerHTML = "";
             document.getElementById("date_error").classList.add("showed");
             document.getElementById("ALL_DONE").value = "Error";
+            chkRegistered("", 4);
     }
 
     return error;
 }
 
-// Проверка на правильность заполнения формы перед отправкой
-// Специально для браузеров, не поддерживающих HTML5!
+// decode html text into html entity
+// from https://gist.github.com/CatTail/4174511
+function decodeHtmlEntity(str) {
+    return str.replace(/&#(\d+);/g, function(match, dec) {
+        return String.fromCharCode(dec);
+    });
+}
+
+// РџСЂРѕРІРµСЂРєР° СѓР¶Рµ Р·Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅРЅРѕРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.
+// Р¤СѓРЅРєС†РёСЏ РІС‹Р·С‹РІР°РµС‚СЃСЏ РєР°Р¶РґС‹Р№ СЂР°Р·, РєРѕРіРґР° Р·Р°РїРѕР»РЅСЏСЋС‚СЃСЏ РїРѕР»СЏ Р¤Р°РјРёР»РёСЏ (1), РРјСЏ (2), Рё Р”Р°С‚Р°_СЂРѕР¶РґРµРЅРёСЏ (4)
+// Р•СЃР»Рё РїРѕР»СЏ Р·Р°РїРѕР»РЅРµРЅС‹, РґРµР»Р°РµС‚СЃСЏ Р·Р°РїСЂРѕСЃ РІ Р±Р°Р·Сѓ РІСЃРµС… СЂРµРіРёСЃС‚СЂР°С†РёР№ Рё, РµСЃР»Рё СЂРµРіРёСЃС‚СЂР°С†РёСЏ СѓР¶Рµ Р±С‹Р»Р°, РѕСЃС‚Р°Р»СЊРЅС‹Рµ РїРѕР»СЏ
+// Р·Р°РїРѕР»РЅСЏСЋС‚СЃСЏ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё.
+// РўР°Рє РєР°Рє РїРѕР»Рµ "РѕС‚С‡РµСЃС‚РІРѕ" РЅРµ СЏРІР»СЏРµС‚СЃСЏ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рј, РјС‹ РЅРµ РїСЂРѕРІРµСЂСЏРµРј РµРіРѕ Р·Р°РїРѕР»РЅРµРЅРЅРѕСЃС‚СЊ.
+let flagUID = 0;
+function chkRegistered(value, flag) {
+    if (value !== "") {flagUID |= flag;}
+    else {flagUID &= ~flag;}
+
+    if (flagUID === 7 && document.getElementById("ALL_DONE").value !== "Checking") {
+        let name = document.getElementById("name").value;
+        let surname = document.getElementById("surname").value;
+        let middleName = document.getElementById("middlename").value;
+        let birthday = document.getElementById("birthday").value;
+
+        // Р—Р°РїСЂРѕСЃ РЅР° СЃРµСЂРІРµСЂ
+        let xhttp = new XMLHttpRequest();
+
+        xhttp.onreadystatechange = function () {
+            if (this.readyState === 4) {
+                if (this.status === 200) { // Р—Р°РїРёСЃСЊ РµСЃС‚СЊ РІ СЃС‚Р°СЂРѕР№ Р±Р°Р·Рµ СЂРµРіРёСЃС‚СЂР°С†РёР№
+
+                    let message = document.getElementById("known");
+                    message.innerHTML = "РЎ РІРѕР·РІСЂР°С‰РµРЅРёРµРј, РјС‹ РІР°СЃ СѓР·РЅР°Р»Рё!";
+                    message.classList.add("highlighted");
+                    message.style.fontSize = "x-large";
+
+                    let person = this.response;
+
+                    // Р—Р°РїРѕР»РЅСЏРµРј РЅРµР·Р°РїРѕР»РЅРµРЅРЅС‹Рµ РїРѕР»СЏ С„РѕСЂРјС‹ СЂРµРіРёСЃС‚СЂР°С†РёРё
+                    if (document.getElementById("email").value === "") document.getElementById("email").value = person["Email"];
+                    if (document.getElementById("tel").value === "") document.getElementById("tel").value = person["Tel"];
+                    if (document.getElementById("school").value === "") document.getElementById("school").value = person["School"];
+                    if (document.getElementById("city").value === "") document.getElementById("city").value = person["City"];
+                    if (document.getElementById("country").value === "") document.getElementById("country").value = person["Country"];
+                    if (document.getElementById("langs").value === "СЂСѓСЃСЃРєРёР№") document.getElementById("langs").value = person["Languages"];
+                    if (document.getElementById("notes").value === "") document.getElementById("notes").value = person["Notes"];
+
+                    // РџРѕРјРµС‡Р°РµРј РїСЂР°РІРёР»СЊРЅРѕ РїРѕР»
+                    if (person["Gender"] === "f") {
+                        document.getElementById("female").setAttribute("checked", "checked");
+                    } else {
+                        document.getElementById("male").setAttribute("checked", "checked");
+                    }
+
+
+                    // Р”РѕР±Р°РІР»СЏРµРј РїРѕР»СЏ Р°РЅРєРµС‚С‹
+                    let form = document.getElementById("form");
+                    // OwnTel
+                    if (document.getElementsByName("ownTel").length === 0) {
+                        let input = document.createElement("input");
+                        input.setAttribute("name", "ownTel");
+                        input.setAttribute("type", "hidden");
+                        input.setAttribute("value", person["OwnTel"]);
+                        form.appendChild(input);
+                    }
+                    // CertLang
+                    if (document.getElementsByName("certLang").length === 0) {
+                        input = document.createElement("input");
+                        input.setAttribute("name", "certLang");
+                        input.setAttribute("type", "hidden");
+                        input.setAttribute("value", person["CertLang"]);
+                        form.appendChild(input);
+                    }
+                    // CertName - РґРµРєРѕРґРёСЂСѓРµРј, С‚.Рє. С‚РµРїРµСЂСЊ РІСЃС‘ РІ UTF-8
+                    if (document.getElementsByName("certName").length === 0) {
+                        input = document.createElement("input");
+                        input.setAttribute("name", "certName");
+                        input.setAttribute("type", "hidden");
+                        input.setAttribute("value", decodeHtmlEntity(person["CertName"]));
+                        form.appendChild(input);
+                    }
+                    // Health
+                    if (document.getElementsByName("health").length === 0) {
+                        input = document.createElement("input");
+                        input.setAttribute("name", "health");
+                        input.setAttribute("type", "hidden");
+                        input.setAttribute("value", person["Health"]);
+                        form.appendChild(input);
+                    }
+                    // Insurance
+                    if (document.getElementsByName("insurance").length === 0) {
+                        input = document.createElement("input");
+                        input.setAttribute("name", "insurance");
+                        input.setAttribute("type", "hidden");
+                        input.setAttribute("value", person["Insurance"]);
+                        form.appendChild(input);
+                    }
+                    // NotesText
+                    if (document.getElementsByName("notesText").length === 0) {
+                        input = document.createElement("input");
+                        input.setAttribute("name", "notesText");
+                        input.setAttribute("type", "hidden");
+                        input.setAttribute("value", person["NotesText"]);
+                        form.appendChild(input);
+                    }
+                    // Visa
+                    if (document.getElementsByName("visa").length === 0) {
+                        input = document.createElement("input");
+                        input.setAttribute("name", "visa");
+                        input.setAttribute("type", "hidden");
+                        input.setAttribute("value", person["Visa"]);
+                        form.appendChild(input);
+                    }
+                    // Notebook
+                    if (document.getElementsByName("notebook").length === 0) {
+                        input = document.createElement("input");
+                        input.setAttribute("name", "notebook");
+                        input.setAttribute("type", "hidden");
+                        input.setAttribute("value", person["Notebook"]);
+                        form.appendChild(input);
+                    }
+                    // Shirt
+                    if (document.getElementsByName("shirt").length === 0) {
+                        input = document.createElement("input");
+                        input.setAttribute("name", "shirt");
+                        input.setAttribute("type", "hidden");
+                        input.setAttribute("value", person["Shirt"]);
+                        form.appendChild(input);
+                    }
+
+                    // РџРѕРјРµС‡Р°РµРј С„РѕСЂРјСѓ
+                    document.getElementById("ALL_DONE").value = "Old";
+                } else { // РќРѕРІР°СЏ СЂРµРіРёСЃС‚СЂР°С†РёСЏ
+                    person = false;
+                }
+            }
+        };
+
+        xhttp.open("POST", "registration.php", true);
+        xhttp.responseType = 'json';
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhttp.send("ALL_DONE=Check&surname=" + surname + "&name=" + name + "&middlename=" + middleName + "&birthday=" + birthday );
+    }
+}
+
+// РџСЂРѕРІРµСЂРєР° РЅР° РїСЂР°РІРёР»СЊРЅРѕСЃС‚СЊ Р·Р°РїРѕР»РЅРµРЅРёСЏ С„РѕСЂРјС‹ РїРµСЂРµРґ РѕС‚РїСЂР°РІРєРѕР№
+// РЎРїРµС†РёР°Р»СЊРЅРѕ РґР»СЏ Р±СЂР°СѓР·РµСЂРѕРІ, РЅРµ РїРѕРґРґРµСЂР¶РёРІР°СЋС‰РёС… HTML5!
 function checkForm() {
-    var result = true;
-    var i, formInputs = document.getElementsByTagName("input");
-    var gdr = false; // Пол определён
-    var agreed = false; // Дано согласие на обработку данных
-    for (i = 0; i < formInputs.length; i++ ) {
-        var inpt = formInputs[i];
-        inpt.style.border = "thin solid green";
-        document.getElementById("gender").style.paddingLeft = "10px";
-        document.getElementById("gender").style.border = "thin solid green";
+    flagUID = 0; // Р—Р°РїСЂРµС‰Р°РµРј AJAX-Р·Р°РїСЂРѕСЃС‹
+    let result = true;
+    let i, formInputs = document.getElementsByTagName("input");
 
-        if (inpt.required && (inpt.type === "text" || inpt.type === "email" || inpt.type === "tel") &&
-            inpt.value === "") {
-            inpt.style.border = "thin solid red";
-            result = false;
-        }
-        // проверка правильности даты
-        if (checkDate(document.getElementById("birthday"))) {
-            result = false;
-        }
+    for (i = 0; i < formInputs.length; i++ ) { // РџСЂРѕРІРµСЂРєР° РѕР±СЏР·Р°С‚РµР»СЊРЅС‹С… РїРѕР»РµР№ С‚РёРїР° input
+        let input = formInputs[i];
+        input.style.border = "thin solid green";
 
-        // проверка определённости пола и согласия
-        else if (inpt.required && inpt.type === "radio" && inpt.checked) {
-            gdr = true;
-        }
-        else if (inpt.type === "checkbox" && inpt.value === "agree" && inpt.checked) {
-            agreed = true;
+        if (input.required && (input.type === "text" || input.type === "email" || input.type === "tel") &&
+                input.value === "") {
+            input.style.border = "thin solid red";
+            result = false;
         }
     }
-    if (!gdr) {
+    // РїСЂРѕРІРµСЂРєР° РїСЂР°РІРёР»СЊРЅРѕСЃС‚Рё РґР°С‚С‹
+    if (checkDate(document.getElementById("birthday"))) {
+        result = false;
+    }
+
+    // РїСЂРѕРІРµСЂРєР° РѕРїСЂРµРґРµР»С‘РЅРЅРѕСЃС‚Рё РїРѕР»Р°
+    if (document.getElementById("female").checked || document.getElementById("male").checked) {
+        document.getElementById("gender").style.paddingLeft = "10px";
+        document.getElementById("gender").style.border = "thin solid green";
+    } else {
+        document.getElementById("gender").style.paddingLeft = "10px";
         document.getElementById("gender").style.border = "thin solid red";
         result = false;
     }
-    if (!agreed) {
-        document.getElementById("agree").style.border = "thin solid red";
-        result = false;
+
+    // РїСЂРѕРІРµСЂРєР° РѕС‚РјРµС‚РєРё СЃРѕРіР»Р°СЃРёСЏ РЅР° РѕР±СЂР°Р±РѕС‚РєСѓ РґР°РЅРЅС‹С…
+    if (document.getElementById("agree").checked) {
+        document.getElementById("agree_box").style.border = "thin solid green";
     } else {
-        document.getElementById("agree").style.border = "thin solid green";
-        result = true;
+        document.getElementById("agree_box").style.border = "thick solid red";
+        result = false;
     }
 
     if (!result) {
-        alert("Обязательное поле не заполнено!");
+        alert("РћР±СЏР·Р°С‚РµР»СЊРЅРѕРµ РїРѕР»Рµ РЅРµ Р·Р°РїРѕР»РЅРµРЅРѕ!");
     }
     if (result) {
-        document.getElementById("ALL_DONE").value = "Ok";
-    }
-    else {
-        document.getElementById("ALL_DONE").value = "Error";
+        if (document.getElementById("ALL_DONE").value !== "Old")
+            document.getElementById("ALL_DONE").value = "Ok";
     }
     return result;
 }

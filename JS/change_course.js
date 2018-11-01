@@ -10,18 +10,18 @@ $(document).ready(function () {
             .join("");
         let teachers = $("input[type='checkbox']:checked");
         if (names === "") {
-            alert('Нет названия курса');
-            return;
+            if(!confirm('РќРµС‚ РЅР°Р·РІР°РЅРёСЏ РєСѓСЂСЃР°. РЈРґР°Р»РёС‚СЊ РєСѓСЂСЃ?'))
+                return;
         }
         if (teachers.length === 0) {
-            alert('Не выделено ни одного преподавателя');
+            alert('РќРµ РІС‹РґРµР»РµРЅРѕ РЅРё РѕРґРЅРѕРіРѕ РїСЂРµРїРѕРґР°РІР°С‚РµР»СЏ');
             return;
         }
 
         this.submit();
     });
 
-    // Изменения в таблице расписания
+    // РР·РјРµРЅРµРЅРёСЏ РІ С‚Р°Р±Р»РёС†Рµ СЂР°СЃРїРёСЃР°РЅРёСЏ
     $('#t0').on('click', function (e) {
         if (Number($('#tt0').val()) === 0) {
             $('#t0').addClass('course-icon-project');

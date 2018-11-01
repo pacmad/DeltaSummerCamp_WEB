@@ -7,15 +7,12 @@
  */
 ?>
 <div class="newsblock">
-    <h1>Фотогалерея</h1>
-    <p>В данный момент этот раздел находится в разработке.</p>
-    <p>Фотографии прошлых лет можно посмотреть на наших страничках в соцсетях:</p>
+    <h1>Р¤РѕС‚РѕРіР°Р»РµСЂРµСЏ</h1>
+    <p>Р’ РґР°РЅРЅС‹Р№ РјРѕРјРµРЅС‚ СЌС‚РѕС‚ СЂР°Р·РґРµР» РЅР°С…РѕРґРёС‚СЃСЏ РІ СЂР°Р·СЂР°Р±РѕС‚РєРµ.</p>
+    <p>Р¤РѕС‚РѕРіСЂР°С„РёРё РїСЂРѕС€Р»С‹С… Р»РµС‚ РјРѕР¶РЅРѕ РїРѕСЃРјРѕС‚СЂРµС‚СЊ РЅР° РЅР°С€РёС… СЃС‚СЂР°РЅРёС‡РєР°С… РІ СЃРѕС†СЃРµС‚СЏС…:</p>
     <div class="icons big">
         <a href="https://www.facebook.com/pg/Summer.Camp.Delta/photos/?tab=albums" target="_blank">
             <div class="iconbox big"><span class="icon big fa fa-facebook"></span></div>
-        </a>
-        <a href="https://www.instagram.com/delta.summer.camp/" target="_blank">
-            <div class="iconbox big"><span class="icon big fa fa-instagram"></span></div>
         </a>
         <a href="https://vk.com/albums-144523711" target="_blank">
             <div class="iconbox big"><span class="icon big fa fa-vk"></span></div>

@@ -13,6 +13,6 @@ if (isset($_POST["UID"]) && $_POST["UID"] != null) {
 }
 if ($result == 1) {
     http_response_code(201); // Created
-    $db->dbLog("Ïàðîëü àäìèíèñòðàòîðà óñòàíîâëåí", $_POST['UID']);
+    $db->dbLog("ÐŸÐ°Ñ€Ð¾Ð»ÑŒ Ð°Ð´Ð¼Ð¸Ð½Ð¸ÑÑ‚Ñ€Ð°Ñ‚Ð¾Ñ€Ð° ÑƒÑÑ‚Ð°Ð½Ð¾Ð²Ð»ÐµÐ½", $_POST['UID']);
 }
 ?>

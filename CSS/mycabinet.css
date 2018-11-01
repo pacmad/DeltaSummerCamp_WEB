@@ -45,6 +45,9 @@ h2 {
 	border: 1px solid darkgrey;
 	box-shadow: 2px 3px grey;
 }
+.highlighted {
+    color: orange;
+}
 .form-title {
     display: inline-block;
     position: relative;

@@ -1,24 +1,18 @@
 /*
- *  Личный кабинет
+ *  Р›РёС‡РЅС‹Р№ РєР°Р±РёРЅРµС‚
  */
-// Установка пользователю UID флага 'status' в значение 2
+// РЈСЃС‚Р°РЅРѕРІРєР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЋ UID С„Р»Р°РіР° 'status' РІ Р·РЅР°С‡РµРЅРёРµ 2
 function setDateWorkSent(UID) {
-	var xhttp = new XMLHttpRequest();
+	let xhttp = new XMLHttpRequest();
 	xhttp.open("GET", "mycabinet.php?id=" + UID + "&SetStatus=2", true);
 	xhttp.send();
 }
 
-// encode(decode) html text into html entity
+// encode html text into html entity
 // from https://gist.github.com/CatTail/4174511
-var decodeHtmlEntity = function(str) {
-    return str.replace(/&#(\d+);/g, function(match, dec) {
-        return String.fromCharCode(dec);
-    });
-};
-
-var encodeHtmlEntity = function(str) {
-    var buf = [];
-    for (var i=str.length-1;i>=0;i--) {
+const encodeHtmlEntity = function(str) {
+    let buf = [];
+    for (let i=str.length-1;i>=0;i--) {
         buf.unshift(['&#', str[i].charCodeAt(), ';'].join(''));
     }
     return buf.join('');
@@ -27,7 +21,7 @@ var encodeHtmlEntity = function(str) {
 
 $(document).ready(function () {
 
-    $("#fileuploader").uploadFile({ //Подключение библиотеки jquery.uploadfile.js
+    $("#fileuploader").uploadFile({ //РџРѕРґРєР»СЋС‡РµРЅРёРµ Р±РёР±Р»РёРѕС‚РµРєРё jquery.uploadfile.js
 
         fileName: "file",
         sequential: true,
@@ -37,7 +31,7 @@ $(document).ready(function () {
         uploadButtonClass: "uploader"
     });
 
-    $("#imguploader").uploadFile({ // Подключаем библиотеку jquery.uploadfile.js для загрузки фото
+    $("#imguploader").uploadFile({ // РџРѕРґРєР»СЋС‡Р°РµРј Р±РёР±Р»РёРѕС‚РµРєСѓ jquery.uploadfile.js РґР»СЏ Р·Р°РіСЂСѓР·РєРё С„РѕС‚Рѕ
         fileName: "file",
         multiple: false,
         maxFileCount: 1,
@@ -50,11 +44,11 @@ $(document).ready(function () {
     });
 
     /*
-        Обработка подсветки элемента для передачи файлов при отсылке решений олимпиады
-        .ajax-upload-dragdrop определяется в библиотеке jquery.uploadfile.js
+        РћР±СЂР°Р±РѕС‚РєР° РїРѕРґСЃРІРµС‚РєРё СЌР»РµРјРµРЅС‚Р° РґР»СЏ РїРµСЂРµРґР°С‡Рё С„Р°Р№Р»РѕРІ РїСЂРё РѕС‚СЃС‹Р»РєРµ СЂРµС€РµРЅРёР№ РѕР»РёРјРїРёР°РґС‹
+        .ajax-upload-dragdrop РѕРїСЂРµРґРµР»СЏРµС‚СЃСЏ РІ Р±РёР±Р»РёРѕС‚РµРєРµ jquery.uploadfile.js
      */
 
-	var dropZone = $('.ajax-upload-dragdrop');
+	const dropZone = $('.ajax-upload-dragdrop');
 
 	dropZone[0].ondragover = function () {
         dropZone.addClass('hover');
@@ -74,7 +68,7 @@ $(document).ready(function () {
 
 /*
 
-	Функции заполнения анкеты
+	Р¤СѓРЅРєС†РёРё Р·Р°РїРѕР»РЅРµРЅРёСЏ Р°РЅРєРµС‚С‹
 
  */
 	$("#btnOwnTel").hide();
@@ -94,7 +88,7 @@ $(document).ready(function () {
 
 /*
 
-    Блок личного телефонного номера
+    Р‘Р»РѕРє Р»РёС‡РЅРѕРіРѕ С‚РµР»РµС„РѕРЅРЅРѕРіРѕ РЅРѕРјРµСЂР°
 
  */
     let ownTelTimer = 0;
@@ -124,12 +118,12 @@ $(document).ready(function () {
 
 /*
 
-    Блок детали поездки туда
+    Р‘Р»РѕРє РґРµС‚Р°Р»Рё РїРѕРµР·РґРєРё С‚СѓРґР°
 
  */
     let comeInTimer = 0;
     let comeInOptions = {
-        beforeSubmit: function (arr, $form, options) { // Необходимо передать значения тех полей, которые могут быть disabled
+        beforeSubmit: function (arr, $form, options) { // РќРµРѕР±С…РѕРґРёРјРѕ РїРµСЂРµРґР°С‚СЊ Р·РЅР°С‡РµРЅРёСЏ С‚РµС… РїРѕР»РµР№, РєРѕС‚РѕСЂС‹Рµ РјРѕРіСѓС‚ Р±С‹С‚СЊ disabled
             arr.push(
                 {
                     name: "comingDate",
@@ -174,12 +168,12 @@ $(document).ready(function () {
         if (this.value === "DimaAnya") {
             $("#comingDate").val("15/07/2018").attr('disabled', 'disabled');
             $("#comingTime").val("13:15").attr('disabled', 'disabled');
-            $("#comingPlace").append(new Option('Аэропорт "Домодедово"', 'DME', false, true)).attr('disabled', 'disabled');
+            $("#comingPlace").append(new Option('РђСЌСЂРѕРїРѕСЂС‚ "Р”РѕРјРѕРґРµРґРѕРІРѕ"', 'DME', false, true)).attr('disabled', 'disabled');
             $("#comingFlight").val("LH2529").attr('disabled', 'disabled');
         } else if (this.value === "Dubeniuk") {
             $("#comingDate").val("16/07/2018").attr('disabled', 'disabled');
             $("#comingTime").val("7:30").attr('disabled', 'disabled');
-            $("#comingPlace").append(new Option('Аэропорт "Внуково"', 'VKO', false, true)).attr('disabled', 'disabled');
+            $("#comingPlace").append(new Option('РђСЌСЂРѕРїРѕСЂС‚ "Р’РЅСѓРєРѕРІРѕ"', 'VKO', false, true)).attr('disabled', 'disabled');
             $("#comingFlight").val("UT799").attr('disabled', 'disabled');
         } else if (this.value === "WithParents") {
             $("#comingDate").val("16/07/2018").removeAttr('disabled');
@@ -245,12 +239,12 @@ $(document).ready(function () {
 
 /*
 
-    Блок деталей поездки обратно
+    Р‘Р»РѕРє РґРµС‚Р°Р»РµР№ РїРѕРµР·РґРєРё РѕР±СЂР°С‚РЅРѕ
 
  */
     let leaveOutTimer = 0;
     let leaveOutOptions = {
-        beforeSubmit: function (arr, $form, options) { // Необходимо передать значения тех полей, которые могут быть disabled
+        beforeSubmit: function (arr, $form, options) { // РќРµРѕР±С…РѕРґРёРјРѕ РїРµСЂРµРґР°С‚СЊ Р·РЅР°С‡РµРЅРёСЏ С‚РµС… РїРѕР»РµР№, РєРѕС‚РѕСЂС‹Рµ РјРѕРіСѓС‚ Р±С‹С‚СЊ disabled
             arr.push(
                 {
                     name: "leavingDate",
@@ -295,12 +289,12 @@ $(document).ready(function () {
         if (this.value === "DimaAnya") {
             $("#leavingDate").val("30/07/2018").attr('disabled', 'disabled');
             $("#leavingTime").val("23:55").attr('disabled', 'disabled');
-            $("#leavingPlace").append(new Option('Аэропорт "Домодедово"', 'DME', false, true)).attr('disabled', 'disabled');
+            $("#leavingPlace").append(new Option('РђСЌСЂРѕРїРѕСЂС‚ "Р”РѕРјРѕРґРµРґРѕРІРѕ"', 'DME', false, true)).attr('disabled', 'disabled');
             $("#leavingFlight").val("LH2530").attr('disabled', 'disabled');
         } else if (this.value === "Dubeniuk") {
             $("#leavingDate").val("30/07/2018").attr('disabled', 'disabled');
             $("#leavingTime").val("17:40").attr('disabled', 'disabled');
-            $("#leavingPlace").append(new Option('Аэропорт "Внуково"', 'VKO', false, true)).attr('disabled', 'disabled');
+            $("#leavingPlace").append(new Option('РђСЌСЂРѕРїРѕСЂС‚ "Р’РЅСѓРєРѕРІРѕ"', 'VKO', false, true)).attr('disabled', 'disabled');
             $("#leavingFlight").val("UT800").attr('disabled', 'disabled');
         } else if (this.value === "WithParents") {
             $("#leavingDate").val("30/07/2018").removeAttr('disabled');
@@ -366,7 +360,7 @@ $(document).ready(function () {
 
 /*
 
-    Блоки "здоровье", "Страховка", "Указания" и "Другое"
+    Р‘Р»РѕРєРё "Р·РґРѕСЂРѕРІСЊРµ", "РЎС‚СЂР°С…РѕРІРєР°", "РЈРєР°Р·Р°РЅРёСЏ" Рё "Р”СЂСѓРіРѕРµ"
 
  */
     let healthTimer = 0;
@@ -447,7 +441,7 @@ $(document).ready(function () {
     let otherTimer = 0;
     let otherOptions = {
         beforeSubmit: function (arr, $form, options) {
-            arr[3].value = encodeHtmlEntity($("#certName").val());  // Важно! Сменить индекс при изменении полей формы!
+            arr[3].value = encodeHtmlEntity($("#certName").val());  // Р’Р°Р¶РЅРѕ! РЎРјРµРЅРёС‚СЊ РёРЅРґРµРєСЃ РїСЂРё РёР·РјРµРЅРµРЅРёРё РїРѕР»РµР№ С„РѕСЂРјС‹!
         },
         success: function (data, status) {
             if (status === "success") {
@@ -524,7 +518,7 @@ $(document).ready(function () {
     });
 });
 
-// Генератор "Приложения 2" к Договору
+// Р“РµРЅРµСЂР°С‚РѕСЂ "РџСЂРёР»РѕР¶РµРЅРёСЏ 2" Рє Р”РѕРіРѕРІРѕСЂСѓ
 function createPDF(UID) {
     $.get(
         "mycabinet.php",
@@ -533,10 +527,10 @@ function createPDF(UID) {
             app: "true"
         },
         function (text) {
-            alert("Письмо отправлено!");
+            alert("РџРёСЃСЊРјРѕ РѕС‚РїСЂР°РІР»РµРЅРѕ!");
         })
         .fail(function (jqXHR, textStatus, errorThrown) {
-            alert("Возникли проблемы с отправкой файла-приложения. Свяжитесь, пожалуйста, с организаторами!");
+            alert("Р’РѕР·РЅРёРєР»Рё РїСЂРѕР±Р»РµРјС‹ СЃ РѕС‚РїСЂР°РІРєРѕР№ С„Р°Р№Р»Р°-РїСЂРёР»РѕР¶РµРЅРёСЏ. РЎРІСЏР¶РёС‚РµСЃСЊ, РїРѕР¶Р°Р»СѓР№СЃС‚Р°, СЃ РѕСЂРіР°РЅРёР·Р°С‚РѕСЂР°РјРё!");
         })
     ;
 }

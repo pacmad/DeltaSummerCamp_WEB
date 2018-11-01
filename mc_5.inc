@@ -1,19 +1,19 @@
 <?php
 /*
- * Анкета участника
- * $UID - уникальный номер пользователя, передаётся из mycabinet.php
+ * РђРЅРєРµС‚Р° СѓС‡Р°СЃС‚РЅРёРєР°
+ * $UID - СѓРЅРёРєР°Р»СЊРЅС‹Р№ РЅРѕРјРµСЂ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ, РїРµСЂРµРґР°С‘С‚СЃСЏ РёР· mycabinet.php
  */
 require_once 'phplib/dbConnect.php';
 require_once 'phplib/mail.php';
 require_once 'phplib/common.php';
 
 if (!isset($UID)) {
-    exit('Данный файл не предназначен для самостоятельного запуска');
+    exit('Р”Р°РЅРЅС‹Р№ С„Р°Р№Р» РЅРµ РїСЂРµРґРЅР°Р·РЅР°С‡РµРЅ РґР»СЏ СЃР°РјРѕСЃС‚РѕСЏС‚РµР»СЊРЅРѕРіРѕ Р·Р°РїСѓСЃРєР°');
 }
 
 /*
  *
- *  Обработка загрузки фото AJAX
+ *  РћР±СЂР°Р±РѕС‚РєР° Р·Р°РіСЂСѓР·РєРё С„РѕС‚Рѕ AJAX
  *
  */
 
@@ -28,12 +28,12 @@ if (isset($_FILES['file'])) {
     $ret = array();
 
     if (disk_free_space($targetDir) < MIN_FREE_SPACE) {
-        error("Загрузка фото: недостаточно места на диске! UID: " . $UID);
+        error("Р—Р°РіСЂСѓР·РєР° С„РѕС‚Рѕ: РЅРµРґРѕСЃС‚Р°С‚РѕС‡РЅРѕ РјРµСЃС‚Р° РЅР° РґРёСЃРєРµ! UID: " . $UID);
     }
 
     if (!is_dir($targetDir)) {
         if (!mkdir($targetDir)) {
-            error("Загрузка фотографии: не удалось создать директорию $targetDir. UID: $UID");
+            error("Р—Р°РіСЂСѓР·РєР° С„РѕС‚РѕРіСЂР°С„РёРё: РЅРµ СѓРґР°Р»РѕСЃСЊ СЃРѕР·РґР°С‚СЊ РґРёСЂРµРєС‚РѕСЂРёСЋ $targetDir. UID: $UID");
             exit;
         }
     }
@@ -44,7 +44,7 @@ if (isset($_FILES['file'])) {
         $fileSize = $_FILES['file']['size'];
         $tmpFileName = $_FILES['file']['tmp_name'];
         $error = $_FILES['file']['error'];
-    } else { //Multiple files, file[], выбираем первый файл
+    } else { //Multiple files, file[], РІС‹Р±РёСЂР°РµРј РїРµСЂРІС‹Р№ С„Р°Р№Р»
         $fileCount = count($_FILES['file']['name']);
         if ($fileCount >= 1) {
             $fileName = $_FILES['file']['name'][0];
@@ -53,13 +53,13 @@ if (isset($_FILES['file'])) {
             $error = $_FILES['file']['error'][0];
         } else {
             $tmpFileName = null;
-            error("Загрузка фотографии,  UID: $UID, ошибка: '$tmpFileName' = null. " . var_dump($_FILES));
+            error("Р—Р°РіСЂСѓР·РєР° С„РѕС‚РѕРіСЂР°С„РёРё,  UID: $UID, РѕС€РёР±РєР°: '$tmpFileName' = null. " . var_dump($_FILES));
             exit();
         }
     }
 
     if ($error) {
-        error("Загрузка фотографии, ошибка " . $error);
+        error("Р—Р°РіСЂСѓР·РєР° С„РѕС‚РѕРіСЂР°С„РёРё, РѕС€РёР±РєР° " . $error);
         exit();
     }
 
@@ -74,10 +74,10 @@ if (isset($_FILES['file'])) {
     if ($type != IMG_JPG && $type != IMG_GIF && $type != IMG_PNG) {
         rename($rawFileName, $targetFile . 'unknown');
         copy('photos/toEdit.jpg', $targetFile);
-        error("Загружена не фотография (неверный тип файла $fileExt): $fileName,  UID: $UID");
+        error("Р—Р°РіСЂСѓР¶РµРЅР° РЅРµ С„РѕС‚РѕРіСЂР°С„РёСЏ (РЅРµРІРµСЂРЅС‹Р№ С‚РёРї С„Р°Р№Р»Р° $fileExt): $fileName,  UID: $UID");
     }
 
-    if ($fileSize < 1024*1024) { // На очень больших файлах функция не работает
+    if ($fileSize < 1024*1024) { // РќР° РѕС‡РµРЅСЊ Р±РѕР»СЊС€РёС… С„Р°Р№Р»Р°С… С„СѓРЅРєС†РёСЏ РЅРµ СЂР°Р±РѕС‚Р°РµС‚
         $cropSize = min($width, $height);
         $x1 = round(($width - $cropSize) / 2.0);
         $x2 = $x1 + $width;
@@ -101,18 +101,18 @@ if (isset($_FILES['file'])) {
     } else {
         rename($rawFileName, $targetFile . '.toEdit.jpg');
         copy('photos/toEdit.jpg', $targetFile);
-        error("ToDo: отредактировать фото $targetFile");
+        error("ToDo: РѕС‚СЂРµРґР°РєС‚РёСЂРѕРІР°С‚СЊ С„РѕС‚Рѕ $targetFile");
     }
     $ret[] = $fileName;
     echo json_encode($ret);
 
-    $db->dbLog("Загружена фотография", $UID);
+    $db->dbLog("Р—Р°РіСЂСѓР¶РµРЅР° С„РѕС‚РѕРіСЂР°С„РёСЏ", $UID);
 
     exit();
 }
 
 /*
- * Обработка AJAX-форм (параметры прилетают в $_POST)
+ * РћР±СЂР°Р±РѕС‚РєР° AJAX-С„РѕСЂРј (РїР°СЂР°РјРµС‚СЂС‹ РїСЂРёР»РµС‚Р°СЋС‚ РІ $_POST)
  */
 
 if (isset($_POST) && is_array($_POST) && count($_POST) > 0) {
@@ -123,7 +123,7 @@ if (isset($_POST) && is_array($_POST) && count($_POST) > 0) {
             error("Error in setOwnTel(): $exception, UID: $UID");
             exit();
         }
-        $db->dbLog("Загружен телефон ребёнка", $UID);
+        $db->dbLog("Р—Р°РіСЂСѓР¶РµРЅ С‚РµР»РµС„РѕРЅ СЂРµР±С‘РЅРєР°", $UID);
     } elseif ($_POST['form'] === "ComingDetails") {
         try {
             $db->setComingDetails($UID, $_POST['comingWith'], $_POST['comingDate'], $_POST['comingTime'], $_POST['comingFlight'], $_POST['comingPlace']);
@@ -131,7 +131,7 @@ if (isset($_POST) && is_array($_POST) && count($_POST) > 0) {
             error("Error in setComingDetails(): $exception, UID: $UID");
             exit();
         }
-        $db->dbLog("Загружены детали приезда", $UID);
+        $db->dbLog("Р—Р°РіСЂСѓР¶РµРЅС‹ РґРµС‚Р°Р»Рё РїСЂРёРµР·РґР°", $UID);
     } elseif ($_POST['form'] === "LeavingDetails") {
         try {
             $db->setLeavingDetails($UID, $_POST['leavingWith'], $_POST['leavingDate'], $_POST['leavingTime'], $_POST['leavingFlight'], $_POST['leavingPlace']);
@@ -139,7 +139,7 @@ if (isset($_POST) && is_array($_POST) && count($_POST) > 0) {
             error("Error in setLeavingDetails(): $exception, UID: $UID");
             exit();
         }
-        $db->dbLog("Загружены детали отъезда", $UID);
+        $db->dbLog("Р—Р°РіСЂСѓР¶РµРЅС‹ РґРµС‚Р°Р»Рё РѕС‚СЉРµР·РґР°", $UID);
     } elseif ($_POST['form'] === "HealthDetails") {
         try {
             $db->setHealthDetails($UID, $_POST['healthText']);
@@ -147,7 +147,7 @@ if (isset($_POST) && is_array($_POST) && count($_POST) > 0) {
             error("Error in setHealthDetails(): $exception, UID: $UID");
             exit();
         }
-        $db->dbLog("Загружены детали здоровья", $UID);
+        $db->dbLog("Р—Р°РіСЂСѓР¶РµРЅС‹ РґРµС‚Р°Р»Рё Р·РґРѕСЂРѕРІСЊСЏ", $UID);
     } elseif ($_POST['form'] === "InsuranceDetails") {
         try {
             $db->setInshuranceDetails($UID, $_POST['insuranceText']);
@@ -155,7 +155,7 @@ if (isset($_POST) && is_array($_POST) && count($_POST) > 0) {
             error("Error in setInsuranceDetails(): $exception, UID: $UID");
             exit();
         }
-        $db->dbLog("Загружены детали страховки", $UID);
+        $db->dbLog("Р—Р°РіСЂСѓР¶РµРЅС‹ РґРµС‚Р°Р»Рё СЃС‚СЂР°С…РѕРІРєРё", $UID);
     } elseif ($_POST['form'] === "NotesDetails") {
         try {
             $db->setNotesDetails($UID, $_POST['notesText']);
@@ -163,7 +163,7 @@ if (isset($_POST) && is_array($_POST) && count($_POST) > 0) {
             error("Error in setNotesDetails(): $exception, UID: $UID");
             exit();
         }
-        $db->dbLog("Загружены детали форс-мажор", $UID);
+        $db->dbLog("Р—Р°РіСЂСѓР¶РµРЅС‹ РґРµС‚Р°Р»Рё С„РѕСЂСЃ-РјР°Р¶РѕСЂ", $UID);
     } elseif ($_POST['form'] === "OtherDetails") {
         try {
             $db->setOtherDetails($UID, $_POST['certLang'], $_POST['certName'], $_POST['visa'], $_POST['notebook'], $_POST['shirt']);
@@ -171,14 +171,14 @@ if (isset($_POST) && is_array($_POST) && count($_POST) > 0) {
             error("Error in SetOtherDetails(): $exception, UID: $UID");
             exit();
         }
-        $db->dbLog("Загружены дополнительные поля", $UID);
+        $db->dbLog("Р—Р°РіСЂСѓР¶РµРЅС‹ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ", $UID);
     }
 
     exit();
 }
 
 /*
- * Установка фото, если есть, иначе - заглушки.
+ * РЈСЃС‚Р°РЅРѕРІРєР° С„РѕС‚Рѕ, РµСЃР»Рё РµСЃС‚СЊ, РёРЅР°С‡Рµ - Р·Р°РіР»СѓС€РєРё.
  */
 $pattern = $targetDir . $UID . '.*';
 $photos = glob($pattern);
@@ -194,7 +194,7 @@ if (isset($photos) && $photos != false && $photos !== '') {
 }
 
 /*
- * Инициализация полей форм
+ * РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РїРѕР»РµР№ С„РѕСЂРј
  */
 try {
     $result = $db->getOwnTel($UID);
@@ -267,8 +267,8 @@ if(!$shirt = $row['Shirt']) $shirt = "";
 
 <div class="row">
     <div class="col-12">
-        <h3>Здравствуйте! </h3>
-        <p>Заполните, пожалуйста, анкету участника:</p>
+        <h3>Р—РґСЂР°РІСЃС‚РІСѓР№С‚Рµ! </h3>
+        <p>Р—Р°РїРѕР»РЅРёС‚Рµ, РїРѕР¶Р°Р»СѓР№СЃС‚Р°, Р°РЅРєРµС‚Сѓ СѓС‡Р°СЃС‚РЅРёРєР°:</p>
     </div>
 </div>
 <div class="row">
@@ -281,47 +281,47 @@ if(!$shirt = $row['Shirt']) $shirt = "";
         <br>
         <form id="ownTelForm" method="post" class="questionnaire">
             <input name="form" value="OwnTel" hidden>
-            <div class="form-title">Номер мобильного телефона ребёнка&nbsp;</div><br>
-            Введите номер телефона, который будет у ребёнка с собой в лагере:<br>
+            <div class="form-title">РќРѕРјРµСЂ РјРѕР±РёР»СЊРЅРѕРіРѕ С‚РµР»РµС„РѕРЅР° СЂРµР±С‘РЅРєР°&nbsp;</div><br>
+            Р’РІРµРґРёС‚Рµ РЅРѕРјРµСЂ С‚РµР»РµС„РѕРЅР°, РєРѕС‚РѕСЂС‹Р№ Р±СѓРґРµС‚ Сѓ СЂРµР±С‘РЅРєР° СЃ СЃРѕР±РѕР№ РІ Р»Р°РіРµСЂРµ:<br>
             <input type="tel" name="ownTel" id="ownTel" class="text-input" value="<?php echo $ownTel ?>" placeholder="+4912345678999" required>
             <input id="btnOwnTel" type="submit" value="&#x2714" class="smallbtn">
         </form>
     </div>
     <div class="col-8">
-        <p><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Введите детали поездки:</b></p>
+        <p><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РІРµРґРёС‚Рµ РґРµС‚Р°Р»Рё РїРѕРµР·РґРєРё:</b></p>
 
         <div class="col-6">
         <form id="comeInForm" method="post" class="questionnaire">
-            <div class="form-title">&nbsp;В Мюнхен&nbsp;</div><br>
+            <div class="form-title">&nbsp;Р’ РњСЋРЅС…РµРЅ&nbsp;</div><br>
             <input name="form" value="ComingDetails" hidden>
             <select name="comingWith" id="comingWith" required>
-                <option value="" hidden disabled <?php if($comingWith === "") {echo 'selected';}?>>С кем приезжает...</option>
-                <option value="DimaAnya" <?php if($comingWith === "DimaAnya") {echo 'selected';}?>>С организаторами, рейс Lufthansa</option>
-                <option value="Dubeniuk" <?php if($comingWith === "Dubeniuk") {echo 'selected';}?>>С организаторами, рейс Utair</option>
-                <option value="Singly" <?php if($comingWith === "Singly") {echo 'selected';}?>>Надо встретить...</option>
-                <option value="WithParents" <?php if($comingWith === "WithParents") {echo 'selected';}?>>Привозят родители</option>
+                <option value="" hidden disabled <?php if($comingWith === "") {echo 'selected';}?>>РЎ РєРµРј РїСЂРёРµР·Р¶Р°РµС‚...</option>
+                <option value="DimaAnya" <?php if($comingWith === "DimaAnya") {echo 'selected';}?>>РЎ РѕСЂРіР°РЅРёР·Р°С‚РѕСЂР°РјРё, СЂРµР№СЃ Lufthansa</option>
+                <option value="Dubeniuk" <?php if($comingWith === "Dubeniuk") {echo 'selected';}?>>РЎ РѕСЂРіР°РЅРёР·Р°С‚РѕСЂР°РјРё, СЂРµР№СЃ Utair</option>
+                <option value="Singly" <?php if($comingWith === "Singly") {echo 'selected';}?>>РќР°РґРѕ РІСЃС‚СЂРµС‚РёС‚СЊ...</option>
+                <option value="WithParents" <?php if($comingWith === "WithParents") {echo 'selected';}?>>РџСЂРёРІРѕР·СЏС‚ СЂРѕРґРёС‚РµР»Рё</option>
             </select>
             <br>
-            Дата:<br> <input type="text" name="comingDate" id="comingDate" placeholder="dd/mm/yyyy"
-                             value='<?php if($comingDate === "") {echo "16/07/2018";} else {echo "$comingDate";}?>'
+            Р”Р°С‚Р°:<br> <input type="text" name="comingDate" id="comingDate" placeholder="dd/mm/yyyy"
+                             value='<?php if($comingDate === "") {echo START_DAY;} else {echo "$comingDate";}?>'
                              <?php if($comingWith === "DimaAnya" || $comingWith === "Dubeniuk") {echo 'disabled';}?> required><br>
-            Время:<br> <input type="text" name="comingTime" id="comingTime" placeholder="hh:mm"
+            Р’СЂРµРјСЏ:<br> <input type="text" name="comingTime" id="comingTime" placeholder="hh:mm"
                             value='<?php echo "$comingTime" ?>'
                             <?php if($comingWith === "DimaAnya" || $comingWith === "Dubeniuk") {echo 'disabled';}?> required><br>
-            Номер рейса:<br> <input type="text" name="comingFlight" id="comingFlight" value='<?php echo "$comingFlight" ?>'
+            РќРѕРјРµСЂ СЂРµР№СЃР°:<br> <input type="text" name="comingFlight" id="comingFlight" value='<?php echo "$comingFlight" ?>'
                             <?php if($comingWith === "DimaAnya" || $comingWith === "Dubeniuk") {echo 'disabled';}
                             elseif ($comingWith ==="WithParents") {echo 'value="-" disabled';}?> required><br>
-            Место встречи:<br> <select name="comingPlace" id="comingPlace" required <?php if($comingWith === "DimaAnya" || $comingWith === "Dubeniuk") {echo 'disabled';} ?>>
+            РњРµСЃС‚Рѕ РІСЃС‚СЂРµС‡Рё:<br> <select name="comingPlace" id="comingPlace" required <?php if($comingWith === "DimaAnya" || $comingWith === "Dubeniuk") {echo 'disabled';} ?>>
                 <option value="" hidden disabled <?php if($comingPlace === "") {echo 'selected';}?>>...</option>
-                <option value="MUC" <?php if($comingPlace === "MUC") {echo 'selected';}?>>В аэропорту (Мюнхен)</option>
-                <option value="hbf" <?php if($comingPlace === "hbf") {echo 'selected';}?>>На вокзал Hauptbahnhof</option>
-                <option value="gorod" <?php if($comingPlace === "gorod") {echo 'selected';}?>>В культурном центре GOROD</option>
-                <option value="other" <?php if($comingPlace === "other") {echo 'selected';}?>>Иное... (свяжитесь с организаторами!)</option>
+                <option value="MUC" <?php if($comingPlace === "MUC") {echo 'selected';}?>>Р’ Р°СЌСЂРѕРїРѕСЂС‚Сѓ (РњСЋРЅС…РµРЅ)</option>
+                <option value="hbf" <?php if($comingPlace === "hbf") {echo 'selected';}?>>РќР° РІРѕРєР·Р°Р» Hauptbahnhof</option>
+                <option value="gorod" <?php if($comingPlace === "gorod") {echo 'selected';}?>>Р’ РєСѓР»СЊС‚СѓСЂРЅРѕРј С†РµРЅС‚СЂРµ GOROD</option>
+                <option value="other" <?php if($comingPlace === "other") {echo 'selected';}?>>РРЅРѕРµ... (СЃРІСЏР¶РёС‚РµСЃСЊ СЃ РѕСЂРіР°РЅРёР·Р°С‚РѕСЂР°РјРё!)</option>
                 <?php
                 if ($comingWith === "DimaAnya") {
-                    echo "<option value='DME' selected>Аэропорт \"Домодедово\"</option>";
+                    echo "<option value='DME' selected>РђСЌСЂРѕРїРѕСЂС‚ \"Р”РѕРјРѕРґРµРґРѕРІРѕ\"</option>";
                 } elseif ($comingWith === "Dubeniuk") {
-                    echo "<option value='VKO' selected>Аэропорт \"Внуково\"</option>";
+                    echo "<option value='VKO' selected>РђСЌСЂРѕРїРѕСЂС‚ \"Р’РЅСѓРєРѕРІРѕ\"</option>";
                 }
                 ?>
             </select>
@@ -331,36 +331,36 @@ if(!$shirt = $row['Shirt']) $shirt = "";
 
         <div class="col-6">
         <form id="leaveOutForm" method="post" class="questionnaire">
-            <div class="form-title">&nbsp;Из Мюнхена&nbsp;</div><br>
+            <div class="form-title">&nbsp;РР· РњСЋРЅС…РµРЅР°&nbsp;</div><br>
             <input name="form" value="LeavingDetails" hidden>
             <select name="leavingWith" id="leavingWith" required>
-                <option value="" hidden disabled <?php if($leavingWith === "") {echo 'selected';}?>>С кем уезжает...</option>
-                <option value="DimaAnya" <?php if($leavingWith === "DimaAnya") {echo 'selected';}?>>С организаторами, рейс Lufthansa</option>
-                <option value="Dubeniuk" <?php if($leavingWith === "Dubeniuk") {echo 'selected';}?>>С организаторами, рейс Utair</option>
-                <option value="Singly" <?php if($leavingWith === "Singly") {echo 'selected';}?>>Надо проводить...</option>
-                <option value="WithParents" <?php if($leavingWith === "WithParents") {echo 'selected';}?>>Забирают родители</option>
+                <option value="" hidden disabled <?php if($leavingWith === "") {echo 'selected';}?>>РЎ РєРµРј СѓРµР·Р¶Р°РµС‚...</option>
+                <option value="DimaAnya" <?php if($leavingWith === "DimaAnya") {echo 'selected';}?>>РЎ РѕСЂРіР°РЅРёР·Р°С‚РѕСЂР°РјРё, СЂРµР№СЃ Lufthansa</option>
+                <option value="Dubeniuk" <?php if($leavingWith === "Dubeniuk") {echo 'selected';}?>>РЎ РѕСЂРіР°РЅРёР·Р°С‚РѕСЂР°РјРё, СЂРµР№СЃ Utair</option>
+                <option value="Singly" <?php if($leavingWith === "Singly") {echo 'selected';}?>>РќР°РґРѕ РїСЂРѕРІРѕРґРёС‚СЊ...</option>
+                <option value="WithParents" <?php if($leavingWith === "WithParents") {echo 'selected';}?>>Р—Р°Р±РёСЂР°СЋС‚ СЂРѕРґРёС‚РµР»Рё</option>
             </select>
             <br>
-            Дата:<br> <input type="text" name="leavingDate" id="leavingDate" placeholder="dd/mm/yyyy"
-                             value='<?php if($leavingDate === "") {echo "30/07/2018";} else {echo "$leavingDate";}?>'
+            Р”Р°С‚Р°:<br> <input type="text" name="leavingDate" id="leavingDate" placeholder="dd/mm/yyyy"
+                             value='<?php if($leavingDate === "") {echo FINISH_DAY;} else {echo "$leavingDate";}?>'
                 <?php if($leavingWith === "DimaAnya" || $leavingWith === "Dubeniuk") {echo 'disabled';}?> required><br>
-            Время:<br> <input type="text" name="leavingTime" id="leavingTime" placeholder="hh:mm"
+            Р’СЂРµРјСЏ:<br> <input type="text" name="leavingTime" id="leavingTime" placeholder="hh:mm"
                               value='<?php echo "$leavingTime" ?>'
                 <?php if($leavingWith === "DimaAnya" || $leavingWith === "Dubeniuk") {echo 'disabled';}?> required><br>
-            Номер рейса:<br> <input type="text" name="leavingFlight" id="leavingFlight" value='<?php echo "$leavingFlight" ?>'
+            РќРѕРјРµСЂ СЂРµР№СЃР°:<br> <input type="text" name="leavingFlight" id="leavingFlight" value='<?php echo "$leavingFlight" ?>'
                 <?php if($leavingWith === "DimaAnya" || $leavingWith === "Dubeniuk") {echo 'disabled';}
                 elseif ($leavingWith ==="WithParents") {echo 'value="-" disabled';}?> required><br>
-            Место встречи:<br> <select name="leavingPlace" id="leavingPlace" required <?php if($leavingWith === "DimaAnya" || $leavingWith === "Dubeniuk") {echo 'disabled';} ?>>
+            РњРµСЃС‚Рѕ РѕС‚РїСЂР°РІР»РµРЅРёСЏ:<br> <select name="leavingPlace" id="leavingPlace" required <?php if($leavingWith === "DimaAnya" || $leavingWith === "Dubeniuk") {echo 'disabled';} ?>>
                 <option value="" hidden disabled <?php if($leavingPlace === "") {echo 'selected';}?>>...</option>
-                <option value="MUC" <?php if($leavingPlace === "MUC") {echo 'selected';}?>>Из аэропорта (Мюнхен)</option>
-                <option value="hbf" <?php if($leavingPlace === "hbh") {echo 'selected';}?>>От вокзала Hauptbahnhof</option>
-                <option value="gorod" <?php if($leavingPlace === "gorod") {echo 'selected';}?>>Из культурного центра GOROD</option>
-                <option value="other" <?php if($leavingPlace === "other") {echo 'selected';}?>>Иное... (свяжитесь с организаторами!)</option>
+                <option value="MUC" <?php if($leavingPlace === "MUC") {echo 'selected';}?>>РР· Р°СЌСЂРѕРїРѕСЂС‚Р° (РњСЋРЅС…РµРЅ)</option>
+                <option value="hbf" <?php if($leavingPlace === "hbh") {echo 'selected';}?>>РћС‚ РІРѕРєР·Р°Р»Р° Hauptbahnhof</option>
+                <option value="gorod" <?php if($leavingPlace === "gorod") {echo 'selected';}?>>РР· РєСѓР»СЊС‚СѓСЂРЅРѕРіРѕ С†РµРЅС‚СЂР° GOROD</option>
+                <option value="other" <?php if($leavingPlace === "other") {echo 'selected';}?>>РРЅРѕРµ... (СЃРІСЏР¶РёС‚РµСЃСЊ СЃ РѕСЂРіР°РЅРёР·Р°С‚РѕСЂР°РјРё!)</option>
                 <?php
                 if ($leavingWith === "DimaAnya") {
-                    echo "<option value='DME' selected>Аэропорт \"Домодедово\"</option>";
+                    echo "<option value='DME' selected>РђСЌСЂРѕРїРѕСЂС‚ \"Р”РѕРјРѕРґРµРґРѕРІРѕ\"</option>";
                 } elseif ($leavingWith === "Dubeniuk") {
-                    echo "<option value='VKO' selected>Аэропорт \"Внуково\"</option>";
+                    echo "<option value='VKO' selected>РђСЌСЂРѕРїРѕСЂС‚ \"Р’РЅСѓРєРѕРІРѕ\"</option>";
                 }
                 ?>
             </select>
@@ -371,66 +371,66 @@ if(!$shirt = $row['Shirt']) $shirt = "";
 </div>
 <div class="row">
     <div class="col-8">
-        <p><b>Заполните важную информацию о ребенке</b></p>
+        <p><b>Р—Р°РїРѕР»РЅРёС‚Рµ РІР°Р¶РЅСѓСЋ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ СЂРµР±РµРЅРєРµ</b></p>
         <form id="healthForm" method="post" class="questionnaire">
-            <div class="form-title">&nbsp;Здоровье&nbsp;</div><br>
-            Аллергические реакции, другие особенности здоровья, принимаемые медикаменты, ограничения в еде.<br>
+            <div class="form-title">&nbsp;Р—РґРѕСЂРѕРІСЊРµ&nbsp;</div><br>
+            РђР»Р»РµСЂРіРёС‡РµСЃРєРёРµ СЂРµР°РєС†РёРё, РґСЂСѓРіРёРµ РѕСЃРѕР±РµРЅРЅРѕСЃС‚Рё Р·РґРѕСЂРѕРІСЊСЏ, РїСЂРёРЅРёРјР°РµРјС‹Рµ РјРµРґРёРєР°РјРµРЅС‚С‹, РѕРіСЂР°РЅРёС‡РµРЅРёСЏ РІ РµРґРµ.<br>
             <input name="form" value="HealthDetails" hidden>
             <textarea name="healthText" id="healthText"><?php echo $healthDetails ?></textarea>
             <input id="btnHealthDetails" type="submit" value="&#x2714" class="smallbtn">
         </form>
         <br>
         <form id="insuranceForm" method="post" class="questionnaire">
-            <div class="form-title">&nbsp;Страховка&nbsp;</div><br>
-            Информация о страховом полисе; телефон(ы) и язык страховой компании. Особенности использования конкретного страхового полиса.<br>
+            <div class="form-title">&nbsp;РЎС‚СЂР°С…РѕРІРєР°&nbsp;</div><br>
+            РРЅС„РѕСЂРјР°С†РёСЏ Рѕ СЃС‚СЂР°С…РѕРІРѕРј РїРѕР»РёСЃРµ; С‚РµР»РµС„РѕРЅ(С‹) Рё СЏР·С‹Рє СЃС‚СЂР°С…РѕРІРѕР№ РєРѕРјРїР°РЅРёРё. РћСЃРѕР±РµРЅРЅРѕСЃС‚Рё РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ РєРѕРЅРєСЂРµС‚РЅРѕРіРѕ СЃС‚СЂР°С…РѕРІРѕРіРѕ РїРѕР»РёСЃР°.<br>
             <input name="form" value="InsuranceDetails" hidden>
             <textarea name="insuranceText" id="insuranceText"><?php echo $insuranceDetails ?></textarea>
             <input id="btnInsuranceDetails" type="submit" value="&#x2714" class="smallbtn">
         </form>
         <br>
         <form id="notesForm" method="post" class="questionnaire">
-            <div class="form-title">&nbsp;Форс-мажор&nbsp;</div><br>
-            Дополнительная информация по действиям организаторов в сложных ситуациях: список "горячих телефонов" по которым можно звонить,
-            дополнительные инструкции и т.д.<br>
+            <div class="form-title">&nbsp;Р¤РѕСЂСЃ-РјР°Р¶РѕСЂ&nbsp;</div><br>
+            Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅР°СЏ РёРЅС„РѕСЂРјР°С†РёСЏ РїРѕ РґРµР№СЃС‚РІРёСЏРј РѕСЂРіР°РЅРёР·Р°С‚РѕСЂРѕРІ РІ СЃР»РѕР¶РЅС‹С… СЃРёС‚СѓР°С†РёСЏС…: СЃРїРёСЃРѕРє "РіРѕСЂСЏС‡РёС… С‚РµР»РµС„РѕРЅРѕРІ" РїРѕ РєРѕС‚РѕСЂС‹Рј РјРѕР¶РЅРѕ Р·РІРѕРЅРёС‚СЊ,
+            РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ РёРЅСЃС‚СЂСѓРєС†РёРё Рё С‚.Рґ.<br>
             <input name="form" value="NotesDetails" hidden>
             <textarea name="notesText" id="notesText"><?php echo $notesDetails ?></textarea>
             <input id="btnNotesDetails" type="submit" value="&#x2714" class="smallbtn">
         </form>
     </div>
     <div class="col-4">
-        <p><b>...и ещё несколько важных вопросов</b></p>
+        <p><b>...Рё РµС‰С‘ РЅРµСЃРєРѕР»СЊРєРѕ РІР°Р¶РЅС‹С… РІРѕРїСЂРѕСЃРѕРІ</b></p>
         <form id="otherForm" method="post" class="questionnaire">
             <input name="form" value="OtherDetails" hidden>
-            Нужна ли ребёнку виза:<br>
+            РќСѓР¶РЅР° Р»Рё СЂРµР±С‘РЅРєСѓ РІРёР·Р°:<br>
             <input name="visa" type="radio" required id="visa_yes" value="1" <?php if($visa == 1) echo "checked"; ?>>
-            <label for="visa_yes"><span><span></span></span>нужна</label>&nbsp;&nbsp;
+            <label for="visa_yes"><span><span></span></span>РЅСѓР¶РЅР°</label>&nbsp;&nbsp;
             <input name="visa" type="radio" required id="visa_no" value="0" <?php if($visa == 0) echo "checked"; ?>>
-            <label for="visa_no"><span><span></span></span>не нужна</label>
+            <label for="visa_no"><span><span></span></span>РЅРµ РЅСѓР¶РЅР°</label>
             <br><br>
-            В конце смены все участники получают сертификаты, в которых указаны все курсы и тема проекта участника.<br>
-            Выберите язык сертификата:<br>
+            Р’ РєРѕРЅС†Рµ СЃРјРµРЅС‹ РІСЃРµ СѓС‡Р°СЃС‚РЅРёРєРё РїРѕР»СѓС‡Р°СЋС‚ СЃРµСЂС‚РёС„РёРєР°С‚С‹, РІ РєРѕС‚РѕСЂС‹С… СѓРєР°Р·Р°РЅС‹ РІСЃРµ РєСѓСЂСЃС‹ Рё С‚РµРјР° РїСЂРѕРµРєС‚Р° СѓС‡Р°СЃС‚РЅРёРєР°.<br>
+            Р’С‹Р±РµСЂРёС‚Рµ СЏР·С‹Рє СЃРµСЂС‚РёС„РёРєР°С‚Р°:<br>
             <select name="certLang" id="certLang" required>
-                <option value="" hidden disabled <?php if ($certName === "") echo " selected"; ?>>Выбрать...</option>
-                <option value="ru" <?php if ($certLang === "ru") echo " selected"; ?>>Русский</option>
+                <option value="" hidden disabled <?php if ($certName === "") echo " selected"; ?>>Р’С‹Р±СЂР°С‚СЊ...</option>
+                <option value="ru" <?php if ($certLang === "ru") echo " selected"; ?>>Р СѓСЃСЃРєРёР№</option>
                 <option value="de" <?php if ($certLang === "de") echo " selected"; ?>>Deutsch</option>
                 <option value="en" <?php if ($certLang === "en") echo " selected"; ?>>English</option>
             </select>
             <br>
-            Фамилия и имя участника на языке сертификата:<br>
+            Р¤Р°РјРёР»РёСЏ Рё РёРјСЏ СѓС‡Р°СЃС‚РЅРёРєР° РЅР° СЏР·С‹РєРµ СЃРµСЂС‚РёС„РёРєР°С‚Р°:<br>
             <input id="certName" name="certName" type="text" class="text-input" <?php if ($certName !== "") echo " value='$certName'"; ?> required>
             <br><br>
-            В некоторых курсах и проектах требуется компьютер.<br>
-            Будет ли у ребёнка с собой ноутбук:<br>
+            Р’ РЅРµРєРѕС‚РѕСЂС‹С… РєСѓСЂСЃР°С… Рё РїСЂРѕРµРєС‚Р°С… С‚СЂРµР±СѓРµС‚СЃСЏ РєРѕРјРїСЊСЋС‚РµСЂ.<br>
+            Р‘СѓРґРµС‚ Р»Рё Сѓ СЂРµР±С‘РЅРєР° СЃ СЃРѕР±РѕР№ РЅРѕСѓС‚Р±СѓРє:<br>
             <select name="notebook" id="notebook" required>
                 <option value="" hidden disabled <?php if($notebook === "") echo "selected"; ?>>...</option>
-                <option value="win" <?php if($notebook === "win") echo "selected"; ?>>Да, Windows</option>
-                <option value="mac" <?php if($notebook === "mac") echo "selected"; ?>>Да, Mac OS</option>
-                <option value="nix" <?php if($notebook === "nix") echo "selected"; ?>>Да, Linux</option>
-                <option value="no" <?php if($notebook === "no") echo "selected"; ?>>Нет</option>
+                <option value="win" <?php if($notebook === "win") echo "selected"; ?>>Р”Р°, Windows</option>
+                <option value="mac" <?php if($notebook === "mac") echo "selected"; ?>>Р”Р°, Mac OS</option>
+                <option value="nix" <?php if($notebook === "nix") echo "selected"; ?>>Р”Р°, Linux</option>
+                <option value="no" <?php if($notebook === "no") echo "selected"; ?>>РќРµС‚</option>
             </select>
             <br><br>
-            В конце смены участники получают фирменные футболки.<br>
-            Размер футболки:<br>
+            Р’ РєРѕРЅС†Рµ СЃРјРµРЅС‹ СѓС‡Р°СЃС‚РЅРёРєРё РїРѕР»СѓС‡Р°СЋС‚ С„РёСЂРјРµРЅРЅС‹Рµ С„СѓС‚Р±РѕР»РєРё.<br>
+            Р Р°Р·РјРµСЂ С„СѓС‚Р±РѕР»РєРё:<br>
             <select name="shirt" id="shirt" required>
                 <option value="" hidden disabled <?php if($shirt === "") echo "selected"; ?>>...</option>
                 <option value="xs" <?php if($shirt === "XS") echo "selected"; ?>>XS</option>
@@ -444,8 +444,8 @@ if(!$shirt = $row['Shirt']) $shirt = "";
         </form>
     </div>
     <?php
-        if($appStatus === "20") { // Появляется кнопка формирования .pfd-файла
-            echo ('<button onclick="createPDF(\'' . $UID . '\')">Сформировать "Приложение №2" к Договору</button>');
+        if($appStatus === "20") { // РџРѕСЏРІР»СЏРµС‚СЃСЏ РєРЅРѕРїРєР° С„РѕСЂРјРёСЂРѕРІР°РЅРёСЏ .pfd-С„Р°Р№Р»Р°
+            echo ('<button onclick="createPDF(\'' . $UID . '\')">РЎС„РѕСЂРјРёСЂРѕРІР°С‚СЊ "РџСЂРёР»РѕР¶РµРЅРёРµ в„–2" Рє Р”РѕРіРѕРІРѕСЂСѓ</button>');
         }
     ?>
 </div>

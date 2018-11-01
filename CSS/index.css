@@ -177,7 +177,7 @@
 .newsblock img {
     display: block;
     width: 100%;
-    max-width: 1600px;
+    max-width: 800px;
     margin: 5px 0;
     border-style: none;
     border-radius: 7px;
@@ -194,19 +194,23 @@
     font-weight: bold;
     color: darkblue;
 }
-.newsblock .avatar {
-	margin: 5px;
-	padding: 0;
-	float: left;
-	height: 100px;
-	width: 100px;
-	border: 1px solid darkblue;
-	border-radius: 50px;
-}
 .newsblock .continue {
     display: block;
     color: #606060;
     font-size: smaller;
+}
+.teachers h2 {
+    padding-top: 1.5em;
+}
+.teachers .avatar {
+    margin-left: 5px;
+    margin-right: 10px;
+    padding: 0;
+    float: left;
+    height: 100px;
+    width: 100px;
+    border: 1px solid darkblue;
+    border-radius: 50px;
 }
 
 /* Проекты */

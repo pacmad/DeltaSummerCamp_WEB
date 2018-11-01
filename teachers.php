@@ -1,7 +1,7 @@
 <?php
 /*
- * Страница со списком преподавателей
- * @todo Сделать readnly-доступ к странице для всех (без возможности перехода на страницу детей или курсы!)
+ * РЎС‚СЂР°РЅРёС†Р° СЃРѕ СЃРїРёСЃРєРѕРј РїСЂРµРїРѕРґР°РІР°С‚РµР»РµР№
+ * @todo РЎРґРµР»Р°С‚СЊ readnly-РґРѕСЃС‚СѓРї Рє СЃС‚СЂР°РЅРёС†Рµ РґР»СЏ РІСЃРµС… (Р±РµР· РІРѕР·РјРѕР¶РЅРѕСЃС‚Рё РїРµСЂРµС…РѕРґР° РЅР° СЃС‚СЂР°РЅРёС†Сѓ РґРµС‚РµР№ РёР»Рё РєСѓСЂСЃС‹!)
  */
 include "phplib/validate.inc";
 include_once "phplib/dbConnect.php";
@@ -12,7 +12,7 @@ include_once "phplib/dbConnect.php";
 <head>
     <meta charset="windows-1251">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Работа с преподавателями</title>
+    <title>РџСЂРµРїРѕРґР°РІР°С‚РµР»Рё</title>
     <link href="CSS/common.css" rel="stylesheet" type="text/css">
     <link href="CSS/admin.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -37,20 +37,20 @@ include_once "phplib/dbConnect.php";
 <div class="title">
     <div class="row">
         <div class="col-6">
-            <h1>Привет, <?php echo "$name $surname!"?></h1>
+            <h1>РџСЂРёРІРµС‚, <?php echo "$name $surname!"?></h1>
         </div>
         <div class="col-6">
             <div class="icons">
                 <div class="tooltip">
                     <a href="admin.php">
                         <div class="iconbox"><span class="fa fa-child icon"></span></div>
-                        <span class="tooltiptext">Дети</span>
+                        <span class="tooltiptext">Р”РµС‚Рё</span>
                     </a>
                 </div>
                 <div class="tooltip">
                     <a href="courses.php">
                         <div class="iconbox"><span class="fa fa-graduation-cap icon"></span></div>
-                        <span class="tooltiptext">Курсы и проекты</span>
+                        <span class="tooltiptext">РљСѓСЂСЃС‹ Рё РїСЂРѕРµРєС‚С‹</span>
                     </a>
                 </div>
             </div>
@@ -58,7 +58,7 @@ include_once "phplib/dbConnect.php";
     </div>
 </div>
 <div class="main">
-    <h3>Список преподавателей:</h3>
+    <h3>РЎРїРёСЃРѕРє РїСЂРµРїРѕРґР°РІР°С‚РµР»РµР№:</h3>
     <div class="table">
         <?php
         try {
@@ -85,32 +85,39 @@ include_once "phplib/dbConnect.php";
         ?>
     </div>
     <!--
-    @todo Сделать не только форму добавления, но и изменения
+    @todo РЎРґРµР»Р°С‚СЊ РЅРµ С‚РѕР»СЊРєРѕ С„РѕСЂРјСѓ РґРѕР±Р°РІР»РµРЅРёСЏ, РЅРѕ Рё РёР·РјРµРЅРµРЅРёСЏ
     -->
-    <h3>Добавить преподавателя:</h3>
-    <form id="add_teacher" class="table" method="post">
-        <div class="row table-row tch-add">
-            <div class="table-cell l_name">
-                <b>Имя:</b>
-                <input type="text" name="name">
+    <?php
+    if(!$_SESSION['ReadOnly']) {
+        $output = '
+        <h3>Р”РѕР±Р°РІРёС‚СЊ РїСЂРµРїРѕРґР°РІР°С‚РµР»СЏ:</h3>
+        <form id="add_teacher" class="table" method="post">
+            <div class="row table-row tch-add">
+                <div class="table-cell l_name">
+                    <b>РРјСЏ:</b>
+                    <input type="text" name="name">
+                </div>
+                <div class="table-cell l_name">
+                    <b>Р¤Р°РјРёР»РёСЏ:</b>
+                    <input type="text" name="surname">
+                </div>
+                <div class="table-cell l_tel">
+                    <b>РўРµР»РµС„РѕРЅ:</b>
+                    <input type="tel" name="phone">
+                </div>
+                <div class="table-cell l_mail">
+                    <b>Email:</b>
+                    <input type="text" name="email">
+                </div>
+                <div class="table-cell l_submit">
+                    <input type="submit">
+                </div>
             </div>
-            <div class="table-cell l_name">
-                <b>Фамилия:</b>
-                <input type="text" name="surname">
-            </div>
-            <div class="table-cell l_tel">
-                <b>Телефон:</b>
-                <input type="tel" name="phone">
-            </div>
-            <div class="table-cell l_mail">
-                <b>Email:</b>
-                <input type="text" name="email">
-            </div>
-            <div class="table-cell l_submit">
-                <input type="submit">
-            </div>
-        </div>
-    </form>
+        </form>
+        ';
+        echo $output;
+    }
+    ?>
 </div>
 </body>
 </html>

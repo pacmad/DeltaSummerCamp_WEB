@@ -41,12 +41,12 @@ A:active { color: #0000FF }
 <div style="float: right"><a href="registrations.php?a=logout">[ Logout ]</a></div>
 <br>
 <table width="100%"><tr><td class="ThRows">
-Registrations database
+Header text
 </td></tr></table>
 
 <?php
   $conn = connect();
-  $showrecs = 100;
+  $showrecs = 20;
   $pagerange = 10;
   $a = @$_GET["a"];
   $recid = @$_GET["recid"];
@@ -84,10 +84,10 @@ Registrations database
       select();
       break;
   }
-  $conn = null;
+  mysql_close($conn);
 ?>
 <table width="100%"><tr><td class="ThRows">
-Generated from SQL Manager fo MySQL
+Footer text
 </td></tr></table>
 
 </body>
@@ -95,8 +95,8 @@ Generated from SQL Manager fo MySQL
 <?php
 function connect()
 {
-  $c = new PDO("mysql:host=localhost;port=3306;dbname=delta;charset=cp1251", $_SESSION['my_user'], $_SESSION['my_pass']);
-  $c->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+  $c = mysql_connect("localhost:3306", "PHP", "DeltaDB");
+  mysql_select_db("delta");
   return $c;
 }
 ?>
@@ -104,14 +104,21 @@ function connect()
 function sql_getrecordcount()
 {
   global $conn;
-  return $conn->query("select count(*) from `registrations`")->fetchColumn();
+  $sql = "select count(*) from `registrations`";
+  $res = mysql_query($sql, $conn) or die(mysql_error());
+  $row = mysql_fetch_assoc($res);
+  reset($row);
+  return current($row);
 }
 ?>
 <?php
-function sql_select($offset, $limit)
+function sql_select()
 {
   global $conn;
-  return $conn->query("SELECT * FROM `registrations` LIMIT $offset, $limit");
+  $sql = "SELECT * FROM `registrations`;
+";
+  $res = mysql_query($sql, $conn) or die(mysql_error());
+  return $res;
 }
 
 function select(){
@@ -119,6 +126,7 @@ function select(){
   global $pagerange;
   global $page;
   global $conn;
+  $res = sql_select();
   $count = sql_getrecordcount();
   if ($count % $showrecs != 0) {
     $pagecount = intval($count / $showrecs) + 1;
@@ -127,9 +135,8 @@ function select(){
     $pagecount = intval($count / $showrecs);
   }
   $startrec = $showrecs * ($page - 1);
-  $reccount = min($showrecs * $page, $count) - $startrec;
-  if ($reccount > 0)
-    $res = sql_select($startrec, $reccount);
+  if ($startrec < $count) {mysql_data_seek($res, $startrec);}
+  $reccount = min($showrecs * $page, $count);
 ?>
 <?php showpagenav($page, $pagecount); ?>
 <table width="100%" border="0" cellpadding="4" cellspacing="1">
@@ -176,10 +183,10 @@ function select(){
     <td class="ThRows">Shirt</td>
   </tr>
 <?php
-if($reccount > 0) {
-  for ($i = $startrec; $i < $startrec+$reccount; $i++)
+if(mysql_num_rows($res)) {
+  for ($i = $startrec; $i < $reccount; $i++)
   {
-    $row = $res->fetch();
+    $row = mysql_fetch_assoc($res);
     $s = "TrOdd";
     if ($i % 2 == 0) {
       $s = "TrRows";
@@ -227,7 +234,7 @@ if($reccount > 0) {
     <td class="<?php echo $s?>"><?php echo htmlspecialchars($row['Notebook'])?></td>
     <td class="<?php echo $s?>"><?php echo htmlspecialchars($row['Shirt'])?></td>
   </tr>
-<?php }$res=null;}?>
+<?}mysql_free_result($res);}?>
 </table>
 <?php showpagenav($page, $pagecount); ?>
 <?php }?>
@@ -439,7 +446,9 @@ if ($pagecount > 1) {
 <?php
 function select_fk_keys($tablename, $fieldname){
   global $conn;
-  return $conn->query("SELECT $fieldname FROM $tablename");
+  $sql = "SELECT $fieldname FROM $tablename;";
+  $res = mysql_query($sql, $conn) or die(mysql_error());
+  return $res;
 }
 ?>
 <?php function showroweditor($row, $iseditmode)
@@ -604,17 +613,17 @@ function select_fk_keys($tablename, $fieldname){
 <tr>
 <td class="ThRows"><?php echo htmlspecialchars("Health")."&nbsp;" ?></td>
 <td class="TrRows">
-<input type="text" name="Health" value="<?php echo str_replace('"', '&quot;', trim($row["Health"])) ?>"></td>
+<textarea name="Health" cols="36" rows="4"><?php echo str_replace('"', '&quot;', trim($row["Health"]))?></textarea></td>
 </tr>
 <tr>
 <td class="ThRows"><?php echo htmlspecialchars("Insurance")."&nbsp;" ?></td>
 <td class="TrRows">
-<input type="text" name="Insurance" value="<?php echo str_replace('"', '&quot;', trim($row["Insurance"])) ?>"></td>
+<textarea name="Insurance" cols="36" rows="4"><?php echo str_replace('"', '&quot;', trim($row["Insurance"]))?></textarea></td>
 </tr>
 <tr>
 <td class="ThRows"><?php echo htmlspecialchars("NotesText")."&nbsp;" ?></td>
 <td class="TrRows">
-<input type="text" name="NotesText" value="<?php echo str_replace('"', '&quot;', trim($row["NotesText"])) ?>"></td>
+<textarea name="NotesText" cols="36" rows="4"><?php echo str_replace('"', '&quot;', trim($row["NotesText"]))?></textarea></td>
 </tr>
 <tr>
 <td class="ThRows"><?php echo htmlspecialchars("Visa")."&nbsp;" ?></td>
@@ -624,12 +633,12 @@ function select_fk_keys($tablename, $fieldname){
 <tr>
 <td class="ThRows"><?php echo htmlspecialchars("Notebook")."&nbsp;" ?></td>
 <td class="TrRows">
-<textarea name="Notebook" cols="36" rows="4"><?php echo str_replace('"', '&quot;', trim($row["Notebook"]))?></textarea></td>
+<input type="text" name="Notebook" value="<?php echo str_replace('"', '&quot;', trim($row["Notebook"])) ?>"></td>
 </tr>
 <tr>
 <td class="ThRows"><?php echo htmlspecialchars("Shirt")."&nbsp;" ?></td>
 <td class="TrRows">
-<textarea name="Shirt" cols="36" rows="4"><?php echo str_replace('"', '&quot;', trim($row["Shirt"]))?></textarea></td>
+<input type="text" name="Shirt" value="<?php echo str_replace('"', '&quot;', trim($row["Shirt"])) ?>"></td>
 </tr>
 </tr>
 </table>
@@ -693,8 +702,10 @@ showroweditor($row, false);
 
 <?php function viewrec($recid)
 {
-  $row = sql_select($recid, 1)->fetch();
+$res = sql_select();
   $count = sql_getrecordcount();
+  mysql_data_seek($res, $recid);
+  $row = mysql_fetch_assoc($res);
   showrecnav("view", $recid, $count);
 ?>
 <br>
@@ -709,13 +720,15 @@ showroweditor($row, false);
 </tr>
 </table>
 <?php
-  $res = null;
+  mysql_free_result($res);
 } ?>
 
 <?php function editrec($recid)
 {
-  $row = sql_select($recid, 1)->fetch();
+  $res = sql_select();
   $count = sql_getrecordcount();
+  mysql_data_seek($res, $recid);
+  $row = mysql_fetch_assoc($res);
   showrecnav("edit", $recid, $count);
 ?>
 <br>
@@ -726,23 +739,25 @@ showroweditor($row, false);
 <p><input type="submit" name="action" value="Post"></p>
 </form>
 <?php
-  $res = null;
+  mysql_free_result($res);
 } ?>
 <?php function deleterec($recid)
 {
-  $row = sql_select($recid, 1)->fetch();
+  $res = sql_select();
   $count = sql_getrecordcount();
+  mysql_data_seek($res, $recid);
+  $row = mysql_fetch_assoc($res);
 ?>
 <br>
 <form name="delete_form" action="registrations.php" method="post">
 <input type="hidden" name="sql" value="delete">
 <input type="hidden" name="xUniqueId" value="<?php echo $row["UniqueId"] ?>">
 <script type="text/javascript">
-  document.forms["delete_form"].submit();
+  document.getElementById("delete_form").submit();
 </script>
 </form>
 <?php
-  $res = null;
+  mysql_free_result($res);
 } ?>
 <?php
 function sqlvalue($val, $quote)
@@ -765,6 +780,7 @@ function sqlstr($val)
 
 function primarykeycondition()
 {
+  global $_POST;
   $pk = "";
   $pk .= "(`UniqueId`";
   if (@$_POST["xUniqueId"] == "") {
@@ -779,14 +795,18 @@ function primarykeycondition()
 function sql_insert()
 {
   global $conn;
-  $conn->query("insert into `registrations` (`UniqueId`, `RegistrationTime`, `UserIP`, `Email`, `Surname`, `Name`, `MiddleName`, `Gender`, `Birthday`, `Class`, `School`, `City`, `Country`, `Languages`, `Tel`, `OwnTel`, `Notes`, `AppStatus`, `DateOfWorkSent`, `CertLang`, `CertName`, `ComingWith`, `ComingDate`, `ComingTime`, `ComingFlight`, `ComingPlace`, `LeavingWith`, `LeavingDate`, `LeavingTime`, `LeavingFlight`, `LeavingPlace`, `Health`, `Insurance`, `NotesText`, `Visa`, `Notebook`, `Shirt`) values (".sqlvalue(@$_POST["UniqueId"], true).", ".sqlvalue(@$_POST["RegistrationTime"], true).", ".sqlvalue(@$_POST["UserIP"], true).", ".sqlvalue(@$_POST["Email"], true).", ".sqlvalue(@$_POST["Surname"], true).", ".sqlvalue(@$_POST["Name"], true).", ".sqlvalue(@$_POST["MiddleName"], true).", ".sqlvalue(@$_POST["Gender"], true).", ".sqlvalue(@$_POST["Birthday"], true).", ".sqlvalue(@$_POST["Class"], false).", ".sqlvalue(@$_POST["School"], true).", ".sqlvalue(@$_POST["City"], true).", ".sqlvalue(@$_POST["Country"], true).", ".sqlvalue(@$_POST["Languages"], true).", ".sqlvalue(@$_POST["Tel"], true).", ".sqlvalue(@$_POST["OwnTel"], true).", ".sqlvalue(@$_POST["Notes"], true).", ".sqlvalue(@$_POST["AppStatus"], false).", ".sqlvalue(@$_POST["DateOfWorkSent"], true).", ".sqlvalue(@$_POST["CertLang"], true).", ".sqlvalue(@$_POST["CertName"], true).", ".sqlvalue(@$_POST["ComingWith"], true).", ".sqlvalue(@$_POST["ComingDate"], true).", ".sqlvalue(@$_POST["ComingTime"], true).", ".sqlvalue(@$_POST["ComingFlight"], true).", ".sqlvalue(@$_POST["ComingPlace"], true).", ".sqlvalue(@$_POST["LeavingWith"], true).", ".sqlvalue(@$_POST["LeavingDate"], true).", ".sqlvalue(@$_POST["LeavingTime"], true).", ".sqlvalue(@$_POST["LeavingFlight"], true).", ".sqlvalue(@$_POST["LeavingPlace"], true).", ".sqlvalue(@$_POST["Health"], true).", ".sqlvalue(@$_POST["Insurance"], true).", ".sqlvalue(@$_POST["NotesText"], true).", ".sqlvalue(@$_POST["Visa"], false).", ".sqlvalue(@$_POST["Notebook"], true).", ".sqlvalue(@$_POST["Shirt"], true).")");
+  global $_POST;
+  $sql = "insert into `registrations` (`UniqueId`, `RegistrationTime`, `UserIP`, `Email`, `Surname`, `Name`, `MiddleName`, `Gender`, `Birthday`, `Class`, `School`, `City`, `Country`, `Languages`, `Tel`, `OwnTel`, `Notes`, `AppStatus`, `DateOfWorkSent`, `CertLang`, `CertName`, `ComingWith`, `ComingDate`, `ComingTime`, `ComingFlight`, `ComingPlace`, `LeavingWith`, `LeavingDate`, `LeavingTime`, `LeavingFlight`, `LeavingPlace`, `Health`, `Insurance`, `NotesText`, `Visa`, `Notebook`, `Shirt`) values (".sqlvalue(@$_POST["UniqueId"], true).", ".sqlvalue(@$_POST["RegistrationTime"], true).", ".sqlvalue(@$_POST["UserIP"], true).", ".sqlvalue(@$_POST["Email"], true).", ".sqlvalue(@$_POST["Surname"], true).", ".sqlvalue(@$_POST["Name"], true).", ".sqlvalue(@$_POST["MiddleName"], true).", ".sqlvalue(@$_POST["Gender"], true).", ".sqlvalue(@$_POST["Birthday"], true).", ".sqlvalue(@$_POST["Class"], false).", ".sqlvalue(@$_POST["School"], true).", ".sqlvalue(@$_POST["City"], true).", ".sqlvalue(@$_POST["Country"], true).", ".sqlvalue(@$_POST["Languages"], true).", ".sqlvalue(@$_POST["Tel"], true).", ".sqlvalue(@$_POST["OwnTel"], true).", ".sqlvalue(@$_POST["Notes"], true).", ".sqlvalue(@$_POST["AppStatus"], false).", ".sqlvalue(@$_POST["DateOfWorkSent"], true).", ".sqlvalue(@$_POST["CertLang"], true).", ".sqlvalue(@$_POST["CertName"], true).", ".sqlvalue(@$_POST["ComingWith"], true).", ".sqlvalue(@$_POST["ComingDate"], true).", ".sqlvalue(@$_POST["ComingTime"], true).", ".sqlvalue(@$_POST["ComingFlight"], true).", ".sqlvalue(@$_POST["ComingPlace"], true).", ".sqlvalue(@$_POST["LeavingWith"], true).", ".sqlvalue(@$_POST["LeavingDate"], true).", ".sqlvalue(@$_POST["LeavingTime"], true).", ".sqlvalue(@$_POST["LeavingFlight"], true).", ".sqlvalue(@$_POST["LeavingPlace"], true).", ".sqlvalue(@$_POST["Health"], true).", ".sqlvalue(@$_POST["Insurance"], true).", ".sqlvalue(@$_POST["NotesText"], true).", ".sqlvalue(@$_POST["Visa"], false).", ".sqlvalue(@$_POST["Notebook"], false).", ".sqlvalue(@$_POST["Shirt"], false).")";
+  mysql_query($sql, $conn) or die(mysql_error());
 }
 ?>
 <?php
 function sql_update()
 {
   global $conn;
-  $conn->query("update `registrations` set `UniqueId`=".sqlvalue(@$_POST["UniqueId"], true).", `RegistrationTime`=".sqlvalue(@$_POST["RegistrationTime"], true).", `UserIP`=".sqlvalue(@$_POST["UserIP"], true).", `Email`=".sqlvalue(@$_POST["Email"], true).", `Surname`=".sqlvalue(@$_POST["Surname"], true).", `Name`=".sqlvalue(@$_POST["Name"], true).", `MiddleName`=".sqlvalue(@$_POST["MiddleName"], true).", `Gender`=".sqlvalue(@$_POST["Gender"], true).", `Birthday`=".sqlvalue(@$_POST["Birthday"], true).", `Class`=".sqlvalue(@$_POST["Class"], false).", `School`=".sqlvalue(@$_POST["School"], true).", `City`=".sqlvalue(@$_POST["City"], true).", `Country`=".sqlvalue(@$_POST["Country"], true).", `Languages`=".sqlvalue(@$_POST["Languages"], true).", `Tel`=".sqlvalue(@$_POST["Tel"], true).", `OwnTel`=".sqlvalue(@$_POST["OwnTel"], true).", `Notes`=".sqlvalue(@$_POST["Notes"], true).", `AppStatus`=".sqlvalue(@$_POST["AppStatus"], false).", `DateOfWorkSent`=".sqlvalue(@$_POST["DateOfWorkSent"], true).", `CertLang`=".sqlvalue(@$_POST["CertLang"], true).", `CertName`=".sqlvalue(@$_POST["CertName"], true).", `ComingWith`=".sqlvalue(@$_POST["ComingWith"], true).", `ComingDate`=".sqlvalue(@$_POST["ComingDate"], true).", `ComingTime`=".sqlvalue(@$_POST["ComingTime"], true).", `ComingFlight`=".sqlvalue(@$_POST["ComingFlight"], true).", `ComingPlace`=".sqlvalue(@$_POST["ComingPlace"], true).", `LeavingWith`=".sqlvalue(@$_POST["LeavingWith"], true).", `LeavingDate`=".sqlvalue(@$_POST["LeavingDate"], true).", `LeavingTime`=".sqlvalue(@$_POST["LeavingTime"], true).", `LeavingFlight`=".sqlvalue(@$_POST["LeavingFlight"], true).", `LeavingPlace`=".sqlvalue(@$_POST["LeavingPlace"], true).", `Health`=".sqlvalue(@$_POST["Health"], true).", `Insurance`=".sqlvalue(@$_POST["Insurance"], true).", `NotesText`=".sqlvalue(@$_POST["NotesText"], true).", `Visa`=".sqlvalue(@$_POST["Visa"], false).", `Notebook`=".sqlvalue(@$_POST["Notebook"], true).", `Shirt`=".sqlvalue(@$_POST["Shirt"], true)." where " .primarykeycondition());
+  global $_POST;
+  $sql = "update `registrations` set `UniqueId`=".sqlvalue(@$_POST["UniqueId"], true).", `RegistrationTime`=".sqlvalue(@$_POST["RegistrationTime"], true).", `UserIP`=".sqlvalue(@$_POST["UserIP"], true).", `Email`=".sqlvalue(@$_POST["Email"], true).", `Surname`=".sqlvalue(@$_POST["Surname"], true).", `Name`=".sqlvalue(@$_POST["Name"], true).", `MiddleName`=".sqlvalue(@$_POST["MiddleName"], true).", `Gender`=".sqlvalue(@$_POST["Gender"], true).", `Birthday`=".sqlvalue(@$_POST["Birthday"], true).", `Class`=".sqlvalue(@$_POST["Class"], false).", `School`=".sqlvalue(@$_POST["School"], true).", `City`=".sqlvalue(@$_POST["City"], true).", `Country`=".sqlvalue(@$_POST["Country"], true).", `Languages`=".sqlvalue(@$_POST["Languages"], true).", `Tel`=".sqlvalue(@$_POST["Tel"], true).", `OwnTel`=".sqlvalue(@$_POST["OwnTel"], true).", `Notes`=".sqlvalue(@$_POST["Notes"], true).", `AppStatus`=".sqlvalue(@$_POST["AppStatus"], false).", `DateOfWorkSent`=".sqlvalue(@$_POST["DateOfWorkSent"], true).", `CertLang`=".sqlvalue(@$_POST["CertLang"], true).", `CertName`=".sqlvalue(@$_POST["CertName"], true).", `ComingWith`=".sqlvalue(@$_POST["ComingWith"], true).", `ComingDate`=".sqlvalue(@$_POST["ComingDate"], true).", `ComingTime`=".sqlvalue(@$_POST["ComingTime"], true).", `ComingFlight`=".sqlvalue(@$_POST["ComingFlight"], true).", `ComingPlace`=".sqlvalue(@$_POST["ComingPlace"], true).", `LeavingWith`=".sqlvalue(@$_POST["LeavingWith"], true).", `LeavingDate`=".sqlvalue(@$_POST["LeavingDate"], true).", `LeavingTime`=".sqlvalue(@$_POST["LeavingTime"], true).", `LeavingFlight`=".sqlvalue(@$_POST["LeavingFlight"], true).", `LeavingPlace`=".sqlvalue(@$_POST["LeavingPlace"], true).", `Health`=".sqlvalue(@$_POST["Health"], true).", `Insurance`=".sqlvalue(@$_POST["Insurance"], true).", `NotesText`=".sqlvalue(@$_POST["NotesText"], true).", `Visa`=".sqlvalue(@$_POST["Visa"], false).", `Notebook`=".sqlvalue(@$_POST["Notebook"], false).", `Shirt`=".sqlvalue(@$_POST["Shirt"], false)." where " .primarykeycondition();
+  mysql_query($sql, $conn) or die(mysql_error());
 }
 ?>
 <?php
@@ -794,12 +814,14 @@ function sql_delete()
 {
   global $conn;
   $sql = "delete from `registrations` where " .primarykeycondition();
-  $conn->query($sql);
+  mysql_query($sql, $conn) or die(mysql_error());
 }
 ?>
 <?php
 function login()
 {
+  global $_POST;
+  global $_SESSION;
 
   global $_GET;
   if (isset($_GET["a"]) && ($_GET["a"] == 'logout')) $_SESSION["logged_in"] = false;
@@ -811,12 +833,13 @@ function login()
     if (isset($_POST["password"])) $password = @$_POST["password"];
 
     if ($login != "") {
-      $_SESSION["logged_in"] = true;
-      $_SESSION['my_user'] = $login;
-      $_SESSION['my_pass'] = $password;
+      if (($login == "root") && ($password == "Barbar1s")) {
+        $_SESSION["logged_in"] = true;
     }
-  }
-if (isset($_SESSION["logged_in"]) && (!$_SESSION["logged_in"])) { ?>
+    else {
+?>
+<p><b><font color="-1">Sorry, the login/password combination you've entered is invalid</font></b></p>
+<?php } } }if (isset($_SESSION["logged_in"]) && (!$_SESSION["logged_in"])) { ?>
 <form action="registrations.php" method="post">
 <table class="bd" border="0" cellspacing="1" cellpadding="4">
 <tr>

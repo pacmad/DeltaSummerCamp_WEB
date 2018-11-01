@@ -1,6 +1,6 @@
 <?php
 /**
- * Библиотека функций администрирования
+ * Р‘РёР±Р»РёРѕС‚РµРєР° С„СѓРЅРєС†РёР№ Р°РґРјРёРЅРёСЃС‚СЂРёСЂРѕРІР°РЅРёСЏ
  * Created by PhpStorm.
  * User: Dima
  * Date: 22.01.2018
@@ -9,7 +9,7 @@
 require_once 'dbConnect.php';
 
 /*
- *  Диалог по установке нового пароля
+ *  Р”РёР°Р»РѕРі РїРѕ СѓСЃС‚Р°РЅРѕРІРєРµ РЅРѕРІРѕРіРѕ РїР°СЂРѕР»СЏ
  * @param $UID
  */
 function admNewPass($UID) {
@@ -26,15 +26,15 @@ function admNewPass($UID) {
     echo <<<FORM
 <p>&nbsp;</p>    
 <div class="main" id="main">
-    <h1>Здравствуйте, $name $sname!</h1>
+    <h1>Р—РґСЂР°РІСЃС‚РІСѓР№С‚Рµ, $name $sname!</h1>
     <form id="newpass">
-    <p>Введите новый пароль:<br>
+    <p>Р’РІРµРґРёС‚Рµ РЅРѕРІС‹Р№ РїР°СЂРѕР»СЊ:<br>
     <input type="password" id="pass1" class="text-input"></p>
     <p>&nbsp;</p>
-    <p>Повторно введите новый пароль:<br>
+    <p>РџРѕРІС‚РѕСЂРЅРѕ РІРІРµРґРёС‚Рµ РЅРѕРІС‹Р№ РїР°СЂРѕР»СЊ:<br>
     <input type="password" id="pass2" class="text-input"></p>
     <p>&nbsp;</p>    
-    <input type="button" value="Сохранить пароль" onclick="saveNewPass('$UID');">
+    <input type="button" value="РЎРѕС…СЂР°РЅРёС‚СЊ РїР°СЂРѕР»СЊ" onclick="saveNewPass('$UID');">
     </form>
     <p>&nbsp;</p>
 </div>
@@ -43,7 +43,7 @@ FORM;
 }
 
 /*
- * Ввод пароля и авторизация
+ * Р’РІРѕРґ РїР°СЂРѕР»СЏ Рё Р°РІС‚РѕСЂРёР·Р°С†РёСЏ
  * @param $UID
  * @return: sessionID (success) or 0 (fault)
  */
@@ -61,12 +61,12 @@ function admLogin($UID) {
     echo <<<FORM
 <p>&nbsp;</p>    
 <div class="main" id="main">
-    <h1>Здравствуйте, $name $sname!</h1>
+    <h1>Р—РґСЂР°РІСЃС‚РІСѓР№С‚Рµ, $name $sname!</h1>
     <form id="passform" action="" onsubmit="return chkPass('$UID')">
-    <p>Введите пароль:<br>
+    <p>Р’РІРµРґРёС‚Рµ РїР°СЂРѕР»СЊ:<br>
     <input type="password" id="pass" autofocus></p>
     <p>&nbsp;</p>    
-    <input type="submit" value="Ввести пароль">
+    <input type="submit" value="Р’РІРµСЃС‚Рё РїР°СЂРѕР»СЊ">
     </form>
     <p>&nbsp;</p>
 </div>
@@ -76,7 +76,7 @@ FORM;
 }
 
 /*
- * Обработка ситуации нет или не верный UID
+ * РћР±СЂР°Р±РѕС‚РєР° СЃРёС‚СѓР°С†РёРё РЅРµС‚ РёР»Рё РЅРµ РІРµСЂРЅС‹Р№ UID
  */
 function admWrongUID($UID = 0) {
     admPrintHeader();
@@ -87,9 +87,9 @@ function admWrongUID($UID = 0) {
     echo '<h1>&nbsp;</h1>';
     echo '<h1>&nbsp;</h1>';
     if ($UID == 0) {
-        echo '<h1 style="text-align: center">Страница не предназначена для просмотра без параметров.</h1>';
+        echo '<h1 style="text-align: center">РЎС‚СЂР°РЅРёС†Р° РЅРµ РїСЂРµРґРЅР°Р·РЅР°С‡РµРЅР° РґР»СЏ РїСЂРѕСЃРјРѕС‚СЂР° Р±РµР· РїР°СЂР°РјРµС‚СЂРѕРІ.</h1>';
     } else {
-        echo '<h1 style="text-align: center">Идентификатор не найден.</h1>';
+        echo '<h1 style="text-align: center">РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РЅРµ РЅР°Р№РґРµРЅ.</h1>';
     }
     echo '<h1>&nbsp;</h1>';
     echo '<h1>&nbsp;</h1>';
@@ -100,7 +100,7 @@ function admWrongUID($UID = 0) {
 }
 
 /*
- * Вывод заголовка html-страницы
+ * Р’С‹РІРѕРґ Р·Р°РіРѕР»РѕРІРєР° html-СЃС‚СЂР°РЅРёС†С‹
  */
 function admPrintHeader(){
     echo <<<HEADER
@@ -109,7 +109,7 @@ function admPrintHeader(){
 <head>
     <meta charset="windows-1251">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Уголок администратора</title>
+    <title>РЈРіРѕР»РѕРє Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂР°</title>
     <link href="CSS/common.css" rel="stylesheet" type="text/css">
     <link href="../CSS/mycabinet.css" rel="stylesheet" type="text/css">
     
@@ -121,7 +121,7 @@ HEADER;
 }
 
 /*
- * Вывод окончания html-страницы
+ * Р’С‹РІРѕРґ РѕРєРѕРЅС‡Р°РЅРёСЏ html-СЃС‚СЂР°РЅРёС†С‹
  */
 function admPrintFooter(){
     echo <<<FOOTER

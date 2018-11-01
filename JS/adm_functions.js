@@ -1,14 +1,14 @@
 /*
-* Функции работы в административном режиме
+* Р¤СѓРЅРєС†РёРё СЂР°Р±РѕС‚С‹ РІ Р°РґРјРёРЅРёСЃС‚СЂР°С‚РёРІРЅРѕРј СЂРµР¶РёРјРµ
 */
 
-// Проверка правильности введённых новых паролей и запись в базу чере jQuery
+// РџСЂРѕРІРµСЂРєР° РїСЂР°РІРёР»СЊРЅРѕСЃС‚Рё РІРІРµРґС‘РЅРЅС‹С… РЅРѕРІС‹С… РїР°СЂРѕР»РµР№ Рё Р·Р°РїРёСЃСЊ РІ Р±Р°Р·Сѓ С‡РµСЂРµ jQuery
 function saveNewPass(UID) {
     var pass1 = document.getElementById("pass1").value;
     var pass2 = document.getElementById("pass2").value;
 
     if (pass1 !== pass2) {
-        alert("Введённые пароли отличаются!");
+        alert("Р’РІРµРґС‘РЅРЅС‹Рµ РїР°СЂРѕР»Рё РѕС‚Р»РёС‡Р°СЋС‚СЃСЏ!");
         document.getElementById("newpass").reset();
         return;
     }
@@ -17,10 +17,10 @@ function saveNewPass(UID) {
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4) {
             if (this.status == 201) { // Created
-                alert("Пароль установлен!");
+                alert("РџР°СЂРѕР»СЊ СѓСЃС‚Р°РЅРѕРІР»РµРЅ!");
                 location.reload(true);
             } else if (this.status == 400) { // Bad request
-                alert("Внимание, пароль не устанолвен!");
+                alert("Р’РЅРёРјР°РЅРёРµ, РїР°СЂРѕР»СЊ РЅРµ СѓСЃС‚Р°РЅРѕР»РІРµРЅ!");
                 document.getElementById("newpass").reset();
             }
         }
@@ -30,9 +30,9 @@ function saveNewPass(UID) {
     xhttp.send("UID=" + UID + "&PASS=" + pass1);
 }
 
-// Обработка формы проверки пароля через JQuery запрос.
-// В случае удачи в модуле admChkPass.php открывается сессия
-// и в адресе страницы убирается UID
+// РћР±СЂР°Р±РѕС‚РєР° С„РѕСЂРјС‹ РїСЂРѕРІРµСЂРєРё РїР°СЂРѕР»СЏ С‡РµСЂРµР· AJAX Р·Р°РїСЂРѕСЃ.
+// Р’ СЃР»СѓС‡Р°Рµ СѓРґР°С‡Рё РІ РјРѕРґСѓР»Рµ admChkPass.php РѕС‚РєСЂС‹РІР°РµС‚СЃСЏ СЃРµСЃСЃРёСЏ
+// Рё РІ Р°РґСЂРµСЃРµ СЃС‚СЂР°РЅРёС†С‹ СѓР±РёСЂР°РµС‚СЃСЏ UID
 function chkPass(UID) {
     var pass = document.getElementById("pass").value;
     if (pass === "") {
@@ -45,10 +45,10 @@ function chkPass(UID) {
             if (this.status == 202) { // Accepted
                 location.replace(location.origin + location.pathname);
             } else if (this.status == 401) { // Unauthorized
-                alert("Неверный пароль!");
+                alert("РќРµРІРµСЂРЅС‹Р№ РїР°СЂРѕР»СЊ!");
                 document.getElementById("passform").reset();
             } else {
-                alert("Произошла ошибка, http_response_code: " + this.status);
+                alert("РџСЂРѕРёР·РѕС€Р»Р° РѕС€РёР±РєР°, http_response_code: " + this.status);
             }
         }
     };

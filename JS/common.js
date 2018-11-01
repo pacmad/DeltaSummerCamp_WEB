@@ -28,10 +28,10 @@ function getScrollbarWidth() {
     return widthNoScroll - widthWithScroll;
 }
 */
-const startDay = new Date('2018-07-16');
-const endDay = new Date('2018-07-30');
+const startDay = new Date('2019-07-22');
+const endDay = new Date('2019-08-05');
 
-// Возвращает полное число лет от birthday до date
+// Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕР»РЅРѕРµ С‡РёСЃР»Рѕ Р»РµС‚ РѕС‚ birthday РґРѕ date
 // noinspection SyntaxError
 function age(birthday, startDay = new Date()) {
     const years = startDay.getFullYear()-birthday.getFullYear();
@@ -44,7 +44,7 @@ function age(birthday, startDay = new Date()) {
     return years;
 }
 
-// Возвращает дату дня рождения, если пришлось на период лагеря
+// Р’РѕР·РІСЂР°С‰Р°РµС‚ РґР°С‚Сѓ РґРЅСЏ СЂРѕР¶РґРµРЅРёСЏ, РµСЃР»Рё РїСЂРёС€Р»РѕСЃСЊ РЅР° РїРµСЂРёРѕРґ Р»Р°РіРµСЂСЏ
 function happyBirthday(birthday) {
     let theDay = new Date(startDay.getFullYear(), birthday.getMonth(), birthday.getDate());
     if (theDay >= startDay && theDay <= endDay) {

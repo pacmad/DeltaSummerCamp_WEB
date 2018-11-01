@@ -1,7 +1,7 @@
 <?php
-define('NEWS_PER_PAGE', '5'); // Êîëè÷åñòâî çàïèñåé íîâîñòåé âçâðàùàåìûõ çà îäèí ðàç
+define('NEWS_PER_PAGE', '5'); // ÐšÐ¾Ð»Ð¸Ñ‡ÐµÑÑ‚Ð²Ð¾ Ð·Ð°Ð¿Ð¸ÑÐµÐ¹ Ð½Ð¾Ð²Ð¾ÑÑ‚ÐµÐ¹ Ð²Ð·Ð²Ñ€Ð°Ñ‰Ð°ÐµÐ¼Ñ‹Ñ… Ð·Ð° Ð¾Ð´Ð¸Ð½ Ñ€Ð°Ð·
 /*
- * pageEnd() - çàâåðøàåò ñòðàíèöó íîâîñòåé
+ * pageEnd() - Ð·Ð°Ð²ÐµÑ€ÑˆÐ°ÐµÑ‚ ÑÑ‚Ñ€Ð°Ð½Ð¸Ñ†Ñƒ Ð½Ð¾Ð²Ð¾ÑÑ‚ÐµÐ¹
  */
 function pageEnd() {
     echo '<div class="bottom">&copy; 2017 dmitry@ablov.ru</div>
@@ -12,20 +12,21 @@ function pageEnd() {
     exit();
 }
 /*
- * boolean showNewsFeed($page) - âûâîä ñòðàíèöû $page íîâîñòíîé ëåíòû.
- * Âîçâðàùàåò true, åñëè íå âûâåäåíà ïîñëåäíÿÿ çàïèñòü
+ * boolean showNewsFeed($page) - Ð²Ñ‹Ð²Ð¾Ð´ ÑÑ‚Ñ€Ð°Ð½Ð¸Ñ†Ñ‹ $page Ð½Ð¾Ð²Ð¾ÑÑ‚Ð½Ð¾Ð¹ Ð»ÐµÐ½Ñ‚Ñ‹.
+ * Ð’Ð¾Ð·Ð²Ñ€Ð°Ñ‰Ð°ÐµÑ‚ true, ÐµÑÐ»Ð¸ Ð½Ðµ Ð²Ñ‹Ð²ÐµÐ´ÐµÐ½Ð° Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÑÑ Ð·Ð°Ð¿Ð¸ÑÑ‚ÑŒ
  */
 function showNewsFeed($page) {
     $db = new dbConnect();
     $result = $db->getNews($page, NEWS_PER_PAGE);
 
     foreach($result as $row) {
-        echo '<div class="newsblock" onclick="showMore(this);">';
+        $id = $row['Datetime'];
+        echo "<div class='newsblock' id='$id' onclick='showMore(this);'>";
         if ($row['Top'] != 1) {
             print('<p class="newsdate">' . date("d/m/Y", strtotime($row['Datetime'])) . '</p>');
         }
         print($row['Text']);
-        printf("<img src=\"/pictures/%s\" alt=\"Îòäûõ è èíòåðåñíîå îáó÷åíèå\">", $row['Picture']);
+        printf("<img src=\"/pictures/%s\" alt=\"ÐžÑ‚Ð´Ñ‹Ñ… Ð¸ Ð¸Ð½Ñ‚ÐµÑ€ÐµÑÐ½Ð¾Ðµ Ð¾Ð±ÑƒÑ‡ÐµÐ½Ð¸Ðµ\">", $row['Picture']);
         echo '</div>';
     }
 

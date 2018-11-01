@@ -5,18 +5,21 @@
  * Date: 24.10.2017
  * Time: 21:11
  */
+// РџРµСЂРёРѕРґ РїСЂРѕРІРµРґРµРЅРёСЏ Р»Р°РіРµСЂСЏ
+const START_DAY = "22/07/2019";
+const FINISH_DAY = "5/08/2019";
 
 /*
- * Обработка ошибок
+ * РћР±СЂР°Р±РѕС‚РєР° РѕС€РёР±РѕРє
  * @param string $err
  */
 function error($err) {
-    // Запись в журнал
+    // Р—Р°РїРёСЃСЊ РІ Р¶СѓСЂРЅР°Р»
     $servername = "localhost";
     $username = "PHP";
     $password = "DeltaDB";
     try {
-        $PDO = new PDO("mysql:host=$servername;dbname=delta;charset=CP1251", $username, $password);
+        $PDO = new PDO("mysql:host=$servername;dbname=delta;charset=UTF8", $username, $password);
         $PDO->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // set the PDO error mode to exception
         $sql = 'INSERT INTO log (text) VALUES ("' . $err . '")';
         $PDO->exec($sql);
@@ -26,15 +29,15 @@ function error($err) {
     }
     $PDO = null;
 
-    // Уведомление почтой
-    $subject = "Ошибка на сайте Дельты!";
+    // РЈРІРµРґРѕРјР»РµРЅРёРµ РїРѕС‡С‚РѕР№
+    $subject = "РћС€РёР±РєР° РЅР° СЃР°Р№С‚Рµ Р”РµР»СЊС‚С‹!";
     $reply_to = "ablov@cintra.ru";
     $error = "
         <!doctype html>
         <html>
         <head>
-        <meta charset=\"windows-1251\">
-        <title>Ошибка!</title>
+        <meta charset=\"UTF-8\">
+        <title>РћС€РёР±РєР°!</title>
         </head>
         <body>
         $err
@@ -43,7 +46,7 @@ function error($err) {
     ";
     $headers =
         'MIME-Version: 1.0' . "\r\n" .
-        'Content-type: text/html; charset=windows-1251' . "\r\n" .
+        'Content-type: text/html; charset=UTF-8' . "\r\n" .
         'From: Delta <delta_mail_robot@cintra.ru>' . "\r\n" .
         'To: ablov@cintra.ru' . "\r\n" .
 //        'Cc: anna.sem@gmail.com' . "\r\n" .
@@ -53,7 +56,7 @@ function error($err) {
 
 /*
  *
- * Вывод отладочной информации на консоль браузера
+ * Р’С‹РІРѕРґ РѕС‚Р»Р°РґРѕС‡РЅРѕР№ РёРЅС„РѕСЂРјР°С†РёРё РЅР° РєРѕРЅСЃРѕР»СЊ Р±СЂР°СѓР·РµСЂР°
  *
  */
 function console_log( $data ){
@@ -63,13 +66,13 @@ function console_log( $data ){
 }
 
 /*
- * Печатает стандартно контакты организатора
+ * РџРµС‡Р°С‚Р°РµС‚ СЃС‚Р°РЅРґР°СЂС‚РЅРѕ РєРѕРЅС‚Р°РєС‚С‹ РѕСЂРіР°РЅРёР·Р°С‚РѕСЂР°
  * @param string $person - 'abl' or 'sem'
  */
 function printContact($person) {
     if($person == 'sem') {
         echo '
-                +7(903)749-4851 (<a title="Телефон" href="tel:+79037494851" target="_blank">телефон</a>,
+                +7(903)749-4851 (<a title="РўРµР»РµС„РѕРЅ" href="tel:+79037494851" target="_blank">С‚РµР»РµС„РѕРЅ</a>,
                 <a title="Telegram" href="https://t.me/annasemovskaya" target="_blank">Telegram</a>,
                 <a title="WhatsApp" href="whatsapp://send?phone=+79037494851" target="_blank">WhatsApp</a>)<br>
                 <a title="E-mail" href="mailto:anna.sem@gmail.com" target="_blank">anna.sem@gmail.com</a><br>
@@ -78,7 +81,7 @@ function printContact($person) {
     }
     elseif ($person == 'abl') {
         echo '
-                +7(903)795-4223 (<a title="Телефон" href="tel:+79037954223" target="_blank">телефон</a>,
+                +7(903)795-4223 (<a title="РўРµР»РµС„РѕРЅ" href="tel:+79037954223" target="_blank">С‚РµР»РµС„РѕРЅ</a>,
                 <a title="Telegram" href="https://t.me/d_ablov" target="_blank">Telegram</a>,
                 <a title="Viber" href="viber://add?number=+79037954223" target="_blank">Viber</a>,
                 <a title="WhatsApp" href="whatsapp://send?phone=+79037954223" target="_blank">WhatsApp</a>)<br>

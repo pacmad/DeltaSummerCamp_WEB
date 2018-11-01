@@ -7,7 +7,7 @@ include 'phplib/yandex.metrika.php';
 include 'phplib/google.analytics.php';
 ?>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Обратная связь</title>
+<title>РћР±СЂР°С‚РЅР°СЏ СЃРІСЏР·СЊ</title>
 <link href="CSS/common.css" rel="stylesheet" type="text/css">
 <link href="CSS/mycabinet.css" rel="stylesheet" type="text/css">
 <?php
@@ -27,17 +27,17 @@ if (isset($_POST["id"])) {
 }
 
 /*
- * Вывод страницы обратной связи
+ * Р’С‹РІРѕРґ СЃС‚СЂР°РЅРёС†С‹ РѕР±СЂР°С‚РЅРѕР№ СЃРІСЏР·Рё
  *
  */ ?>
 <div class="title">
-    <h1>Связаться с организаторами летнего физико-математического лагеря &quot;Дельта&quot; в Мюнхене</h1>
+    <h1>РЎРІСЏР·Р°С‚СЊСЃСЏ СЃ РѕСЂРіР°РЅРёР·Р°С‚РѕСЂР°РјРё Р»РµС‚РЅРµРіРѕ С„РёР·РёРєРѕ-РјР°С‚РµРјР°С‚РёС‡РµСЃРєРѕРіРѕ Р»Р°РіРµСЂСЏ &quot;Р”РµР»СЊС‚Р°&quot; РІ РњСЋРЅС…РµРЅРµ</h1>
 </div>
 <div class="main">
     <form id="feedback" name="feedback" method="post" action="feedback-status.php">
     <div class="row"><div class="col-8">
-	    <h3>Здравствуйте! </h3>
-        <p>Заполните, пожалуйста, поля формы. Мы свяжемся с вами, как только получим этот запрос.</p>
+	    <h3>Р—РґСЂР°РІСЃС‚РІСѓР№С‚Рµ! </h3>
+        <p>Р—Р°РїРѕР»РЅРёС‚Рµ, РїРѕР¶Р°Р»СѓР№СЃС‚Р°, РїРѕР»СЏ С„РѕСЂРјС‹. РњС‹ СЃРІСЏР¶РµРјСЃСЏ СЃ РІР°РјРё, РєР°Рє С‚РѕР»СЊРєРѕ РїРѕР»СѓС‡РёРј СЌС‚РѕС‚ Р·Р°РїСЂРѕСЃ.</p>
 	</div></div> <!-- col-8, row -->
     <div class="row">
         <div class="col-4">
@@ -48,26 +48,26 @@ if (isset($_POST["id"])) {
         </div> <!-- col-4 -->
         <div class="col-4">
         	<p>
-	        <b>Как зовут ребёнка: </b><br>
+	        <b>РљР°Рє Р·РѕРІСѓС‚ СЂРµР±С‘РЅРєР°: </b><br>
             <input name="name" type="text" id="name" class="text-input" value="<?php echo $name?>">
             </p>
         </div> <!-- col-4 -->
     </div> <!-- row -->
     <div class="row"><div class="col-8">
-    <p><b>Сообщение:</b><br>
+    <p><b>РЎРѕРѕР±С‰РµРЅРёРµ:</b><br>
     <textarea name="message" rows="4" class="text-input" id="message"></textarea>
     </p>
-    <p><input type="submit" value="Отправить!"></p>
+    <p><input type="submit" value="РћС‚РїСЂР°РІРёС‚СЊ!"></p>
     </div></div> <!-- row --><!-- col-8-->
     </form>
     <hr>
     <div id="persons" class="row">
         <div class="col-6">
-            <p><b>Анна Семовская</b><br>
+            <p><b>РђРЅРЅР° РЎРµРјРѕРІСЃРєР°СЏ</b><br>
                 <?php printContact('sem'); ?>
             </p></div> <!-- col-6 -->
         <div class="col-6">
-            <p><b>Дмитрий Аблов</b><br>
+            <p><b>Р”РјРёС‚СЂРёР№ РђР±Р»РѕРІ</b><br>
                 <?php printContact('abl'); ?>
             </p>
         </div>

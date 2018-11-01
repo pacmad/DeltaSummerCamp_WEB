@@ -1,10 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding">
-    <file url="file://$PROJECT_DIR$/index.cgi" charset="windows-1251" />
-    <file url="file://$PROJECT_DIR$/index.php" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/JS/adm_functions.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/JS/adm_main.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/JS/cabinet_functions.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/JS/change_course.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/JS/common.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/JS/courses.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/JS/form_functions.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/JS/index.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/JS/timetable.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/admin.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/change_course.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/courses.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/environment.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/f_gorod.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/f_mathbaby.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/feedback-status.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/feedback.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/founders.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/index.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/info.php" charset="windows-1251" />
-    <file url="file://$PROJECT_DIR$/phplib/dbConnect.php" charset="windows-1251" />
-    <file url="file://$PROJECT_DIR$/registration.php" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/mc_-.inc" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mc_01.inc" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mc_5.inc" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mc_bottom.inc" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mc_err_empty.inc" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mc_err_unknown_id.inc" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mycabinet.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/photos.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/phplib/admChkPass.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/phplib/admFetch.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/phplib/admMain.inc" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/phplib/admSetPass.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/phplib/adminlib.inc" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/phplib/common.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/phplib/dbConnect.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/phplib/mail.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/phplib/news.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/phplib/registrations.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/phplib/validate.inc" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/projects.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/registration.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/teachers.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/team.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/timetable.php" charset="UTF-8" />
   </component>
 </project>

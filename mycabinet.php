@@ -1,14 +1,14 @@
 <!doctype html>
 <html>
 <head>
-<meta charset="windows-1251">
-<meta http-equiv="Content-Type" content="text/html; charset=windows-1251" />
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <?php
 include 'phplib/yandex.metrika.php';
 include 'phplib/google.analytics.php';
 ?>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Личный кабинет</title>
+<title>Р›РёС‡РЅС‹Р№ РєР°Р±РёРЅРµС‚</title>
 <link href="CSS/common.css" rel="stylesheet" type="text/css">
 <link href="CSS/mycabinet.css" rel="stylesheet" type="text/css">
 <link href="CSS/uploader.css" rel="stylesheet" type="text/css">
@@ -22,8 +22,8 @@ include 'phplib/google.analytics.php';
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="JS/lib/jquery.form.min.js"></script>
-<!-- Для загрузки файлов используем ужасную библиотеку jquery.uploadfile.js -->
-<!-- В дальнейшем надо обязательно переписать!!! -->
+<!-- Р”Р»СЏ Р·Р°РіСЂСѓР·РєРё С„Р°Р№Р»РѕРІ РёСЃРїРѕР»СЊР·СѓРµРј СѓР¶Р°СЃРЅСѓСЋ Р±РёР±Р»РёРѕС‚РµРєСѓ jquery.uploadfile.js -->
+<!-- Р’ РґР°Р»СЊРЅРµР№С€РµРј РЅР°РґРѕ РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ РїРµСЂРµРїРёСЃР°С‚СЊ!!! -->
 <script src="JS/lib/jquery.uploadfile.js"></script>
 <script src="JS/cabinet_functions.js"></script>
 </head>
@@ -42,21 +42,21 @@ if (!isset($_GET["id"])) {
 } else {
     $UID = $_GET["id"];
     /*
-     * Обработка AJAX-запроса из функции setDateWorkSent() на изменение статуса записи
-     * после того, как была открыта Олимпиада. Меняем статус абитуриента на "2"
-     * (если он и так не "2") и, записываем дату отсылки олимпиады.
+     * РћР±СЂР°Р±РѕС‚РєР° AJAX-Р·Р°РїСЂРѕСЃР° РёР· С„СѓРЅРєС†РёРё setDateWorkSent() РЅР° РёР·РјРµРЅРµРЅРёРµ СЃС‚Р°С‚СѓСЃР° Р·Р°РїРёСЃРё
+     * РїРѕСЃР»Рµ С‚РѕРіРѕ, РєР°Рє Р±С‹Р»Р° РѕС‚РєСЂС‹С‚Р° РћР»РёРјРїРёР°РґР°. РњРµРЅСЏРµРј СЃС‚Р°С‚СѓСЃ Р°Р±РёС‚СѓСЂРёРµРЅС‚Р° РЅР° "2"
+     * (РµСЃР»Рё РѕРЅ Рё С‚Р°Рє РЅРµ "2") Рё, Р·Р°РїРёСЃС‹РІР°РµРј РґР°С‚Сѓ РѕС‚СЃС‹Р»РєРё РѕР»РёРјРїРёР°РґС‹.
      */
     if (isset($_GET["SetStatus"])) {
         $db = new dbConnect();
         if ($db->getAppStatus($UID) != 2) {
             $db->setWorkDaySent($UID);
-            $db->dbLog("Открыта вступительная олимпиада", $UID);
+            $db->dbLog("РћС‚РєСЂС‹С‚Р° РІСЃС‚СѓРїРёС‚РµР»СЊРЅР°СЏ РѕР»РёРјРїРёР°РґР°", $UID);
         }
         exit();
     }
 
     /*
-     * Отработка AJAX-запроса на генерацию и отсылку "Приложения 2" по анкете
+     * РћС‚СЂР°Р±РѕС‚РєР° AJAX-Р·Р°РїСЂРѕСЃР° РЅР° РіРµРЅРµСЂР°С†РёСЋ Рё РѕС‚СЃС‹Р»РєСѓ "РџСЂРёР»РѕР¶РµРЅРёСЏ 2" РїРѕ Р°РЅРєРµС‚Рµ
      */
     if (isset($_GET["app"])) {
         include 'mc_app2gen.inc';
@@ -64,22 +64,22 @@ if (!isset($_GET["id"])) {
     }
 
     /*
-     * Основной модуль личного кабинета
+     * РћСЃРЅРѕРІРЅРѕР№ РјРѕРґСѓР»СЊ Р»РёС‡РЅРѕРіРѕ РєР°Р±РёРЅРµС‚Р°
      */
     $db = new dbConnect();
     if ($row = $db->getPerson($UID)) {
-        $db->dbLog($row['Name'] . " " . $row['Surname'] . " зашёл в Личный кабинет", $UID);
+        $db->dbLog($row['Name'] . " " . $row['Surname'] . " Р·Р°С€С‘Р» РІ Р›РёС‡РЅС‹Р№ РєР°Р±РёРЅРµС‚", $UID);
         if ($row['AppStatus'] == 0) {
-            $db->setAppStatus($UID, 1); // Пользователь первый раз зашёл в Личный кабинет
+            $db->setAppStatus($UID, 1); // РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ РїРµСЂРІС‹Р№ СЂР°Р· Р·Р°С€С‘Р» РІ Р›РёС‡РЅС‹Р№ РєР°Р±РёРЅРµС‚
         }
         /*
-         * Вывод страницы личного кабинета
+         * Р’С‹РІРѕРґ СЃС‚СЂР°РЅРёС†С‹ Р»РёС‡РЅРѕРіРѕ РєР°Р±РёРЅРµС‚Р°
          *
          */
 
         $appStatus = $db->getAppStatus($UID);
 
-        // Сначала выставляем subTitle
+        // РЎРЅР°С‡Р°Р»Р° РІС‹СЃС‚Р°РІР»СЏРµРј subTitle
         $subTitle = "";
         if ($appStatus > 1) {
             $name = $row["Name"];
@@ -88,28 +88,28 @@ if (!isset($_GET["id"])) {
             $phone = $row["Tel"];
             $subTitle = "<strong>$name $surname</strong>";
         } elseif ($appStatus < 0) {
-            $subTitle = "Регистрация закрыта.";
+            $subTitle = "Р РµРіРёСЃС‚СЂР°С†РёСЏ Р·Р°РєСЂС‹С‚Р°.";
         } else {
-            $subTitle = "Здесь мы будем выкладывать всю необходимую информацию по организации поездки.";
+            $subTitle = "Р—РґРµСЃСЊ РјС‹ Р±СѓРґРµРј РІС‹РєР»Р°РґС‹РІР°С‚СЊ РІСЃСЋ РЅРµРѕР±С…РѕРґРёРјСѓСЋ РёРЅС„РѕСЂРјР°С†РёСЋ РїРѕ РѕСЂРіР°РЅРёР·Р°С†РёРё РїРѕРµР·РґРєРё.";
         }
 
-        // Выводим заголовок
+        // Р’С‹РІРѕРґРёРј Р·Р°РіРѕР»РѕРІРѕРє
         echo "
             <div class=\"title\">
-            <h1>Личный кабинет участника летнего физико-математического лагеря \"Дельта\"</h1>
+            <h1>Р›РёС‡РЅС‹Р№ РєР°Р±РёРЅРµС‚ СѓС‡Р°СЃС‚РЅРёРєР° Р»РµС‚РЅРµРіРѕ С„РёР·РёРєРѕ-РјР°С‚РµРјР°С‚РёС‡РµСЃРєРѕРіРѕ Р»Р°РіРµСЂСЏ \"Р”РµР»СЊС‚Р°\"</h1>
             <h2 id=\"subTitle\">$subTitle</h2>
             </div>
         ";
 
-        // Вывод основного куска в зависимости от статуса пользователя
+        // Р’С‹РІРѕРґ РѕСЃРЅРѕРІРЅРѕРіРѕ РєСѓСЃРєР° РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ СЃС‚Р°С‚СѓСЃР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
         echo "<div class=\"main\">";
-        if ($appStatus < 0) { // Регистрация закрыта
+        if ($appStatus < 0) { // Р РµРіРёСЃС‚СЂР°С†РёСЏ Р·Р°РєСЂС‹С‚Р°
             include "mc_-.inc";
-        } elseif ($appStatus < 2) { // Скачать олимпиаду
+        } elseif ($appStatus < 2) { // РЎРєР°С‡Р°С‚СЊ РѕР»РёРјРїРёР°РґСѓ
             include "mc_01.inc";
-        } elseif ($appStatus < 4) { // Прислать результаты
+        } elseif ($appStatus < 4) { // РџСЂРёСЃР»Р°С‚СЊ СЂРµР·СѓР»СЊС‚Р°С‚С‹
             include "mc_23.inc";
-        } elseif ($appStatus < 25) { // Заполнить анкету (статус = 15) и сгенерировать приложение к договору (статус = 20)
+        } elseif ($appStatus < 25) { // Р—Р°РїРѕР»РЅРёС‚СЊ Р°РЅРєРµС‚Сѓ (СЃС‚Р°С‚СѓСЃ = 15) Рё СЃРіРµРЅРµСЂРёСЂРѕРІР°С‚СЊ РїСЂРёР»РѕР¶РµРЅРёРµ Рє РґРѕРіРѕРІРѕСЂСѓ (СЃС‚Р°С‚СѓСЃ = 20)
             include "mc_5.inc";
         }
         include "mc_bottom.inc";
@@ -117,16 +117,16 @@ if (!isset($_GET["id"])) {
 
 
         /*
-         * Обработка запроса выслать файл-олимпиады письмом
+         * РћР±СЂР°Р±РѕС‚РєР° Р·Р°РїСЂРѕСЃР° РІС‹СЃР»Р°С‚СЊ С„Р°Р№Р»-РѕР»РёРјРїРёР°РґС‹ РїРёСЃСЊРјРѕРј
          */
         if (isset($_GET['sbm']) && $_GET['sbm']==='yes') {
             try {
                 sendAssignmentsMail($row);
-                $db->dbLog($row['Name'] . " " . $row['Surname'] . ": выслана вступительная олимпиада", $_GET["id"]);
+                $db->dbLog($row['Name'] . " " . $row['Surname'] . ": РІС‹СЃР»Р°РЅР° РІСЃС‚СѓРїРёС‚РµР»СЊРЅР°СЏ РѕР»РёРјРїРёР°РґР°", $_GET["id"]);
                 $db->setWorkDaySent($_GET["id"]);
                 echo '
                     <script>
-                    document.getElementById("sendStatus").innerHTML = "Письмо со вступительной олимпиадой выслано Вам на почту.";
+                    document.getElementById("sendStatus").innerHTML = "РџРёСЃСЊРјРѕ СЃРѕ РІСЃС‚СѓРїРёС‚РµР»СЊРЅРѕР№ РѕР»РёРјРїРёР°РґРѕР№ РІС‹СЃР»Р°РЅРѕ Р’Р°Рј РЅР° РїРѕС‡С‚Сѓ.";
                     document.getElementById("sendStatus").style.color = "#188";
                     document.getElementById("sendStatus").style.opacity = "1";
                     </script>
@@ -134,7 +134,7 @@ if (!isset($_GET["id"])) {
             } catch (\PHPMailer\PHPMailer\Exception $e) {
                 echo '
                     <script>
-                    document.getElementById("sendStatus").innerHTML = "Проблема с отправкой письма. Свяжитесь, пожалуйста, с организаторами!";
+                    document.getElementById("sendStatus").innerHTML = "РџСЂРѕР±Р»РµРјР° СЃ РѕС‚РїСЂР°РІРєРѕР№ РїРёСЃСЊРјР°. РЎРІСЏР¶РёС‚РµСЃСЊ, РїРѕР¶Р°Р»СѓР№СЃС‚Р°, СЃ РѕСЂРіР°РЅРёР·Р°С‚РѕСЂР°РјРё!";
                     document.getElementById("sendStatus").style.color = "#A33";
                     document.getElementById("sendStatus").style.opacity = "1";
                     </script>
@@ -143,7 +143,7 @@ if (!isset($_GET["id"])) {
             }
         }
 
-    } else { // Обработка запроса с неверным UID
+    } else { // РћР±СЂР°Р±РѕС‚РєР° Р·Р°РїСЂРѕСЃР° СЃ РЅРµРІРµСЂРЅС‹Рј UID
         include "mc_err_unknown_id.inc";
     }
 }
