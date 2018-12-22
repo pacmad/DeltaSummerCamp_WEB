@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Edit</title>
+
+    <style>
+        canvas {
+            cursor: crosshair;
+        }
+
+        .controls * {
+            margin: 5px;
+        }
+
+        .controls input {
+            position: relative;
+            top: 5px;
+        }
+    </style>
+
+    <script>
+        /*      *Features*
+         * init() to initialize global vars
+         * step() for logic + redraw()
+         * interface speed control + stop/start
+         */
+        let matrix = [];
+        let oldmatrix = [];
+        let isRunning = false;
+        var delay = 500;
+        var canvas;
+        var ctx;
+        var cellW;
+        var cellH;
+        const MAX_X = 50;
+        const MAX_Y = 50;
+        let isDrawing = false;
+        let penChosen = false;
+
+        function putXY(X, Y, val) {
+            let index = Y * MAX_X + X;
+            matrix[index] = val;
+        }
+
+        function putoldXY(X, Y, val) {
+            let index = Y * MAX_X + X;
+            oldmatrix[index] = val;
+        }
+
+        function getXY(X, Y) {
+            let index = Y * MAX_X + X;
+            return oldmatrix[index];
+        }
+
+        function getnewXY(X, Y) {
+            let index = Y * MAX_X + X;
+            return matrix[index];
+        }
+
+        //show current state of matrix + grid
+        function show() {
+
+            let c = document.getElementById('myCanvas');
+            let context = c.getContext('2d');
+
+            for (x = 0; x < MAX_X; x++) {
+                for (y = 0; y < MAX_Y; y++) {
+                    context.fillStyle = getnewXY(x, y);
+                    context.fillRect(x * cellW, y * cellH, cellW, cellH);
+                }
+            }
+
+            for (i = 0; i < MAX_X; i++) {
+                ctx.beginPath();
+                ctx.moveTo(0, i * cellH);
+                ctx.lineTo(canvas.width, i * cellH);
+                ctx.stroke();
+            }
+
+            for (j = 0; j < MAX_Y; j++) {
+                ctx.beginPath();
+                ctx.moveTo(j * cellW, 0);
+                ctx.lineTo(j * cellW, canvas.height);
+                ctx.stroke();
+            }
+        }
+
+        // randomize every cell to 1 or 0
+        function prepare() {
+            for (let y = 0; y < MAX_X; y++) {
+                for (let x = 0; x < MAX_Y; x++) {
+                    let r = getRandomInt(0, 255);
+                    let g = getRandomInt(0, 255);
+                    let b = getRandomInt(0, 255);
+                    putXY(x, y, rgbToHex(r, g, b));
+                }
+
+                oldmatrix = matrix.slice();
+            }
+        }
+
+
+        function startstop(btn) {
+            if (isRunning) {
+                stop();
+                isRunning = false;
+                btn.innerHTML = 'Start';
+            } else {
+                play();
+                isRunning = true;
+                btn.innerHTML = 'Stop';
+            }
+        }
+
+        function play() {
+            id = setInterval(step, delay);
+        }
+
+        function stop() {
+            clearInterval(id);
+        }
+
+
+        function init() {
+            initCanvas(MAX_X, MAX_Y);
+            prepare();
+        }
+
+        function clearMatrix() {
+            for (let y = 0; y < MAX_X; y++) {
+                for (let x = 0; x < MAX_Y; x++) {
+                    putXY(x, y, "#ffffff");
+                }
+            }
+            oldmatrix = matrix.slice();
+            show();
+        }
+
+        // set global variables
+        function initCanvas(w, h) {
+            canvas = document.getElementById('myCanvas');
+            ctx = canvas.getContext('2d');
+            cellW = canvas.width / w;
+            cellH = canvas.height / h;
+        }
+
+        function mDraw(ev) {
+            document.getElementById("outX").innerHTML = ev.layerX;
+            document.getElementById("outY").innerHTML = ev.layerY;
+        }
+
+        function step() {
+
+            for (let posX = 0; posX < MAX_X; posX++) {
+                for (let posY = 0; posY < MAX_Y; posY++) {
+
+                    let _xr = (posX === MAX_X - 1) ? 0 : posX + 1;
+                    let _xl = (posX === 0) ? MAX_X - 1 : posX - 1;
+
+                    let _yu = (posY === 0) ? MAX_Y - 1 : posY - 1;
+                    let _yd = (posY === MAX_Y - 1) ? 0 : posY + 1;
+
+                    let colors = [getXY(_xr, posY), getXY(_xl, posY), getXY(posX, _yu), getXY(posX, _yd),
+                        getXY(_xl, _yu), getXY(_xl, _yd), getXY(_xr, _yu), getXY(_xr, _yd)];
+                    let rand = getRandomInt(0, 10);
+                    if (rand === 0) {
+                        let finalColor = mix(colors);
+                        putXY(posX, posY, finalColor);
+                    }
+                    else if (rand === 3 && getXY(posX, posY) !== "#ffffff") {
+                        let r = getRandomInt(0, 255);
+                        let g = getRandomInt(0, 255);
+                        let b = getRandomInt(0, 255);
+                        putXY(posX, posY, rgbToHex(r, g, b));
+                    }
+                }
+            }
+            show();
+            oldmatrix = matrix.slice();
+        }
+
+
+        function mix(fourColors) {
+            let final = {r: 0, g: 0, b: 0};
+            for (let i = 0; i < 8; i++) {
+                let obj = hexToRgb(fourColors[i]);
+                final.r += obj.r;
+                final.g += obj.g;
+                final.b += obj.b;
+            }
+            final.r = Math.round(final.r / 8);
+            final.g = Math.round(final.g / 8);
+            final.b = Math.round(final.b / 8);
+            return rgbToHex(final.r, final.g, final.b);
+        }
+
+        function componentToHex(c) {
+            var hex = c.toString(16);
+            return hex.length == 1 ? "0" + hex : hex;
+        }
+
+        function rgbToHex(r, g, b) {
+            return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+        }
+
+        function hexToRgb(hex) {
+            var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+
+        //------------------------------mouse activity
+        function mouse() {
+            isDrawing = true;
+        }
+
+        function mouseSec() {
+            isDrawing = false;
+            oldmatrix = matrix.slice();
+        }
+
+        function pen() {
+            penChosen = true;
+        }
+
+        function eraser() {
+            penChosen = false;
+        }
+
+        function onClick(evt) {
+            let posX = Math.floor(evt.layerX / cellW);
+            let posY = Math.floor(evt.layerY / cellH);
+            if (isDrawing) {
+                if (penChosen) {
+                    let r = getRandomInt(0, 255);
+                    let g = getRandomInt(0, 255);
+                    let b = getRandomInt(0, 255);
+                    let color = rgbToHex(r, g, b);
+
+                    let _xr = (posX === MAX_X - 1) ? 0 : posX + 1;
+                    let _xl = (posX === 0) ? MAX_X - 1 : posX - 1;
+
+                    let _yu = (posY === 0) ? MAX_Y - 1 : posY - 1;
+                    let _yd = (posY === MAX_Y - 1) ? 0 : posY + 1;
+
+                    putXY(posX, posY, color);
+                    putXY(posX, _yu, color);
+                    putXY(posX, _yd, color);
+                    putXY(_xr, posY, color);
+                    putXY(_xl, posY, color);
+                    putXY(_xr, _yu, color);
+                    putXY(_xr, _yd, color);
+                    putXY(_xl, _yu, color);
+                    putXY(_xl, _yd, color);
+
+                }
+                /*else {
+                    putXY(x, y, 0);
+                }*/
+                show();
+            }
+        }
+
+        //changes speed with new value
+        function newspeed(value) {
+            stop();
+            delay = value;
+            if (isRunning == true) {
+                play();
+            }
+        }
+
+        function getRandomInt(min, max) { // random int in[a,b]
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+    </script>
+</head>
+
+<body onLoad='init()'>
+<canvas width='600px' height='600px' style="border:1px solid black;" id='myCanvas' onmousemove='onClick(event)'
+        onmousedown="mouse()" onmouseup="mouseSec()"></canvas>
+<br>
+<div class='controls'>
+    <button onclick='startstop(this)'>Play</button>
+    <!--<button onclick ='stop()'>Stop</button>-->
+    <button onclick='step()'>Next</button>
+    <button onclick="clearMatrix()">Clear</button>
+    <button onclick="pen()">Pen On</button>
+    <button onclick="eraser()">Pen Off</button>
+    <span> Refresh speed: </span>
+    <input type="range" min="10" max="1000" value="500" step="10" class="slider" id="myRange"
+           oninput='newspeed(this.value)'>
+    <span>X: <span id="outX"> ??? </span> Y: <span id="outY"> ??? </span> </span>
+</div>
+</body>
+
+</html>
+

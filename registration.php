@@ -1,7 +1,7 @@
 <?php
 require_once 'phplib/dbConnect.php';
 require_once 'phplib/mail.php';
-require_once 'phplib/common.php';
+require_once 'phplib/common.inc';
 // Обработка AJAX-запроса
 if (isset($_POST["ALL_DONE"]) && $_POST["ALL_DONE"] === 'Check'){
     $db = new dbConnect();
@@ -34,7 +34,7 @@ if (isset($_POST["ALL_DONE"]) && $_POST["ALL_DONE"] === 'Check'){
 
 <body>
 <div class="title">
-    <h1><span class="highlighted">Предварительная</span> регистрация в летний физико-математический лагерь "Дельта" <span class="highlighted">на июль 2019 года</span> </h1>
+    <h1>Регистрация в летний физико-математический лагерь "Дельта" <span class="highlighted">на июль-август 2019 года</span> </h1>
 </div>
 
 <?php
@@ -166,25 +166,36 @@ if (!isset($_POST["ALL_DONE"]) || $_POST["ALL_DONE"] === "") {
     if ($db->getStatus() == DB_ADD_OK) {
         /*****
          *
-         * Сообщение об успешной регистрации
+         * Успешная регистрация
          *
          */
         $person = $db->getPerson($uniqueID);
-        try {
-            sendRegMail($person);
-            $db->dbLog("Выслано подтверждение регистрации, UID=" . $uniqueID, $uniqueID);
-        } catch (PHPMailer\PHPMailer\Exception $e) {
-            error("Error in sendRegMail function, with person UID=" . $uniqueID . ": " . $e->errorMessage());
-        }
 
-        // Если были в прошлом году - перекидываем фотографию из бекапа в новую папку
+        // Если были в прошлом году
         if ($_POST["ALL_DONE"] === "Old" && $OldUID = $db->getOldUID($uniqueID)) {
+            // ...перекидываем фотографию из бекапа в новую папку
             $source_pattern = "_2018/photos/" . $OldUID . ".*";
-            $all_source_photos = glob($source_pattern);
-            $source = $all_source_photos[0];
-            $dest = "photos/" . $uniqueID . ".JPG";
-            $result = copy($source, $dest);
-            if (!$result) error("Unable to copy photo from old account for UID: $uniqueID, old_UID: $OldUID");
+            if ($all_source_photos = glob($source_pattern)) {
+                $source = $all_source_photos[0];
+                $dest = "photos/" . $uniqueID . ".JPG";
+                $result = copy($source, $dest);
+                if (!$result) error("Unable to copy photo from old account for UID: $uniqueID, old_UID: $OldUID");
+            }
+
+            // ... и отправляем письмо об успешной регистрации
+            try {
+                sendGreetingsMail($person);
+            } catch (PHPMailer\PHPMailer\Exception $e) {
+                error("Error in sendGreetingsMail function, with person UID=" . $uniqueID . ": " . $e->errorMessage());
+            }
+        } else {
+            // Отправляем письмо новеньким
+            try {
+                sendRegMail($person);
+                $db->dbLog("Выслано подтверждение регистрации, UID=" . $uniqueID, $uniqueID);
+            } catch (PHPMailer\PHPMailer\Exception $e) {
+                error("Error in sendRegMail function, with person UID=" . $uniqueID . ": " . $e->errorMessage());
+            }
         }
         ?>
         <div class="main">

@@ -1,6 +1,6 @@
 <?php
 /**
- * Библиотека функций администрирования
+ * Библиотека функций входа в систему администрирования
  * Created by PhpStorm.
  * User: Dima
  * Date: 22.01.2018
@@ -107,7 +107,7 @@ function admPrintHeader(){
 <!doctype html>
 <html lang="ru">
 <head>
-    <meta charset="windows-1251">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Уголок администратора</title>
     <link href="CSS/common.css" rel="stylesheet" type="text/css">

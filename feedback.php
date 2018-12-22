@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-<meta charset="windows-1251">
+<meta charset="UTF-8">
 <?php
 include 'phplib/yandex.metrika.php';
 include 'phplib/google.analytics.php';
@@ -11,7 +11,7 @@ include 'phplib/google.analytics.php';
 <link href="CSS/common.css" rel="stylesheet" type="text/css">
 <link href="CSS/mycabinet.css" rel="stylesheet" type="text/css">
 <?php
-    require_once 'phplib/common.php';
+    require_once 'phplib/common.inc';
 ?>
 </head>
 <body>

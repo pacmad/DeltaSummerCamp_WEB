@@ -1,0 +1,552 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cellular Automate</title>
+    <meta name = "view port" content="width=device-width, inital-scale=1.0">
+    <link href="common.css" rel="stylesheet" type="text/css">
+    <style>
+        .wrap
+        {
+            perspective: 1000px;
+            perspective-origin: 10% 170px;
+            position: absolute;
+        }
+        .a1{
+            top: 50px;
+            left: 50px;
+        }
+        .a2 {
+            top: 50px;
+            left: 125px;
+        }
+        .a3{
+            top: 50px;
+            left: 200px;
+
+        }
+        .a4{
+            top: 50px;
+            left: 275px;
+        }
+        .a5{
+            top: 50px;
+            left: 350px;
+        }
+        .a6{
+            top: 50px;
+            left: 425px;
+
+        }
+        .a7{
+            top: 50px;
+            left: 500px;
+        }
+        .a8{
+            top: 50px;
+            left: 575px;
+        }
+        .a9{
+            top: 50px;
+            left: 650px;
+        }
+        .a11{
+            top: 50px;
+            left: 750px;
+        }
+        .a12{
+            top: 50px;
+            left: 825px;
+        }
+        .a13{
+             top: 50px;
+             left: 900px;
+        }
+        .a14{
+              top: 50px;
+              left: 975px;
+        }
+        .a15{
+               top: 50px;
+               left: 1050px;
+        }
+        .a16{
+               top: 50px;
+               left: 1125px;
+            }.a17{
+                 top: 50px;
+                 left: 1200px;
+             }.a18 {
+                  top: 50px;
+                  left: 1275px;
+
+              }
+        .cube {
+            position: relative;
+            width: 50px;
+            transform-style: preserve-3d;
+        }
+        .cube div {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border: 1px solid #000;
+
+        }
+
+        .back {
+            transform: translateZ(-25px) rotateY(90deg);
+            text-align: center;
+            font-size: 30px;
+            background-color: orchid;
+            color: black;
+            transform-origin: top right;
+        }
+        .right {
+            transform: rotateY(180deg) translateZ(25px);
+            text-align: center;
+            font-size: 30px;
+            background-color:lightseagreen ;
+            color: black;
+            height: 25px;
+            width: 25px;
+
+        }
+        .left {
+            transform: rotateY(90deg) translateX(-25px);
+            transform-origin: left center ;
+            text-align: center;
+            font-size: 30px;
+            color: black;
+            background-color:limegreen;
+            height: 25px;
+            width: 25px;
+
+
+        }
+        .top {
+            transform: rotateX(-90deg) translateY(-25px);
+            transform-origin: top center;
+            text-align: center;
+            font-size: 30px;
+            color: black;
+            background-color: red ;
+
+        }
+        .bottom {
+            transform: rotateX(90deg) translateY(25px);
+            transform-origin: bottom center;
+            text-align: center;
+            font-size: 30px;
+            color: black;
+            background-color: orange ;
+        }
+        .front {
+            transform: translateZ(25px);
+            text-align: center;
+            font-size: 30px;
+            color: black;
+            background-color: yellow ;
+        }
+
+
+        @keyframes spin {
+            from { transform: rotateY(0); }
+            to { transform: rotateY(360deg); }
+        }
+
+        .cube {
+            animation: spin 15s infinite linear;
+        }
+
+    </style>
+</head>
+<body>
+<a href = "BorisKantor.html"><button class="button"><span>Паркур</span></button></a>
+<a href = "washinghands2.html"><button class="button2"><span>Мой-до-дыр</span></button></a>
+<a href="Jonathan-Life_Simulator.html"><button class="button3"><span> Cимулятор жизни </span></button></a>
+<a href = "Artem-Game_of_life.html"><button class="button4"><span>Движок (+ Игра жизнь)</span></button></a>
+<a href = "about the game.html"><button class="aboutthegame"><span>Что такое клеточный автомат?</span></button></a>
+<a href = "Tanya-ANTS.html"><button class="button5" style="top:600px;"><span>Муравей</span></button></a>
+<a href = "Yan+venya-Colors.html"><button class="button6"><span>Цвета</span></button></a>
+<a href = "vova-lichens.html"><button class="button7"><span>Бактерии</span></button></a>
+<a href = "vova-sandbox.html"><button class="button8"><span>Песочница</span></button></a>
+<a href = "vova-inkspot.html"><button class="button9"><span>Пятно</span></button></a>
+<a href = "flower.html"><button class="button10" style="left:300px"><span>Flower</span></button></a>
+
+
+<div class="bg c1 x1 y1"></div>
+<div class="bg c2 x2 y1"></div>
+<div class="bg c3 x3 y1"></div>
+<div class="bg c4 x4 y1"></div>
+<div class="bg c5 x5 y1"></div>
+<div class="bg c6 x6 y1"></div>
+<div class="bg c7 x7 y1"></div>
+<div class="bg c8 x8 y1"></div>
+<div class="bg c9 x9 y1"></div>
+<div class="bg c10 x10 y1"></div>
+<div class="bg c11 x11 y1"></div>
+<div class="bg c12 x12 y1"></div>
+<div class="bg c13 x13 y1"></div>
+<div class="bg c14 x14 y1"></div>
+<div class="bg c15 x15 y1"></div>
+
+<div class="bg c1 x1 y2"></div>
+<div class="bg c2 x2 y2"></div>
+<div class="bg c3 x3 y2"></div>
+<div class="bg c4 x4 y2"></div>
+<div class="bg c5 x5 y2"></div>
+<div class="bg c6 x6 y2"></div>
+<div class="bg c7 x7 y2"></div>
+<div class="bg c8 x8 y2"></div>
+<div class="bg c9 x9 y2"></div>
+<div class="bg c10 x10 y2"></div>
+<div class="bg c11 x11 y2"></div>
+<div class="bg c12 x12 y2"></div>
+<div class="bg c13 x13 y2"></div>
+<div class="bg c14 x14 y2"></div>
+<div class="bg c15 x15 y2"></div>
+
+<div class="bg c1 x1 y1"></div>
+<div class="bg c2 x2 y1"></div>
+<div class="bg c3 x3 y1"></div>
+<div class="bg c4 x4 y1"></div>
+<div class="bg c5 x5 y1"></div>
+<div class="bg c6 x6 y1"></div>
+<div class="bg c7 x7 y1"></div>
+<div class="bg c8 x8 y1"></div>
+<div class="bg c9 x9 y1"></div>
+<div class="bg c10 x10 y1"></div>
+<div class="bg c11 x11 y1"></div>
+<div class="bg c12 x12 y1"></div>
+<div class="bg c13 x13 y1"></div>
+<div class="bg c14 x14 y1"></div>
+<div class="bg c15 x15 y1"></div>
+
+<div class="bg c1 x1 y3"></div>
+<div class="bg c2 x2 y3"></div>
+<div class="bg c3 x3 y3"></div>
+<div class="bg c4 x4 y3"></div>
+<div class="bg c5 x5 y3"></div>
+<div class="bg c6 x6 y3"></div>
+<div class="bg c7 x7 y3"></div>
+<div class="bg c8 x8 y3"></div>
+<div class="bg c9 x9 y3"></div>
+<div class="bg c10 x10 y3"></div>
+<div class="bg c11 x11 y3"></div>
+<div class="bg c12 x12 y3"></div>
+<div class="bg c13 x13 y3"></div>
+<div class="bg c14 x14 y3"></div>
+<div class="bg c15 x15 y3"></div>
+
+<div class="bg c1 x1 y3"></div>
+<div class="bg c2 x2 y3"></div>
+<div class="bg c3 x3 y3"></div>
+<div class="bg c4 x4 y3"></div>
+<div class="bg c5 x5 y3"></div>
+<div class="bg c6 x6 y3"></div>
+<div class="bg c7 x7 y3"></div>
+<div class="bg c8 x8 y3"></div>
+<div class="bg c9 x9 y3"></div>
+<div class="bg c10 x10 y3"></div>
+<div class="bg c11 x11 y3"></div>
+<div class="bg c12 x12 y3"></div>
+<div class="bg c13 x13 y3"></div>
+<div class="bg c14 x14 y3"></div>
+<div class="bg c15 x15 y3"></div>
+
+<div class="bg c1 x1 y4"></div>
+<div class="bg c2 x2 y4"></div>
+<div class="bg c3 x3 y4"></div>
+<div class="bg c4 x4 y4"></div>
+<div class="bg c5 x5 y4"></div>
+<div class="bg c6 x6 y4"></div>
+<div class="bg c7 x7 y4"></div>
+<div class="bg c8 x8 y4"></div>
+<div class="bg c9 x9 y4"></div>
+<div class="bg c10 x10 y4"></div>
+<div class="bg c11 x11 y4"></div>
+<div class="bg c12 x12 y4"></div>
+<div class="bg c13 x13 y4"></div>
+<div class="bg c14 x14 y4"></div>
+<div class="bg c15 x15 y4"></div>
+
+<div class="bg c1 x1 y5"></div>
+<div class="bg c2 x2 y5"></div>
+<div class="bg c3 x3 y5"></div>
+<div class="bg c4 x4 y5"></div>
+<div class="bg c5 x5 y5"></div>
+<div class="bg c6 x6 y5"></div>
+<div class="bg c7 x7 y5"></div>
+<div class="bg c8 x8 y5"></div>
+<div class="bg c9 x9 y5"></div>
+<div class="bg c10 x10 y5"></div>
+<div class="bg c11 x11 y5"></div>
+<div class="bg c12 x12 y5"></div>
+<div class="bg c13 x13 y5"></div>
+<div class="bg c14 x14 y5"></div>
+<div class="bg c15 x15 y5"></div>
+
+<div class="bg c1 x1 y5"></div>
+<div class="bg c2 x2 y5"></div>
+<div class="bg c3 x3 y5"></div>
+<div class="bg c4 x4 y5"></div>
+<div class="bg c5 x5 y5"></div>
+<div class="bg c6 x6 y5"></div>
+<div class="bg c7 x7 y5"></div>
+<div class="bg c8 x8 y5"></div>
+<div class="bg c9 x9 y5"></div>
+<div class="bg c10 x10 y5"></div>
+<div class="bg c11 x11 y5"></div>
+<div class="bg c12 x12 y5"></div>
+<div class="bg c13 x13 y5"></div>
+<div class="bg c14 x14 y5"></div>
+<div class="bg c15 x15 y5"></div>
+
+<div class="bg c1 x1 y6"></div>
+<div class="bg c2 x2 y6"></div>
+<div class="bg c3 x3 y6"></div>
+<div class="bg c4 x4 y6"></div>
+<div class="bg c5 x5 y6"></div>
+<div class="bg c6 x6 y6"></div>
+<div class="bg c7 x7 y6"></div>
+<div class="bg c8 x8 y6"></div>
+<div class="bg c9 x9 y6"></div>
+<div class="bg c10 x10 y6"></div>
+<div class="bg c11 x11 y6"></div>
+<div class="bg c12 x12 y6"></div>
+<div class="bg c13 x13 y6"></div>
+<div class="bg c14 x14 y6"></div>
+<div class="bg c15 x15 y6"></div>
+
+
+<div class="bg c1 x1 y7"></div>
+<div class="bg c2 x2 y7"></div>
+<div class="bg c3 x3 y7"></div>
+<div class="bg c4 x4 y7"></div>
+<div class="bg c5 x5 y7"></div>
+<div class="bg c6 x6 y7"></div>
+<div class="bg c7 x7 y7"></div>
+<div class="bg c8 x8 y7"></div>
+<div class="bg c9 x9 y7"></div>
+<div class="bg c10 x10 y7"></div>
+<div class="bg c11 x11 y7"></div>
+<div class="bg c12 x12 y7"></div>
+<div class="bg c13 x13 y7"></div>
+<div class="bg c14 x14 y7"></div>
+<div class="bg c15 x15 y7"></div>
+
+<div class="bg c1 x1 y7"></div>
+<div class="bg c2 x2 y7"></div>
+<div class="bg c3 x3 y7"></div>
+<div class="bg c4 x4 y7"></div>
+<div class="bg c5 x5 y7"></div>
+<div class="bg c6 x6 y7"></div>
+<div class="bg c7 x7 y7"></div>
+<div class="bg c8 x8 y7"></div>
+<div class="bg c9 x9 y7"></div>
+<div class="bg c10 x10 y7"></div>
+<div class="bg c11 x11 y7"></div>
+<div class="bg c12 x12 y7"></div>
+<div class="bg c13 x13 y7"></div>
+<div class="bg c14 x14 y7"></div>
+<div class="bg c15 x15 y7"></div>
+
+<div class="bg c1 x1 y8"></div>
+<div class="bg c2 x2 y8"></div>
+<div class="bg c3 x3 y8"></div>
+<div class="bg c4 x4 y8"></div>
+<div class="bg c5 x5 y8"></div>
+<div class="bg c6 x6 y8"></div>
+<div class="bg c7 x7 y8"></div>
+<div class="bg c8 x8 y8"></div>
+<div class="bg c9 x9 y8"></div>
+<div class="bg c10 x10 y8"></div>
+<div class="bg c11 x11 y8"></div>
+<div class="bg c12 x12 y8"></div>
+<div class="bg c13 x13 y8"></div>
+<div class="bg c14 x14 y8"></div>
+<div class="bg c15 x15 y8"></div>
+
+<div class="wrap a1">
+    <div class="cube">
+        <div class="front">К</div>
+        <div class="back">К</div>
+        <div class="top">К</div>
+        <div class="bottom">К</div>
+        <div class="left">К</div>
+        <div class="right">К</div>
+    </div>
+</div>
+<div class="wrap a2">
+    <div class="cube">
+        <div class="front">л</div>
+        <div class="back">л</div>
+        <div class="top">л</div>
+        <div class="bottom">л</div>
+        <div class="left">л</div>
+        <div class="right">л</div>
+    </div>
+</div>
+<div class="wrap a3">
+    <div class="cube">
+        <div class="front">е</div>
+        <div class="back">е</div>
+        <div class="top">е</div>
+        <div class="bottoе">е</div>
+        <div class="left">е</div>
+        <div class="right">е</div>
+    </div>
+</div>
+<div class="wrap a4">
+    <div class="cube">
+        <div class="front">т</div>
+        <div class="back">т</div>
+        <div class="top">т</div>
+        <div class="bottom">т</div>
+        <div class="left">т</div>
+        <div class="right">т</div>
+    </div>
+</div>
+<div class="wrap a5">
+    <div class="cube">
+        <div class="front">о</div>
+        <div class="back">о</div>
+        <div class="top">о</div>
+        <div class="bottom">о</div>
+        <div class="left">о</div>
+        <div class="right">о</div>
+    </div>
+</div>
+<div class="wrap a6">
+    <div class="cube">
+        <div class="front">ч</div>
+        <div class="back">ч</div>
+        <div class="top">ч</div>
+        <div class="bottom">ч</div>
+        <div class="left">ч</div>
+        <div class="right">ч</div>
+    </div>
+</div>
+<div class="wrap a7">
+    <div class="cube">
+        <div class="front">н</div>
+        <div class="back">н</div>
+        <div class="top">н</div>
+        <div class="bottom">н</div>
+        <div class="left">н</div>
+        <div class="right">н</div>
+    </div>
+</div>
+<div class="wrap a8">
+    <div class="cube">
+        <div class="front">ы</div>
+        <div class="back">ы</div>
+        <div class="top">ы</div>
+        <div class="bottom">ы</div>
+        <div class="left">ы</div>
+        <div class="right">ы</div>
+    </div>
+</div>
+<div class="wrap a9">
+    <div class="cube">
+        <div class="front">е</div>
+        <div class="back">е</div>
+        <div class="top">е</div>
+        <div class="bottom">е</div>
+        <div class="left">е</div>
+        <div class="right">е</div>
+    </div>
+</div>
+
+<div class="wrap a11">
+    <div class="cube">
+        <div class="front">А</div>
+        <div class="back">А</div>
+        <div class="top">А</div>
+        <div class="bottom">А</div>
+        <div class="left">А</div>
+        <div class="right">А</div>
+
+    </div>
+</div>
+<div class="wrap a12">
+    <div class="cube">
+        <div class="front">в</div>
+        <div class="back">в</div>
+        <div class="top">в</div>
+        <div class="bottom">в</div>
+        <div class="left">в</div>
+        <div class="right">в</div>
+
+    </div>
+</div>
+<div class="wrap a13">
+    <div class="cube">
+        <div class="front">т</div>
+        <div class="back">т</div>
+        <div class="top">т</div>
+        <div class="bottom">т</div>
+        <div class="left">т</div>
+        <div class="right">т</div>
+
+    </div>
+</div>
+<div class="wrap a14">
+    <div class="cube">
+        <div class="front">о</div>
+        <div class="back">о</div>
+        <div class="top">о</div>
+        <div class="bottom">о</div>
+        <div class="left">о</div>
+        <div class="right">о</div>
+
+    </div>
+</div>
+<div class="wrap a15">
+    <div class="cube">
+        <div class="front">м</div>
+        <div class="back">м</div>
+        <div class="top">м</div>
+        <div class="bottom">м</div>
+        <div class="left">м</div>
+        <div class="right">м</div>
+
+    </div>
+</div>
+<div class="wrap a16">
+    <div class="cube">
+        <div class="front">а</div>
+        <div class="back">а</div>
+        <div class="top">а</div>
+        <div class="bottom">а</div>
+        <div class="left">a</div>
+        <div class="right">a</div>
+
+    </div>
+</div>
+<div class="wrap a17">
+    <div class="cube">
+        <div class="front">т</div>
+        <div class="back">т</div>
+        <div class="top">т</div>
+        <div class="bottom">т</div>
+        <div class="left">т</div>
+        <div class="right">т</div>
+    </div>
+</div>
+<div class="wrap a18">
+    <div class="cube">
+        <div class="front">ы</div>
+        <div class="back">ы</div>
+        <div class="top">ы</div>
+        <div class="bottom">ы</div>
+        <div class="left">ы</div>
+        <div class="right">ы</div>
+
+    </div>
+</div>
+
+
+</body>
+</html>

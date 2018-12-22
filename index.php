@@ -127,6 +127,7 @@ require_once 'phplib/news.php';
     <div class="news">
         <div class="top"></div>
         <?php
+        settype($page, "int");
         if (isset($_GET['page'])) {
             if ($_GET['page'] == 'founders') {
                 include 'founders.php';
@@ -162,15 +163,13 @@ require_once 'phplib/news.php';
         // Вывод внизу ссылок на предыдущую/следующую страницы
         echo '<div class="newsblock">';
         if ($page > 1) {
-            $page--;
-            echo '<a href="index.php?page=' . $page . '">&lt; назад</a>';
+            echo '<a href="index.php?page=' . ($page-1) . '">&lt; назад</a>';
         } else {
             echo '<span class="inactive">&lt; назад</span>';
         }
         echo ' | ';
         if ($isNext) {
-            $page++;
-            echo '<a href="index.php?page=' . $page . '">вперёд &gt;</a>';
+            echo '<a href="index.php?page=' . ($page+1) . '">вперёд &gt;</a>';
         } else {
             echo '<span class="inactive">вперёд &gt;</span>';
         }

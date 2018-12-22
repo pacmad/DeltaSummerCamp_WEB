@@ -1,14 +1,14 @@
 <?php
 /*
- * Обработка загрузки файлов решений вступительной олимпиады
- * $UID - уникальный номер пользователя, передаётся из mycabinet.php
+ * РћР±СЂР°Р±РѕС‚РєР° Р·Р°РіСЂСѓР·РєРё С„Р°Р№Р»РѕРІ СЂРµС€РµРЅРёР№ РІСЃС‚СѓРїРёС‚РµР»СЊРЅРѕР№ РѕР»РёРјРїРёР°РґС‹
+ * $UID - СѓРЅРёРєР°Р»СЊРЅС‹Р№ РЅРѕРјРµСЂ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ, РїРµСЂРµРґР°С‘С‚СЃСЏ РёР· mycabinet.php
  */
 require_once 'phplib/dbConnect.php';
 require_once 'phplib/mail.php';
-require_once 'phplib/common.php';
+require_once 'phplib/common.inc';
 
 if (!isset($UID)) {
-    exit('Данный файл не предназначен для самостоятельного запуска');
+    exit('Р”Р°РЅРЅС‹Р№ С„Р°Р№Р» РЅРµ РїСЂРµРґРЅР°Р·РЅР°С‡РµРЅ РґР»СЏ СЃР°РјРѕСЃС‚РѕСЏС‚РµР»СЊРЅРѕРіРѕ Р·Р°РїСѓСЃРєР°');
 }
 
 define('MIN_FREE_SPACE', 50*1024*1024);
@@ -17,11 +17,11 @@ if (isset($_FILES['file'])) {
     $error = $_FILES['file']['error'];
     $targetDir = "uploads/$UID/";
     if (disk_free_space('uploads/') < MIN_FREE_SPACE) {
-        $error("Загрузка олимпиады: недостаточно места на диске! UID: " . $UID);
+        $error("Р—Р°РіСЂСѓР·РєР° РѕР»РёРјРїРёР°РґС‹: РЅРµРґРѕСЃС‚Р°С‚РѕС‡РЅРѕ РјРµСЃС‚Р° РЅР° РґРёСЃРєРµ! UID: " . $UID);
     }
     if (!is_dir($targetDir)) {
         if (!mkdir($targetDir)) {
-            $error("Загрузка олимпиады: не удалось создать директорию $targetDir. UID: $UID");
+            $error("Р—Р°РіСЂСѓР·РєР° РѕР»РёРјРїРёР°РґС‹: РЅРµ СѓРґР°Р»РѕСЃСЊ СЃРѕР·РґР°С‚СЊ РґРёСЂРµРєС‚РѕСЂРёСЋ $targetDir. UID: $UID");
             exit;
         }
     }
@@ -38,44 +38,44 @@ if (isset($_FILES['file'])) {
         }
     }
     echo json_encode($ret);
-    $db->dbLog("Получено решение олимпиады", $UID);
+    $db->dbLog("РџРѕР»СѓС‡РµРЅРѕ СЂРµС€РµРЅРёРµ РѕР»РёРјРїРёР°РґС‹", $UID);
     if ($db->getAppStatus($UID) < 3) {
-        $db->setAppStatus($UID, 3); // Меняем статус на "получено"
+        $db->setAppStatus($UID, 3); // РњРµРЅСЏРµРј СЃС‚Р°С‚СѓСЃ РЅР° "РїРѕР»СѓС‡РµРЅРѕ"
         try {
             sendComfirmMail($db->getPerson($UID));
         } catch (\PHPMailer\PHPMailer\Exception $e) {
-            error("Не удалось выслать подтверждение о получении олимпиады");
+            error("РќРµ СѓРґР°Р»РѕСЃСЊ РІС‹СЃР»Р°С‚СЊ РїРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ Рѕ РїРѕР»СѓС‡РµРЅРёРё РѕР»РёРјРїРёР°РґС‹");
         }
     }
 }
 ?>
 <div class="row">
     <div class="col-12">
-        <h3>Здравствуйте! </h3>
+        <h3>Р—РґСЂР°РІСЃС‚РІСѓР№С‚Рµ! </h3>
     </div>
 </div>
 <div class="row">
     <div class="col-6">
-        <p>Загрузите, пожалуйста, решение олимпиады ниже или вышлите на адрес электронной почты:
+        <p>Р—Р°РіСЂСѓР·РёС‚Рµ, РїРѕР¶Р°Р»СѓР№СЃС‚Р°, СЂРµС€РµРЅРёРµ РѕР»РёРјРїРёР°РґС‹ РЅРёР¶Рµ РёР»Рё РІС‹С€Р»РёС‚Рµ РЅР° Р°РґСЂРµСЃ СЌР»РµРєС‚СЂРѕРЅРЅРѕР№ РїРѕС‡С‚С‹:
             <a href="mailto:summer.camp.delta@gmail.com">summer.camp.delta@gmail.com</a>
         </p>
         <!-- D&D Zone -->
         <div id="fileuploader">
-            <button id="uploadLabel">Выберите из списка</button>
-            <p>или переместите сюда файлы для загрузки</p>
+            <button id="uploadLabel">Р’С‹Р±РµСЂРёС‚Рµ РёР· СЃРїРёСЃРєР°</button>
+            <p>РёР»Рё РїРµСЂРµРјРµСЃС‚РёС‚Рµ СЃСЋРґР° С„Р°Р№Р»С‹ РґР»СЏ Р·Р°РіСЂСѓР·РєРё</p>
         </div>
         <!-- /D&D Zone -->
     </div>
     <!-- col-6 -->
     <div class="col-6">
-        <p>Вступительную олимпиаду можно открыть по этой ссылке:
-            <a href="documents/assignments.pdf" title="Вступительная олимпиада." target="_blank"
-            onclick='setDateWorkSent("<?php echo $row['UniqueId'] ?>");'>вступительную олимпиаду</a> (.pdf).</p>
-        <p>Также Вы можете отправить файл с задачами себе на почту (<?php echo $row["Email"] ?>):</p>
+        <p>Р’СЃС‚СѓРїРёС‚РµР»СЊРЅСѓСЋ РѕР»РёРјРїРёР°РґСѓ РјРѕР¶РЅРѕ РѕС‚РєСЂС‹С‚СЊ РїРѕ СЌС‚РѕР№ СЃСЃС‹Р»РєРµ:
+            <a href="documents/assignments.pdf" title="Р’СЃС‚СѓРїРёС‚РµР»СЊРЅР°СЏ РѕР»РёРјРїРёР°РґР°." target="_blank"
+            onclick='setDateWorkSent("<?php echo $row['UniqueId'] ?>");'>РІСЃС‚СѓРїРёС‚РµР»СЊРЅСѓСЋ РѕР»РёРјРїРёР°РґСѓ</a> (.pdf).</p>
+        <p>РўР°РєР¶Рµ Р’С‹ РјРѕР¶РµС‚Рµ РѕС‚РїСЂР°РІРёС‚СЊ С„Р°Р№Р» СЃ Р·Р°РґР°С‡Р°РјРё СЃРµР±Рµ РЅР° РїРѕС‡С‚Сѓ (<?php echo $row["Email"] ?>):</p>
         <form id="SentWorkByMail" name="SentWorkByMail" method="get">
             <input name="sbm" type="hidden" id="SendByMail">
             <input name="id" type="hidden" id="UniqueId" value="<?php echo $row['UniqueId'] ?>">
-            <input type="submit" value="Выслать на почту!" onClick='document.getElementById("SendByMail").value = "yes";'>
+            <input type="submit" value="Р’С‹СЃР»Р°С‚СЊ РЅР° РїРѕС‡С‚Сѓ!" onClick='document.getElementById("SendByMail").value = "yes";'>
             <div id="sendStatus"></div>
         </form>
     </div> <!-- col-6 -->

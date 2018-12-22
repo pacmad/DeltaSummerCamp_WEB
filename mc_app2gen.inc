@@ -5,7 +5,7 @@
 require_once 'phplib/dbConnect.php';
 require_once 'phplib/fpdf/fpdf.php';
 require_once 'phplib/mail.php';
-require_once 'phplib/common.php';
+require_once 'phplib/common.inc';
 
 class PDF extends FPDF {
     // Page footer

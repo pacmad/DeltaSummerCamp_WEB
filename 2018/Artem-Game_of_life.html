@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Game of Lie</title>
+    <link rel="shortcut icon" href="C:\Users\User\Documents\Artem_U\favicon.ico" />   						 <!-- Фавиконка -->
+
+    <style>
+        canvas {
+            cursor: crosshair;
+        }
+
+        .controls * {
+            margin: 4.7px;
+        }
+
+        .controls input {
+            position: relative;
+            top: 5px;
+        }
+    </style>
+
+    <script>
+        /*      *Features*
+         * init() to initialize global vars
+         * step() for logic + redraw()
+         * interface speed control + stop/start 2.0
+         */
+        let matrix = [];
+        let oldmatrix = [];
+        let isRunning = false;
+        let isDrawing = false;
+        let penChosen = false;
+        var delay = 500; 																					//Стартовая задержка (в мс.), потом в эту же переменную записывается новое значение задержки.
+        var canvas;
+        var ctx;
+        var cellW;
+        var cellH;
+        var colors = ["white", "black", "red"];  															//Массив для цветов ???
+        const MAX_X = 50;
+        const MAX_Y = 50;
+
+        function putXY(X, Y, val) {
+            let index = Y * MAX_X + X;
+            matrix[index] = val;
+        }
+
+        function putoldXY(X, Y, val) {
+            let index = Y * MAX_X + X;
+            oldmatrix[index] = val;
+        }
+
+        function getXY(X, Y) {
+            X = (X < 0) ? X + MAX_X : ((X >= MAX_X) ? X - MAX_X : X);
+            Y = (Y < 0) ? Y + MAX_Y : ((Y >= MAX_Y) ? Y - MAX_Y : Y);
+            let index = Y * MAX_X + X;
+            return oldmatrix[index];
+        }
+
+        function getnewXY(X, Y) {
+            X = (X < 0) ? X + MAX_X : ((X >= MAX_X) ? X - MAX_X : X);
+            Y = (Y < 0) ? Y + MAX_Y : ((Y >= MAX_Y) ? Y - MAX_Y : Y);
+            let index = Y * MAX_X + X;
+            return matrix[index];
+        }
+
+        //show current state of matrix + grid
+        function show() {
+
+            let c = document.getElementById('myCanvas');
+            let context = c.getContext('2d');
+
+            for (x = 0; x < MAX_X; x++) {
+                for (y = 0; y < MAX_Y; y++) {
+                    let val = getnewXY(x, y);
+                    if (typeof(colors[val]) == "string") {
+                        context.fillStyle = colors[val];
+                    } else {
+                        context.fillStyle = "pink";
+                    }
+                    context.fillRect(x * cellW, y * cellH, cellW, cellH);
+                }
+            }
+
+            for (i = 0; i < MAX_X; i++) {
+                ctx.beginPath();
+                ctx.moveTo(0, i * cellH);
+                ctx.lineTo(canvas.width, i * cellH);
+                ctx.stroke();
+            }
+
+            for (j = 0; j < MAX_Y; j++) {
+                ctx.beginPath();
+                ctx.moveTo(j * cellW, 0);
+                ctx.lineTo(j * cellW, canvas.height);
+                ctx.stroke();
+            }
+		}
+		
+        // randomize every cell to 1 or 0
+        function prepare() {
+            for (let y = 0; y < MAX_Y; y++) {
+                for (let x = 0; x < MAX_X; x++) {
+                    putXY(x, y, Math.round(Math.random())); // Тут было * на кол во цветов.
+                }
+            }
+            oldmatrix = matrix.slice();
+        }
+
+        function startstop(btn) {
+            if (isRunning) {
+                stop();
+                isRunning = false;
+                btn.innerHTML = 'Start';
+            } else {
+                play();
+                isRunning = true;
+                btn.innerHTML = 'Stop';
+            }
+        }
+
+        function play() {
+            id = setInterval(step, delay); 																																//nu privet
+        }
+
+        function stop() {
+            clearInterval(id);
+        }
+
+
+        function init() {
+            initCanvas(MAX_X, MAX_Y);
+            prepare();
+        }
+
+        function clearMatrix() {
+            for (let y = 0; y < MAX_X; y++) {
+                for (let x = 0; x < MAX_Y; x++) {
+                    putXY(x, y, 0);
+                }
+            }
+            oldmatrix = matrix.slice();
+            show();
+        }
+
+        // set global variables
+        function initCanvas(w, h) {
+            canvas = document.getElementById('myCanvas');
+            ctx = canvas.getContext('2d');
+            cellW = canvas.width / w;
+            cellH = canvas.height / h;
+        }
+
+        function showPos(ev) {
+            document.getElementById("outX").innerHTML = ev.layerX;
+            document.getElementById("outY").innerHTML = ev.layerY;
+        }
+
+        function step() {
+
+            for (x = 0; x < MAX_X; x++) {
+                for (y = 0; y < MAX_Y; y++) {
+                    //== Game Of Life Logic ==//
+
+                    let A_1 = getXY(x - 1, y - 1);
+                    let A_2 = getXY(x, y - 1);
+                    let A_3 = getXY(x + 1, y - 1);
+                    let B_1 = getXY(x - 1, y);
+                    let B_2 = getXY(x + 1, y);
+                    let C_1 = getXY(x - 1, y + 1);
+                    let C_2 = getXY(x, y + 1);
+                    let C_3 = getXY(x + 1, y + 1);
+                    let number = A_1 + A_2 + A_3 + B_1 + B_2 + C_1 + C_2 + C_3;
+                    if (getXY(x, y) == 0) {
+                        if (number == 3) {
+                            putXY(x, y, 1);
+                        }
+                    } else if (getXY(x, y) == 1) {
+                        if (number < 2) {
+                            putXY(x, y, 0);
+                        } else if (number > 3) {
+                            putXY(x, y, 0);
+                        }
+                    }
+                }
+            }
+
+            show();
+            oldmatrix = matrix.slice();
+        }
+
+        //mouse activity
+        function mouse() {
+            isDrawing = true;
+        }
+
+        function mouseSec() {
+            isDrawing = false;
+            oldmatrix = matrix.slice();
+        }
+
+        function pen() {
+            penChosen = true;
+        }
+
+        function eraser() {
+            penChosen = false;
+        }
+
+        function onClick(evt) {
+            let x = Math.floor(evt.layerX / cellW);
+            let y = Math.floor(evt.layerY / cellH);
+            if (isDrawing) {
+                if (penChosen) {
+                    putXY(x, y, 1);
+                } else {
+                    putXY(x, y, 0);
+                }
+                show();
+            }
+        }
+
+        function fBlack() {
+            for (let y = 0; y < MAX_X; y++) {
+                for (let x = 0; x < MAX_Y; x++) {
+                    putXY(x, y, 1);
+                }
+            }
+            oldmatrix = matrix.slice();
+            show();
+        }
+
+        //changes speed with new value
+        function newspeed(value) {
+            stop();
+            delay = value;
+            if (isRunning == true) {
+                play();
+            }
+        }
+    </script>
+</head>
+
+<body onLoad='init()'>													<!-- Собственно, запускает создание коробки при открытии файла. -->
+    <canvas width='600px' height='600px' style="border:1px solid black;" id='myCanvas' onmousemove='onClick(event) , showPos(event)' onmousedown="mouse()" onmouseup="mouseSec()"></canvas><br> <!-- А вот и сама коробка -->
+    <div class='controls'>
+        <button onclick='startstop(this)'>Play	</button> 				<!-- Запустить / остановить программу, динамическая кнопка. -->
+        <button onclick='step()'>         Next	</button> 				<!-- Один шаг программы -->
+        <button onclick="clearMatrix()">  Clear </button> 				<!-- Очистить все поле -->
+        <button onclick='init()'>		  Reset </button> 				<!-- Запускает игру заного (можно также нажать f5) -->
+        <button onclick="pen()">		  Pen	</button> 				<!-- Запускает процесс рисования мышью -->
+        <button onclick="eraser()">		  Eraser</button> 				<!-- Запускает процесс стирания -->
+        <a href = "index.html"><button class="button2"><span>к маинменю</span></button></a>
+        <span> 					  Refresh speed:</span>
+        <input type="range" min="10" max="1000" value="500" step="10" class="slider" id="myRange" oninput='newspeed(this.value)'> <!-- Создает слайдер, меняющий задержку до следующего шага. -->
+        <br>															<!-- Переход на следующую строку. -->
+        <button onclick="fBlack()">Blek</button> 						<!-- Если, for some reason, нужно закрасить все поле черным. -->
+        <br> 															<!-- Переход на следующую строку. -->    
+        <span>	Mouse position: <span>X: <span id="outX"> ??? </span> Y: <span id="outY"> ??? </span> </span> <!-- Выводит на экран положение мыши внутри квадрата ) в пикселях -->
+    </div>
+</body>
+
+</html>

@@ -237,6 +237,9 @@
     border-style: none;
     border-radius: 7px;
 }
+.project a:hover {
+    color: darkred;
+}
 
 /* Основные ссылки */
 .buttonholder {

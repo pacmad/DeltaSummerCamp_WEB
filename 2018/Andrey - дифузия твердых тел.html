@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Kak-to tak</title>
+
+    <style>
+        canvas:hover{
+            cursor:crosshair;
+        }
+
+    </style>
+
+    <script>
+        let matrix=[];
+
+        var canvas;
+        var ctx;
+        var cellW;
+        var cellH;
+        var n = 30;
+        var m=n;
+        let pro = 0.1;
+        let MaX = n - 1;
+        let MaY = n - 1;
+
+        function putXY(X,Y,val){
+            let index=Y * n +X;
+            matrix[index]=val;
+        }
+        function getXY(X,Y){
+            let index=Y* n +X;
+            return matrix[index];
+        }
+        function show(){
+            for (x = 0; x<n; x++){
+                for (y = 0; y<n; y++){
+                    if (getXY(x,y)==0){
+                        ctx.fillStyle='black';
+                        ctx.fillRect(x*cellW,y*cellH,cellW,cellH);
+                    }else{
+                        ctx.fillStyle='yellow';
+                        ctx.fillRect(x*cellW,y*cellH,cellW,cellH);
+                    }}}
+
+            for (i = 0; i < n; i++){
+                ctx.beginPath();
+                ctx.moveTo(0,i*cellH);
+                ctx.lineTo(canvas.width,i*cellH);
+                ctx.stroke();
+                for (j = 0; j < m; j++){
+                    ctx.beginPath();
+                    ctx.moveTo(j*cellW,0);
+                    ctx.lineTo(j*cellW,canvas.height);
+                    ctx.stroke();
+                }
+            }
+        }
+        function prepare() {
+            for (let y = 0; y<n; y++){
+                for (let x = 0; x<n; x++){
+                    if (x < n / 2) {
+                        putXY(x,y,1);
+                    }
+                    else {
+                        putXY(x,y,0);
+                    }
+                }
+            }
+        }
+
+        function play(){
+            id = setInterval(step,500);
+        }
+
+        function stop(){
+            clearInterval(id);
+
+        }
+
+        function init(){
+            initCanvas(n,m);
+            prepare();
+
+        }
+
+        function msgPro() {
+            pro = document.getElementById('pro').value;
+        }
+
+        function initCanvas(w,h) {
+            canvas=document.getElementById('myCanvas');
+            ctx=canvas.getContext('2d');
+            cellW = canvas.width/w;
+            cellH = canvas.height/h;
+        }
+
+        function showCoords(e){
+            document.getElementById("show").innerHTML = 'X:' + e.layerX + ' ' + 'Y:' + e.layerY;
+        }
+
+        function step() {
+            for (x = 0; x < n; x++) {
+                for (y = 0; y < n; y++) {
+                    if (getXY(x, y) == 1) {
+                        let rand = Math.random();
+                        if (rand < pro) {
+                            let rand1 = Math.random();
+                            if ((rand1 < 0.125) && getXY(x + 1, y) == 0 && x != MaX) {
+                                putXY(x + 1, y, 1);
+                                putXY(x, y, 0);
+                            }
+                            if ((rand1 > 0.125 && rand1 < 0.25) && (getXY(x, y + 1) == 0) && y != MaY) {
+                                putXY(x, y + 1, 1);
+                                putXY(x, y, 0);
+                            }
+                            if (rand1 > 0.25 && rand1 < 0.375 && getXY(x, y - 1) == 0 && y != 0) {
+                                putXY(x, y - 1, 1);
+                                putXY(x, y, 0);
+                            }
+                            if (rand1 > 0.375 && rand1 < 0.5 && getXY(x - 1, y) == 0 && x != 0) {
+                                putXY(x - 1, y, 1);
+                                putXY(x, y, 0);
+                            }
+                            if (rand1 > 0.5 && rand1 < 0.625 && getXY(x + 1, y + 1) == 0 && x != MaX && y != MaY) {
+                                putXY(x + 1, y + 1, 1);
+                                putXY(x, y, 0);
+                            }
+                            if (rand1 > 0.625 && rand1 < 0.75 && getXY(x - 1, y - 1) == 0 && x != 0 && y != 0) {
+                                putXY(x - 1, y - 1, 1);
+                                putXY(x, y, 0);
+                            }
+                            if (rand1 > 0.75 && rand1 < 0.875 && getXY(x + 1, y - 1) == 0 && x != MaX && y != 0) {
+                                putXY(x + 1, y - 1, 1);
+                                putXY(x, y, 0);
+                            }
+                            if ((rand1 > 0.875) && getXY(x - 1, y + 1) == 0 && x != 0 && y != MaY) {
+                                putXY(x - 1, y + 1, 1);
+                                putXY(x, y, 0);
+                            }
+                            else {
+                            }
+                        }
+                        else {
+                            putXY(x, y, 1);
+                        }
+                    }
+                    else {
+                        putXY(x, y, 0);
+                    }
+                }
+            }
+            for (x = 0; x < n; x++) {
+                for (y = 0; y < n; y++) {
+                    if (getXY(x, y) == 0) {
+                        let rand = Math.random();
+                        if (rand < pro) {
+                            let rand1 = Math.random();
+                            if ((rand1 < 0.125) && getXY(x + 1, y) == 1 && x != MaX) {
+                                putXY(x + 1, y, 0);
+                                putXY(x, y, 1);
+                            }
+                            if ((rand1 > 0.125 && rand1 < 0.250) && (getXY(x, y + 1) == 1) && y != MaY) {
+                                putXY(x, y + 1, 0);
+                                putXY(x, y, 1);
+                            }
+                            if (rand1 > 0.250 && rand1 < 0.375 && getXY(x, y - 1) == 1 && y != 0) {
+                                putXY(x, y - 1, 0);
+                                putXY(x, y, 1);
+                            }
+                            if ((rand1 > 0.375 && rand1 < 0.5) && getXY(x - 1, y) == 1 && x != 0) {
+                                putXY(x - 1, y, 0);
+                                putXY(x, y, 1);
+                            }
+                            if (rand1 > 0.5 && rand1 < 0.625 && getXY(x + 1, y + 1) == 1 && x != MaX && y != MaY) {
+                                putXY(x + 1, y + 1, 0);
+                                putXY(x, y, 1);
+                            }
+                            if (rand1 > 0.625 && rand1 < 0.75 && getXY(x - 1, y - 1) == 1 && x != 0 && y != 0) {
+                                putXY(x - 1, y - 1, 0);
+                                putXY(x, y, 1);
+                            }
+                            if (rand1 > 0.75 && rand1 < 0.875 && getXY(x + 1, y - 1) == 1 && x != MaX && y != 0) {
+                                putXY(x + 1, y - 1, 0);
+                                putXY(x, y, 1);
+                            }
+                            if ((rand1 > 0.875) && getXY(x - 1, y + 1) == 1 && x != 0 && y != MaY) {
+                                putXY(x - 1, y + 1, 0);
+                                putXY(x, y, 1);
+                            }
+                            else {
+                            }
+                        }
+                        else {
+                            putXY(x, y, 0);
+                        }
+                    }
+                    else {
+                        putXY(x, y, 1);
+                    }
+                }
+            }
+            show();
+        }
+    </script>
+</head>
+
+<body onLoad='init()'>
+<canvas width='620px' height='620px' style="border:2px solid black;"
+        id='myCanvas' onmousemove='showCoords(event)'></canvas>
+<br>
+<button onclick='show()'>Ready</button>
+<button onclick='stop()'>Stop</button>
+<button onclick='step()'>Next</button>
+<button onclick='play()'>Go!!!</button>
+<input type="range" min="0.01" max="0.99" step="0.01" value="0.5" id = "pro" oninput="msgPro()"> Вероятность хода клетки: </input>
+<div id='show'></div>
+</body>
+</html>

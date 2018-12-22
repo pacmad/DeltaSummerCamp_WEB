@@ -1,3 +1,41 @@
+<?php
+
+// Обработка AJAX-запросов
+
+require_once 'phplib/dbConnect.php';
+require_once 'phplib/mail.php';
+require_once 'phplib/common.inc';
+
+if (!isset($_GET["id"])) {
+    include 'mc_err_empty.inc';
+    http_response_code(404);
+    exit();
+} else {
+$UID = $_GET["id"];
+/*
+ * Обработка AJAX-запроса из функции setDateWorkSent() на изменение статуса записи
+ * после того, как была открыта Олимпиада. Меняем статус абитуриента на "2"
+ * (если он и так не "2") и, записываем дату отсылки олимпиады.
+ */
+if (isset($_GET["SetStatus"])) {
+    $db = new dbConnect();
+    if ($db->getAppStatus($UID) != 2) {
+        $db->setWorkDaySent($UID);
+        $db->dbLog("Открыта вступительная олимпиада", $UID);
+    }
+    exit();
+}
+
+/*
+ * Отработка AJAX-запроса на генерацию и отсылку "Приложения 2" по анкете
+ */
+if (isset($_GET["app"])) {
+    include 'mc_app2gen.inc';
+    exit();
+}
+?>
+
+
 <!doctype html>
 <html>
 <head>
@@ -31,37 +69,6 @@ include 'phplib/google.analytics.php';
 <div class="logo"></div>
 
 <?php
-require_once 'phplib/dbConnect.php';
-require_once 'phplib/mail.php';
-require_once 'phplib/common.php';
-
-if (!isset($_GET["id"])) {
-    include 'mc_err_empty.inc';
-    http_response_code(404);
-    exit();
-} else {
-    $UID = $_GET["id"];
-    /*
-     * Обработка AJAX-запроса из функции setDateWorkSent() на изменение статуса записи
-     * после того, как была открыта Олимпиада. Меняем статус абитуриента на "2"
-     * (если он и так не "2") и, записываем дату отсылки олимпиады.
-     */
-    if (isset($_GET["SetStatus"])) {
-        $db = new dbConnect();
-        if ($db->getAppStatus($UID) != 2) {
-            $db->setWorkDaySent($UID);
-            $db->dbLog("Открыта вступительная олимпиада", $UID);
-        }
-        exit();
-    }
-
-    /*
-     * Отработка AJAX-запроса на генерацию и отсылку "Приложения 2" по анкете
-     */
-    if (isset($_GET["app"])) {
-        include 'mc_app2gen.inc';
-        exit();
-    }
 
     /*
      * Основной модуль личного кабинета

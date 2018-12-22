@@ -282,14 +282,6 @@ function checkDate(dateInput) {
     return error;
 }
 
-// decode html text into html entity
-// from https://gist.github.com/CatTail/4174511
-function decodeHtmlEntity(str) {
-    return str.replace(/&#(\d+);/g, function(match, dec) {
-        return String.fromCharCode(dec);
-    });
-}
-
 // Проверка уже зарегистрированного пользователя.
 // Функция вызывается каждый раз, когда заполняются поля Фамилия (1), Имя (2), и Дата_рождения (4)
 // Если поля заполнены, делается запрос в базу всех регистраций и, если регистрация уже была, остальные поля
@@ -344,7 +336,7 @@ function chkRegistered(value, flag) {
                         let input = document.createElement("input");
                         input.setAttribute("name", "ownTel");
                         input.setAttribute("type", "hidden");
-                        input.setAttribute("value", person["OwnTel"]);
+                        input.setAttribute("value", person["OwnTel"] ? person["OwnTel"] : "");
                         form.appendChild(input);
                     }
                     // CertLang
@@ -352,7 +344,7 @@ function chkRegistered(value, flag) {
                         input = document.createElement("input");
                         input.setAttribute("name", "certLang");
                         input.setAttribute("type", "hidden");
-                        input.setAttribute("value", person["CertLang"]);
+                        input.setAttribute("value", person["CertLang"] ? person["CertLang"] : "");
                         form.appendChild(input);
                     }
                     // CertName - декодируем, т.к. теперь всё в UTF-8
@@ -360,7 +352,8 @@ function chkRegistered(value, flag) {
                         input = document.createElement("input");
                         input.setAttribute("name", "certName");
                         input.setAttribute("type", "hidden");
-                        input.setAttribute("value", decodeHtmlEntity(person["CertName"]));
+                        let decodedCertName = "";
+                        input.setAttribute("value", person["CertName"]);
                         form.appendChild(input);
                     }
                     // Health
@@ -368,7 +361,7 @@ function chkRegistered(value, flag) {
                         input = document.createElement("input");
                         input.setAttribute("name", "health");
                         input.setAttribute("type", "hidden");
-                        input.setAttribute("value", person["Health"]);
+                        input.setAttribute("value", person["Health"] ? person["Health"] : "");
                         form.appendChild(input);
                     }
                     // Insurance
@@ -376,7 +369,7 @@ function chkRegistered(value, flag) {
                         input = document.createElement("input");
                         input.setAttribute("name", "insurance");
                         input.setAttribute("type", "hidden");
-                        input.setAttribute("value", person["Insurance"]);
+                        input.setAttribute("value", person["Insurance"] ? person["Insurance"] : "");
                         form.appendChild(input);
                     }
                     // NotesText
@@ -384,7 +377,7 @@ function chkRegistered(value, flag) {
                         input = document.createElement("input");
                         input.setAttribute("name", "notesText");
                         input.setAttribute("type", "hidden");
-                        input.setAttribute("value", person["NotesText"]);
+                        input.setAttribute("value", person["NotesText"] ? person["NotesText"] : "");
                         form.appendChild(input);
                     }
                     // Visa
@@ -392,7 +385,7 @@ function chkRegistered(value, flag) {
                         input = document.createElement("input");
                         input.setAttribute("name", "visa");
                         input.setAttribute("type", "hidden");
-                        input.setAttribute("value", person["Visa"]);
+                        input.setAttribute("value", person["Visa"] ? person["Visa"] : "");
                         form.appendChild(input);
                     }
                     // Notebook
@@ -400,7 +393,7 @@ function chkRegistered(value, flag) {
                         input = document.createElement("input");
                         input.setAttribute("name", "notebook");
                         input.setAttribute("type", "hidden");
-                        input.setAttribute("value", person["Notebook"]);
+                        input.setAttribute("value", person["Notebook"] ? person["Notebook"] : "");
                         form.appendChild(input);
                     }
                     // Shirt
@@ -408,7 +401,7 @@ function chkRegistered(value, flag) {
                         input = document.createElement("input");
                         input.setAttribute("name", "shirt");
                         input.setAttribute("type", "hidden");
-                        input.setAttribute("value", person["Shirt"]);
+                        input.setAttribute("value", person["Shirt"] ? person["Shirt"] : "");
                         form.appendChild(input);
                     }
 

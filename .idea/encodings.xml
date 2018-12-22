@@ -9,7 +9,9 @@
     <file url="file://$PROJECT_DIR$/JS/courses.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/JS/form_functions.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/JS/index.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/JS/student_functions.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/JS/timetable.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/_2018/phplib/admMain.inc" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/admin.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/change_course.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/courses.php" charset="UTF-8" />
@@ -23,6 +25,7 @@
     <file url="file://$PROJECT_DIR$/info.php" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/mc_-.inc" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/mc_01.inc" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mc_23.inc" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/mc_5.inc" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/mc_bottom.inc" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/mc_err_empty.inc" charset="UTF-8" />
@@ -34,14 +37,16 @@
     <file url="file://$PROJECT_DIR$/phplib/admMain.inc" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/phplib/admSetPass.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/phplib/adminlib.inc" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/phplib/common.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/phplib/common.inc" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/phplib/dbConnect.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/phplib/details.inc" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/phplib/mail.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/phplib/news.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/phplib/registrations.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/phplib/validate.inc" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/projects.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/registration.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/student.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/teachers.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/team.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/timetable.php" charset="UTF-8" />

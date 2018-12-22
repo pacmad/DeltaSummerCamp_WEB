@@ -1,0 +1,494 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Пример работы с библиотекой MyGame.js</title>
+	<style>
+body {
+    margin: 0;
+    padding: 0;
+}
+canvas {
+	border: solid darkgreen 1px;
+	cursor: crosshair;
+    margin: 10px;
+}
+.col-1 {width: 8.33%;}
+.col-2 {width: 16.66%;}
+.col-3 {width: 25%;}
+.col-4 {width: 33.33%;}
+.col-5 {width: 41.66%;}
+.col-6 {width: 50%;}
+.col-7 {width: 58.33%;}
+.col-8 {width: 66.66%;}
+.col-9 {width: 75%;}
+.col-10 {width: 83.33%;}
+.col-11 {width: 91.66%;}
+.col-12 {width: 100%;}
+[class*="col-"] {
+    float: left;
+    padding: 10px;
+    border: 1px none white;
+}
+.row::after {
+    content: "";
+    clear: both;
+    display: block;
+}
+.controls {
+    border: solid darkgreen 1px;
+    margin-left: 10px;
+    padding: 10px;
+}
+.controls button {
+    height: 2em;
+    width: 100%;
+}
+.colors select {
+    background-color: ghostwhite;
+    height: 2em;
+}
+.colors option {
+    height: 2em;
+    padding: 0.2em, 0.5em;
+}
+
+</style>
+	<script>
+let WIDTH = 100; // Количество ячеек по ширине
+let HEIGHT = 50; // Количество ячеек по высоте
+let AREA_WIDTH = 1200; // Ширина поля в точках
+let AREA_HEIGHT = 500; // Высото поля в точках
+let CELL_WIDTH = AREA_WIDTH / WIDTH; // Ширина элемента
+let CELL_HEIGHT = AREA_HEIGHT / HEIGHT; // Высота элемена
+// const COLORS = ["white", "red", "orange", "yellow", "green", "lightblue", "darkblue", "darkviolet", "black"]; // Массив цветов, нулевой элемент - цвет фона!
+const COLORS = ["white", "magenta", "red", "orange", "yellow", "blue", "green", "black"];
+
+const MIN_ANT = 2;
+const MAX_ANT = 7;
+const GRID_COLOR = "lightgrey"; // Цвет сетки
+const STEP_TIME = 250; // Скорость хода в мс
+const DIFFUSION_DENSITY = 0.15;
+const GROW_SPEED = 0.004;
+
+
+let CURRENT_LINE=0 //глобальная переменная, показывает, на какой строке мы находимся
+
+function initGame() { // Функция выполняется сразу после загрузки страницы: <body onload="initGame()">
+    myGameArea.start();
+}
+
+// Реакция на нажатие кнопки "Start!"
+function startGame() {
+    document.getElementById("StartBtn").value = "Stop!";
+    document.getElementById("StartBtn").innerHTML = "Stop!";
+    document.getElementById("StartBtn").setAttribute("onclick", "stopGame()");
+    myGameArea.interval = setInterval(nextStep, STEP_TIME);
+}
+
+/*
+*
+*   Клеточный автомат
+*
+*   Функция выполняется периодически, раз в STEP_TIME (в милисекундах)
+*
+*   Текущая матрица игры размерами WIDTH x HEIGHT хранится в myGameArea.layer
+*   Новую матрицу можно создать через 'new Matrix()'
+*
+*   Если необходимо хранить что-то дополнительное, например, номер шага или предыдущую матрицу,
+*   все переменные можно динамически создать в объекте Matrix, например:
+*       let newMatrix = new Matrix();
+*       newMatrix.oldMatrix = myGameArea.layer; // Сохраняем предыдущее состояние автомата в новой переменной oldMatrix
+*       newMatrix.step = myGameArea.layer.step + 1; // Сохраняем количество шагов
+*   на самом деле более правильная конструкця
+*       newMatrix.step = (typeof(myGameArea.layer.step) !== 'undefined') ? myGameArea.layer.step + 1 : 1;
+*
+*   Операции с объектом Matrix:
+*       .set(x, y, color) - устанавливает элемент заданного цвета (см. массив цветов COLORS[])
+*       .get(x, y) - возвращает цвет элемента
+*
+*   После заполнения новой матрицы надо обязательно обновить картинку командами
+*       myGameArea.clear();
+*       myGameArea.showMatrix();
+*/
+
+function setOneRow() {
+    let newMatrix = new Matrix();
+    for (let x = 0; x < WIDTH; x++) {
+
+        let value=1;
+        newMatrix.set(x, 0,value);
+
+    }
+    myGameArea.layer = newMatrix;
+    myGameArea.clear();
+    myGameArea.showMatrix();
+}
+
+function set_primary_soup() {
+    let newMatrix = new Matrix();
+    for (i=0; i<AREA_WIDTH ; i++) {
+        for (j = 0; j < AREA_HEIGHT; j++) {
+            let rand = Math.random();
+            let new_val = (rand < DIFFUSION_DENSITY) ? 1 : 0;
+            newMatrix.set(i,j,new_val);
+        }
+    }
+    myGameArea.layer = newMatrix;
+    myGameArea.clear();
+    myGameArea.showMatrix();
+}
+
+function clearMatrix() {
+    let newMatrix = new Matrix();
+    myGameArea.layer = newMatrix;
+    myGameArea.clear();
+    myGameArea.showMatrix();
+}
+
+function nextStep() {
+    let newMatrix = new Matrix();
+    let oldMatrix = myGameArea.layer;
+
+
+    //сначала скопируем в старую матрицу всю еду и все пустые места, плюс пустим размножение
+    for (let x = 0; x < WIDTH; x++) {
+        for (let y = 0; y < HEIGHT; y++) {
+            let value = oldMatrix.get(x, y);
+            let grow = Math.random();
+            if ((grow < GROW_SPEED) && (value==0)) value=1;
+            newMatrix.set(x, y, value);
+        }
+    }
+
+    //а теперь обрабатываем только поведение муравьёв
+    for (let x = 0; x < WIDTH; x++) {
+        for (let y = 0; y < HEIGHT; y++) {
+            let value = oldMatrix.get(x, y);
+            if ((value >= MIN_ANT) && (value <= MAX_ANT)) {
+
+                _xl = (x > 0) ? x - 1 : WIDTH - 1; // координата левой клетки на торе
+                _xr = (x < WIDTH - 1) ? x + 1 : 0; // координата правой клетки на торе
+                _yt = (y > 0) ? y - 1 : HEIGHT - 1; // координата верхней клетки на торе
+                _yb = (y < HEIGHT - 1) ? y + 1 : 0; // координата нижней клетки на торе
+
+                let NW = oldMatrix.get(_xl, _yt);
+                let N = oldMatrix.get(x, _yt);
+                let NE = oldMatrix.get(_xr, _yt);
+                let E = oldMatrix.get(_xr, y);
+                let SE = oldMatrix.get(_xr, _yb);
+                let S = oldMatrix.get(x, _yb);
+                let SW = oldMatrix.get(_xl, _yb);
+                let W = oldMatrix.get(_xl, y);
+
+                // муравей голодает в пустыне, статус -1
+                if ((NW == 0) && (N == 0) && (NE == 0) && (E == 0) && (SE == 0) && (S == 0) && (SW == 0) && (W == 0)) {
+                    let rand1 = Math.random();
+                    let rand2 = Math.random();
+
+                    let newvalue;
+
+                    if (value > MIN_ANT) newvalue = value - 1; else newvalue = 0;
+
+                    //вероятность 1/8
+                    if (rand1 < 0.125) {
+                        newMatrix.set(_xl, _yt, newvalue);
+                        newMatrix.set(x, y, 0);
+                    } else if (rand1 < 0.25) {
+                        newMatrix.set(x, _yt, newvalue);
+                        newMatrix.set(x, y, 0);
+                    } else if (rand1 < 0.375) {
+                        newMatrix.set(_xr, _yt, newvalue);
+                        newMatrix.set(x, y, 0);
+                    } else if (rand1 < 0.5) {
+                        newMatrix.set(_xr, y, newvalue);
+                        newMatrix.set(x, y, 0);
+                    } else if (rand1 < 0.625) {
+                        newMatrix.set(_xr, _yb, newvalue);
+                        newMatrix.set(x, y, 0);
+                    } else if (rand1 < 0.75) {
+                        newMatrix.set(x, _yb, newvalue);
+                        newMatrix.set(x, y, 0);
+                    } else if (rand1 < 0.875) {
+                        newMatrix.set(_xl, _yb, newvalue);
+                        newMatrix.set(x, y, 0);
+                    } else {
+                        newMatrix.set(_xl, y, newvalue);
+                        newMatrix.set(x, y, 0);
+                    }
+                } else {
+
+                    let newvalue = (value < MAX_ANT) ? ++value : MAX_ANT;
+                    //если есть еда рядом, то муравей двигается туда и статус +1
+                    let neib = [0-7];
+                    if (NW == 1) {
+                        newMatrix.set(_xl, _yt, newvalue);
+                        newMatrix.set(x, y, 0);
+                    } else if (N == 1) {
+                        newMatrix.set(x, _yt, newvalue);
+                        newMatrix.set(x, y, 0);
+                    } else if (NE == 1) {
+                        newMatrix.set(_xr, _yt, newvalue);
+                        newMatrix.set(x, y, 0);
+                    } else if (E == 1) {
+                        newMatrix.set(_xr, y, newvalue);
+                        newMatrix.set(x, y, 0);
+                    } else if (SE == 1) {
+                        newMatrix.set(_xr, _yb, newvalue);
+                        newMatrix.set(x, y, 0);
+                    } else if (S == 1) {
+                        newMatrix.set(x, _yb, newvalue);
+                        newMatrix.set(x, y, 0);
+                    } else if (SW == 1) {
+                        newMatrix.set(_xl, _yb, newvalue);
+                        newMatrix.set(x, y, 0);
+                    } else if (W == 1) {
+                        newMatrix.set(_xl, y, newvalue);
+                        newMatrix.set(x, y, 0);
+                    }
+
+
+
+
+                    /*else if ((N >= MIN_ANT) && (N <= MAX_ANT)) {
+                        if (value > MIN_ANT) newvalue = value - 1; else newvalue = 0;
+                        newMatrix.set(_xr, y, MAX_ANT);
+                        newMatrix.set(x, y, 0);
+                        newMatrix.set(_xl, _yb, newvalue)
+                    } else if ((S >= MIN_ANT) && (S <= MAX_ANT)) {
+                        if (value > MIN_ANT) newvalue = value - 1; else newvalue = 0;
+                        newMatrix.set(_xr, _yb, MAX_ANT);
+                        newMatrix.set(x, y, 0);
+                        newMatrix.set(_xl, _yt, newvalue)
+                    } else if ((E >= MIN_ANT) && (E <= MAX_ANT)) {
+                        if (value > MIN_ANT) newvalue = value - 1; else newvalue = 0;
+                        newMatrix.set(x, _yb, MAX_ANT);
+                        newMatrix.set(x, y, 0);
+                        newMatrix.set(_xl, _yt, newvalue)
+                    } else if ((W >= MIN_ANT) && (W <= MAX_ANT)) {
+                        if (value > MIN_ANT) newvalue = value - 1; else newvalue = 0;
+                        newMatrix.set(_xl, _yb, MAX_ANT);
+                        newMatrix.set(x, y, 0);
+                        newMatrix.set(_xr, _yt, newvalue)
+                    } else if ((NW >= MIN_ANT) && (NW <= MAX_ANT)) {
+                        if (value > MIN_ANT) newvalue = value - 1; else newvalue = 0;
+                        newMatrix.set(_xl, y, MAX_ANT);
+                        newMatrix.set(x, y, 0);
+                        newMatrix.set(_xr, _yt, newvalue)
+                    } else if ((SE >= MIN_ANT) && (SE <= MAX_ANT)) {
+                        if (value > MIN_ANT) newvalue = value - 1; else newvalue = 0;
+                        newMatrix.set(x, _yb, MAX_ANT);
+                        newMatrix.set(x, y, 0);
+                        newMatrix.set(_xl, _yt, newvalue)
+                    } else if ((SW >= MIN_ANT) && (SW <= MAX_ANT)) {
+                        if (value > MIN_ANT) newvalue = value - 1; else newvalue = 0;
+                        newMatrix.set(x, _yb, MAX_ANT);
+                        newMatrix.set(x, y, 0);
+                        newMatrix.set(_xr, _yt, newvalue)
+                    } else if ((NE >= MIN_ANT) && (NE <= MAX_ANT)) {
+                        if (value > MIN_ANT) newvalue = value - 1; else newvalue = 0;
+                        newMatrix.set(_xr, y, MAX_ANT);
+                        newMatrix.set(x, y, 0);
+                        newMatrix.set(_xl, _yb, newvalue)
+                    }*/
+                }
+            }
+        }
+    }
+
+    myGameArea.layer = newMatrix;
+    myGameArea.clear();
+    myGameArea.showMatrix();
+}
+
+
+// Раекция на нажатие кнопки "Stop!"
+function stopGame() {
+    document.getElementById("StartBtn").value = "Start!";
+    document.getElementById("StartBtn").innerHTML = "Start!";
+    document.getElementById("StartBtn").setAttribute("onclick", "startGame()");
+    clearInterval(myGameArea.interval);
+}
+
+
+
+// Изображение поля
+let myGameArea = {
+    // Координаты мыши (в клетках)
+    mX: -1,
+    mY: -1,
+    // Индикатор "кнопка мыши нажата"
+    mDown: 0,
+
+    // Активный цвет
+    color: 1,
+
+    // Активный слой
+    layer: false,
+
+    // CANVAS-элемент внутри объекта 'document' - основного объекта, который отображаеся браузером
+    canvas: document.createElement("canvas"),
+
+    // Инициализация
+    start: function () {
+
+        // Инициализация canvas
+        this.canvas.width = AREA_WIDTH;
+        this.canvas.height = AREA_HEIGHT;
+        this.context = this.canvas.getContext("2d");
+        this.canvas.setAttribute("id", "playCanvas");
+        document.getElementById("play_area").appendChild(this.canvas); // вставка CANVAS внутрь html-блока <div id="play_area"></div>
+
+        // Определяем положение "точки ноль"
+        this.X0 = document.getElementById("playCanvas").getBoundingClientRect().left;
+        this.Y0 = document.getElementById("playCanvas").getBoundingClientRect().top;
+
+        // Вывод начального состояния
+        this.layer = new Matrix();
+        this.clear();
+        this.showMatrix();
+        initControls(); // Выводим панель управления
+
+        // Регистрируем обработчики прерываний
+        window.addEventListener('mousemove', function (ev) {
+            // Выставляем номер клетки mX, mY на которую указывает мышь
+            let _mX = myGameArea.mX;
+            let _mY = myGameArea.mY;
+
+            if (ev.pageX < myGameArea.X0 || ev.pageX > myGameArea.X0 + myGameArea.canvas.width)
+                myGameArea.mX = -1;
+            else
+                myGameArea.mX = Math.floor((ev.pageX - myGameArea.X0 - 1) / CELL_WIDTH);
+            if (ev.pageY < myGameArea.Y0 || ev.pageY > myGameArea.Y0 + myGameArea.canvas.height)
+                myGameArea.mY = -1;
+            else
+                myGameArea.mY = Math.floor((ev.pageY - myGameArea.Y0 - 1) / CELL_HEIGHT);
+
+            // Вызываем обработчик смены клетки, если мышь перешла границу клетки
+            if (myGameArea.mX >= 0 && myGameArea.mY >=0 && (_mX !== myGameArea.mX || _mY !== myGameArea.mY)) myGameArea.onChange();
+        });
+
+        window.addEventListener('mousedown', function (ev) {
+            if (ev.button === 0) {
+                myGameArea.mDown = 1;
+                if (myGameArea.layer && myGameArea.mX >= 0 && myGameArea.mY >= 0) {
+                    myGameArea.layer.set(myGameArea.mX, myGameArea.mY, myGameArea.color);
+                    myGameArea.showElement(myGameArea.mX, myGameArea.mY);
+                }
+            }
+        });
+
+        window.addEventListener('mouseup', function (ev) {
+            if (ev.button === 0) myGameArea.mDown = 0;
+        });
+    },
+    onChange: function () { // Мышь переместилась на другую клетку
+        document.getElementById("debug").innerHTML = "mX:" + myGameArea.mX + " mY:" + myGameArea.mY;
+        if (this.layer && this.mDown && this.mX >= 0 && this.mY >= 0) {
+            this.layer.set(this.mX, this.mY, this.color);
+            this.showElement(this.mX, this.mY);
+        }
+    },
+    clear: function () { // Очистка поля
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.context.fillStyle = GRID_COLOR;
+        for (let x = 0; x < WIDTH; x++)
+            this.context.fillRect(x * CELL_WIDTH, 0, 1, this.canvas.width);
+        for (let y = 0; y < HEIGHT; y++)
+            this.context.fillRect(0, y * CELL_HEIGHT, this.canvas.height, 1);
+    },
+    showMatrix: function () { // Вывод матрицы активного слоя
+        if (this.layer) {
+            for (let x = 0; x < this.layer.width; x++) {
+                for (let y = 0; y < this.layer.height; y++) {
+                    this.context.fillStyle = COLORS[this.layer.get(x, y)];
+                    this.context.fillRect(x * CELL_WIDTH, y * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT);
+                    this.context.fillStyle = GRID_COLOR;
+                    this.context.fillRect(x * CELL_WIDTH, y * CELL_HEIGHT, CELL_WIDTH, 1);
+                    this.context.fillRect(x * CELL_WIDTH, y * CELL_HEIGHT, 1, CELL_HEIGHT);
+                }
+            }
+        }
+    },
+    showElement: function (x, y) { // Вывод одного элемента с координатами x, y в активный слой
+        if (this.layer && x >= 0 && x < this.layer.width && y >= 0 && y < this.layer.height){
+            this.context.fillStyle = COLORS[this.layer.get(x, y)];
+            this.context.fillRect(x * CELL_WIDTH, y * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT);
+            this.context.fillStyle = GRID_COLOR;
+            this.context.fillRect(x * CELL_WIDTH, y * CELL_HEIGHT, CELL_WIDTH, 1);
+            this.context.fillRect(x * CELL_WIDTH, y * CELL_HEIGHT, 1, CELL_HEIGHT);
+        }
+    }
+};
+
+function Matrix() { // Конструктор поля данных, создаёт двумерный массив заполненный нулями
+    this.width = WIDTH;
+    this.height = HEIGHT;
+    this.matrix = new Array(this.width * this.height);
+    this.set = function (x, y, el) { // Установка элемента
+        if (x < this.width && y < this.height) this.matrix[this.width * y + x] = el;
+    };
+    this.get = function (x, y) {  // Считывание элемента
+        if (x < this.width && y < this.height) return this.matrix[this.width * y + x];
+    };
+    for (let n = 0; n < this.matrix.length; n++) this.matrix[n] = 0;
+}
+
+function initControls() {  // Инициализируем панель управления
+    document.getElementById('controls').style.width = AREA_WIDTH - 20 + 'px';
+
+    let select = document.getElementById('colors').firstElementChild;
+    for (let color = 0; color < COLORS.length; color++) {
+        let option = document.createElement('option');
+        option.innerHTML = COLORS[color];
+        option.value = color;
+        option.style.backgroundColor = COLORS[color];
+        select.appendChild(option);
+    }
+}
+
+// Функции преобразования цветов. Стащил отсюда: https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
+function rgbToHex(r, g, b) {
+    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+}
+
+function hexToRgb(hex) {
+    // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+    var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+    hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+        return r + r + g + g + b + b;
+    });
+
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+}
+
+</script>
+	<link rel="stylesheet" type="text/css" href="MyGame.css">
+</head>
+<body onload="initGame()">
+	<div id="play_area"></div>
+    <div class="controls" id="controls">
+        <div class="row">
+            <div class="col-3">
+            <div class="colors" id="colors">
+                <select name="color" onchange="myGameArea.color = this.value">
+                    <option value="" selected disabled>Выберите цвет...</option>
+                </select>
+            </div>
+            </div>
+            <div class="col-3">
+                <button id="StartBtn" value="Start!" onclick="startGame()">Start!</button>
+                <button id="StepBtn" value=">" onclick="nextStep()"> > </button>
+                <button id="SoupBtn" value="SOUP" onclick="set_primary_soup()"> SOUP </button>
+                <button id="Clear" value="CLEAR" onclick="clearMatrix()"> CLEAR </button>
+            </div>
+            <div class="col-3" id="debug"></div>
+        </div>
+    </div>
+</body>
+</html>

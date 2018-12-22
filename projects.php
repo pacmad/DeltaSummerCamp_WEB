@@ -42,6 +42,25 @@
     <div class="projects">
         <div class="project-sizer"></div>
         <div class="project" onclick="showMore(this)">
+            <strong>&laquo;Клеточные автоматы&raquo;</strong> В этом проекте мы научились программировать клеточные
+            автоматы на языке JavaScript и сделали небольшой <a href="https://delta.gorod.de/2018/" target="_blank">
+                web-сайт</a>, на котором представили наши работы.
+            автоматы работают в реальном времени: можно задать начальные условия или выбрать начальную конфигурацию.
+            <img src="images/CMPrj.gif"/>
+            <div class="more">
+                Ссылка на сайт: <a href="https://delta.gorod.de/2018/" target="_blank">https://delta.gorod.de/2018/</a>
+                <img src="images/CMPj-1.gif">
+            </div>
+        </div>
+        <!--
+        <div class="project" onclick="showMore(this)">
+            <strong>&laquo;Моделирование физических процессов&raquo;</strong>
+            <video width="500" height="500" autoplay>
+                <source src="images/PhPrPrj.mp4" type="video/mp4">
+            </video>
+        </div>
+        -->
+        <div class="project" onclick="showMore(this)">
             <strong>&laquo;Оригамматика&raquo;</strong> &ndash; проект на базе одноимённого курса. Участники проекта на
             защите
             познакомили слушателей с теорией построения оригами, разработали и собрали различные сложные модели.
@@ -63,7 +82,7 @@
             За то же время корреспонденты провели кучу интервью, сделали сотни фотографий. Дизайнеры и программисты
             придумали концепцию и дизайн сайта, сверстали страницы, разработали таблицы стилей css. На JavaScript была
             написана простая игрушка &quot;поймай бабочку&quot;. В итоге получился полноценный web-сайт, который можно
-            посмотреть по адресам <a href="http://delta.gorod.de/2016/" target="_blank">http://delta.gorod.de/2016/</a>
+            посмотреть по адресам <a href="https://delta.gorod.de/2016/" target="_blank">https://delta.gorod.de/2016/</a>
             или <a href="http://delta.mathbaby.ru/2016/" target="_blank">http://delta.mathbaby.ru/2016/</a>. Самое
             замечательное, что главный дизайнер и программист Миша Андреев не остановился на достигнутом, и в течение
             следующих месяцев совершенствовал и улучшал качество сайта. Он освоил на высоком уровне программирование на

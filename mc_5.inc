@@ -5,7 +5,7 @@
  */
 require_once 'phplib/dbConnect.php';
 require_once 'phplib/mail.php';
-require_once 'phplib/common.php';
+require_once 'phplib/common.inc';
 
 if (!isset($UID)) {
     exit('Данный файл не предназначен для самостоятельного запуска');

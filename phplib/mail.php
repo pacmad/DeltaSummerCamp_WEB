@@ -22,6 +22,9 @@ $reply_to = 'summer.camp.delta@gmail.com';
 $domain = 'delta.gorod.de';
 $myCabinet = 'https://' . $domain . '/mycabinet.php';
 
+const _DEBUG = false; // Если установлен этот флаг, вместо адреса клиента ставится адрес $cc
+const _PREREG = false; // Если установлен - идёт предварительная регистрация
+
 
 /***
  * Отсылка письма об удадчной регистрации
@@ -30,6 +33,13 @@ $myCabinet = 'https://' . $domain . '/mycabinet.php';
  *
  ***/
 function sendRegMail($person) {
+    global $from;
+    global $cc;
+    global $bcc;
+    global $reply_to;
+    global $myCabinet;
+    global $domain;
+
     $id = $person['UniqueId'];
     $time = $person['RegistrationTime'];
     $ip = $person['UserIP'];
@@ -46,14 +56,8 @@ function sendRegMail($person) {
     $lang = $person['Languages'];
     $tel = $person['Tel'];
     $notes = $person['Notes'];
-    global $from;
-    $to = 'ablov@cintra.ru'; //$person['Email'];
-    global $cc;
-    global $bcc;
-    global $reply_to;
-    $subject = 'Delta-2019 pre-registration';
-    global $myCabinet;
-    global $domain;
+    $to = (_DEBUG ? $cc : $email);
+    $subject = 'Delta-2019 new registration';
 
     /*
      * Сначала отправляем строку для ввода в Excel
@@ -78,13 +82,38 @@ function sendRegMail($person) {
         'To: ' . $reply_to . "\r\n" .
         'Cc: ' . $cc . "\r\n" .
         'X-Mailer: PHP/' . phpversion();
-    mail($reply_to, $subject, $debug, $headers);
+    mail((_DEBUG ? $cc : $reply_to), $subject, $debug, $headers);
 
     /*
      * Теперь основное письмо (предварительная регистрация!)
      */
-    /* Комментарим основное письмо о регистрации
-    $message = '
+    if (_PREREG) $message = '
+        <!doctype html>
+        <html>
+        <head>
+        <meta charset="UTF-8">
+        <title>Благодарим за регистрацию!</title>
+        </head>
+        <body>
+        <p>Благодарим Вас за предварительную регистрацию в летний физико-математический лагерь «Дельта» в Мюнхене!</p>
+        <p>При открытии основной регистрации мы вышлем Вам письмо со вступительной олимпиадой и подробной информацией о 
+        стоимости и сроках проведения лагеря.</p>
+        <p>&nbsp;</p>
+        <p>С уважением,<br>
+        Анна Семовская<br>
+        директор лагеря</p>
+        <p>+7(903)749-4851<br>
+        E-mail: anna@sem@gmail.com<br>
+        Skype: aselect1976<br>
+        Facebook: <a href="https://www.facebook.com/Summer.Camp.Delta">https://www.facebook.com/Summer.Camp.Delta</a><br>
+        ВКонтакте: <a href="https://vk.com/summer_camp_delta">https://vk.com/summer_camp_delta</a></p>
+        </body>
+        </html>
+        ';
+    /*
+     * Теперь основное письмо (регистрация открыта!)
+     */
+    else $message = '
         <!doctype html>
         <html>
         <head>
@@ -123,7 +152,96 @@ function sendRegMail($person) {
         ВКонтакте: <a href="https://vk.com/summer_camp_delta">https://vk.com/summer_camp_delta</a></p>
         </body>
         </html>
-    '; */
+        ';
+    $mail = new PHPMailer(true);
+    $mail->SMTPDebug = 0;
+    $mail->isSMTP();
+    $mail->Host = 'mx.cintra.ru';
+    $mail->SMTPAuth = false;
+    $mail->SMTPAutoTLS = false;
+    $mail->CharSet = 'UTF-8';
+
+    $mail->setFrom($from, 'Delta Summer Camp');
+    $mail->addAddress($to);
+    $mail->addBCC($bcc);
+    $mail->addReplyTo($reply_to);
+
+    $mail->isHTML(true);
+    $mail->Subject = $subject;
+    $mail->Body = $message;
+    if (_PREREG)
+        $mail->AltBody =
+        'Здравствуйте! Вы зарегистрировались в Летний физико-математический лагерь "Дельта" в Мюнхене.\n\r
+        При открытии основной регистрации мы вышлем Вам письмо со вступительной олимпиадой и подробной информацией о 
+        стоимости и сроках проведения лагеря.';
+    else
+        $mail->AltBody = 'Здравствуйте! Вы зарегистрировались в Летний физико-математический лагерь "Дельта" в Мюнхене.\n\r
+        Зайдите, пожалуйста, в личный кабинет по адресу: ' . $myCabinet . '?id=' . $id;
+
+    return $mail->send();
+}
+
+/***
+ * Отсылка письма об удадчной регистрации старым знакомым
+ * @param array from delta(registrations)  $person
+ * @throws \PHPMailer\PHPMailer\Exception
+ *
+ ***/
+function sendGreetingsMail($person) {
+    global $from;
+    global $cc;
+    global $bcc;
+    global $reply_to;
+    global $myCabinet;
+    global $domain;
+
+    $id = $person['UniqueId'];
+    $time = $person['RegistrationTime'];
+    $ip = $person['UserIP'];
+    $email = $person['Email'];
+    $surname = $person['Surname'];
+    $name = $person['Name'];
+    $m_name = $person['MiddleName'];
+    $gender = $person['Gender'];
+    $birthday = $person['Birthday'];
+    $class = $person['Class'];
+    $school = $person['School'];
+    $city = $person['City'];
+    $country = $person['Country'];
+    $lang = $person['Languages'];
+    $tel = $person['Tel'];
+    $notes = $person['Notes'];
+    $to = (_DEBUG ? $cc : $email);
+    $subject = 'Delta-2019 registration';
+
+    /*
+     * Сначала отправляем строку для ввода в Excel
+     */
+    $debug = "
+        <!doctype html>
+        <html>
+        <head>
+        <meta charset=\"UTF-8\">
+        <title>Новая регистрация (свои)!</title>
+        </head>
+        <body>
+        $time<br>$ip<br>$email<br>$surname<br>$name<br>$m_name<br>$gender<br>$birthday<br>$class<br>$school<br>
+        $city<br>$country<br>$lang<br>$tel<br>$notes
+        </body>
+        </html>
+    ";
+    $headers =
+        'MIME-Version: 1.0' . "\r\n" .
+        'Content-type: text/html; charset=UTF-8' . "\r\n" .
+        'From: Delta <' . $from . '>' . "\r\n" .
+        'To: ' . $reply_to . "\r\n" .
+        'Cc: ' . $cc . "\r\n" .
+        'X-Mailer: PHP/' . phpversion();
+    mail($reply_to, $subject, $debug, $headers);
+
+    /*
+     * Теперь основное письмо
+     */
     $message = '
         <!doctype html>
         <html>
@@ -132,16 +250,51 @@ function sendRegMail($person) {
         <title>Благодарим за регистрацию!</title>
         </head>
         <body>
-        <p>Благодарим Вас за предварительную регистрацию в летний физико-математический лагерь «Дельта» в Мюнхене!</p>
-        <p>При открытии основной регистрации мы вышлем Вам письмо со вступительной олимпиадой и подробной информацией о 
-        стоимости и сроках проведения лагеря.</p>
+        <p>Здравствуйте!</p>
+        <p>&nbsp;</p>
+        <p>Спасибо за регистрацию в Дельту, мы рады видеть старых друзей!</p>
+        <p>&nbsp;</p>
+        <p>Ваш личный кабинет: <a href="' . $myCabinet . '?id=' . $id . '">' . $myCabinet . '?id=' . $id . '</a> 
+        По ссылке откроется анкета, содержащая сведения прошлого года. Проверьте актуальность данных участника.</p>
+        <p>&nbsp;</p>
+        <p>С нового года центр GOROD переезжает в другое здание, поэтому в жизни и распорядке Дельты будут некоторые 
+        изменения:</p>
+        <ol>
+            <li>Стоимость лагеря несколько вырастет (размещение в новом здании будет немного дороже). Пока нам не 
+            сказали точно стоимость аренды, но цена путёвки не должна превысить 850 евро. Договорились с GOROD’ом, что 
+            окончательная информация появится не позже февраля.</li>
+            <li>Сроки проведения Дельты определены: в этот раз мы проводим лагерь с 22 июля по 5 августа 2019 г.</li>
+            <li>В новом здании количество спальных мест в этом году будет меньше, скорее всего, количество участников 
+            будет ограничено.</li>
+            <li>Новый GOROD будет жить по адресу <a href="https://goo.gl/maps/bYxmTNgg1hH2">Arnulfstraße 197</a>. 
+            Неподалёку есть большой парк для прогулок. Кроме того, в новом месте в нашем распоряжении будет 
+            внутренний двор.</li>
+        </ol>
+        <p>&nbsp;</p>
+        <p>Решение вступительной олимпиады участникам прошлых лет не требуется.</p>
+        <p>&nbsp;</p>
+        <p>Основная регистрация начнётся с декабря. Уже сейчас у нас довольно много заявок. Если вы твёрдо планируете 
+        присоединиться к нам в 2019 году, пожалуйста, подтвердите своё намерение!</p>
         <p>&nbsp;</p>
         <p>С уважением,<br>
-        Анна Семовская<br>
+        <p><b>Анна Семовская</b><br>
         директор лагеря</p>
-        <p>+7(903)749-4851<br>
-        E-mail: anna@sem@gmail.com<br>
-        Skype: aselect1976<br>
+        <p>            
+        +7(903)749-4851 (<a title="Телефон" href="tel:+79037494851" target="_blank">телефон</a>,
+        <a title="Telegram" href="https://t.me/annasemovskaya" target="_blank">Telegram</a>,
+        <a title="WhatsApp" href="whatsapp://send?phone=+79037494851" target="_blank">WhatsApp</a>)<br>
+        <a title="E-mail" href="mailto:anna.sem@gmail.com" target="_blank">anna.sem@gmail.com</a><br>
+        Skype: <a title="Skype" href="skype:aselect1976?chat" target="_blank">aselect1976</a>
+        </p>
+        <p><b>Дмитрий Аблов</b><br></p>
+        <p>       
+        +7(903)795-4223 (<a title="Телефон" href="tel:+79037954223" target="_blank">телефон</a>,
+        <a title="Telegram" href="https://t.me/d_ablov" target="_blank">Telegram</a>,
+        <a title="Viber" href="viber://add?number=+79037954223" target="_blank">Viber</a>,
+        <a title="WhatsApp" href="whatsapp://send?phone=+79037954223" target="_blank">WhatsApp</a>)<br>
+        <a title="E-Mail" href="mailto:d.ablov@gmail.com" target="_blank">d.ablov@gmail.com</a><br>
+        Skype: <a title="Skype" href="skype:d.ablov?chat" target="_blank">d.ablov</a>       
+        </p>
         Facebook: <a href="https://www.facebook.com/Summer.Camp.Delta">https://www.facebook.com/Summer.Camp.Delta</a><br>
         ВКонтакте: <a href="https://vk.com/summer_camp_delta">https://vk.com/summer_camp_delta</a></p>
         </body>
@@ -163,13 +316,23 @@ function sendRegMail($person) {
     $mail->isHTML(true);
     $mail->Subject = $subject;
     $mail->Body = $message;
-    /* Комментарим в предварительной регистрации
-    $mail->AltBody = 'Здравствуйте! Вы зарегистрировались в Летний физико-математический лагерь "Дельта" в Мюнхене.\n\r
-    Зайдите, пожалуйста, в личный кабинет по адресу: ' . $myCabinet . '?id=' . $id;
-    */
-    $mail->AltBody = 'Здравствуйте! Вы зарегистрировались в Летний физико-математический лагерь "Дельта" в Мюнхене.\n\r
-    При открытии основной регистрации мы вышлем Вам письмо со вступительной олимпиадой и подробной информацией о 
-    стоимости и сроках проведения лагеря.';
+    $mail->AltBody = 'Здравствуйте! Спасибо за регистрацию в Дельту, мы рады видеть старых друзей!\n\r
+    Адрес личного кабинета: ' . $myCabinet . '?id=' . $id . '. По ссылке откроется анкета, содержащая сведения прошлого 
+    года. Проверьте актуальность данных участника.\n\r
+    С нового года центр GOROD переезжает в другое здание, поэтому в жизни и распорядке Дельты будут некоторые изменения:\n\r
+    1.	Стоимость лагеря несколько вырастет (размещение в новом здании будет немного дороже). Пока нам не сказали 
+    точно стоимость аренды, но цена путёвки не должна превысить 850 евро. Договорились с GOROD’ом, что окончательная 
+    информация появится не позже февраля.\n\r
+    2.	Сроки проведения Дельты определены: в этот раз мы проводим лагерь с 22 июля по 5 августа 2019 г.\n\r
+    3.	В новом здании количество спальных мест в этом году будет меньше, скорее всего, количество участников будет ограничено.\n\r
+    4.	Новый GOROD будет жить по адресу Arnulfstraße 197 (https://goo.gl/maps/bYxmTNgg1hH2). Неподалёку есть большой 
+    парк для прогулок. Кроме того, в новом месте в нашем распоряжении будет внутренний двор.\n\r
+    Решение вступительной олимпиады участникам прошлых лет не требуется.\n\r
+    Основная регистрация начнётся с декабря. Уже сейчас у нас довольно много заявок. Если вы планируете присоединиться к 
+    нам в 2019 году, пожалуйста, подтвердите своё намерение!\n\r
+    С уважением,\n\r
+    Команда Дельты.
+    ';
 
     $mail->send();
 }

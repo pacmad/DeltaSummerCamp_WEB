@@ -7,7 +7,7 @@
  */
 
 
-require_once 'common.php';
+require_once 'common.inc';
 
 define("DB_NOT_FOUND", "-1"); // Запись с таким UID не существует
 define("DB_ADD_OK", "0"); // Добавление данных в баз упрошло успешно
@@ -70,12 +70,12 @@ class dbConnect
             error("<br>Invalid e-mail");
             $email = "noemail@found.com";
         } else {
-            $email = substr(trim($email), 0, 50);
+            $email = substr(trim($email), 0, 100);
         }
-        $phone = substr(trim(filter_var($_POST["tel"], FILTER_SANITIZE_STRING)), 0, 20);
-        $surname = substr(trim(filter_var($_POST["surname"], FILTER_SANITIZE_STRING)), 0, 30);
-        $name = substr(trim(filter_var($_POST["name"], FILTER_SANITIZE_STRING)), 0, 30);
-        $middlename = substr(trim(filter_var($_POST["middlename"], FILTER_SANITIZE_STRING)), 0, 30);
+        $phone = substr(trim(filter_var($_POST["tel"], FILTER_SANITIZE_STRING)), 0, 40);
+        $surname = substr(trim(filter_var($_POST["surname"], FILTER_SANITIZE_STRING)), 0, 60);
+        $name = substr(trim(filter_var($_POST["name"], FILTER_SANITIZE_STRING)), 0, 60);
+        $middlename = substr(trim(filter_var($_POST["middlename"], FILTER_SANITIZE_STRING)), 0, 60);
         if ($_POST["gender"] === "f") {
             $gender = 'f';
         } else {
@@ -90,11 +90,11 @@ class dbConnect
         if ($_POST["class"] === '') {
             $_POST["class"] = 0;
         }
-        $class = substr(trim(filter_var($_POST["class"], FILTER_SANITIZE_STRING)), 0, 2);
-        $school = substr(trim(filter_var($_POST["school"], FILTER_SANITIZE_STRING)), 0, 70);
-        $city = substr(trim(filter_var($_POST["city"], FILTER_SANITIZE_STRING)), 0, 40);
-        $country = substr(trim(filter_var($_POST["country"], FILTER_SANITIZE_STRING)), 0, 20);
-        $langs = substr(trim(filter_var($_POST["langs"], FILTER_SANITIZE_STRING)), 0, 60);
+        $class = (int) substr(trim(filter_var($_POST["class"], FILTER_VALIDATE_INT)), 0, 2);
+        $school = substr(trim(filter_var($_POST["school"], FILTER_SANITIZE_STRING)), 0, 140);
+        $city = substr(trim(filter_var($_POST["city"], FILTER_SANITIZE_STRING)), 0, 80);
+        $country = substr(trim(filter_var($_POST["country"], FILTER_SANITIZE_STRING)), 0, 40);
+        $langs = substr(trim(filter_var($_POST["langs"], FILTER_SANITIZE_STRING)), 0, 180);
         $notes = substr(trim(filter_var($_POST["notes"], FILTER_SANITIZE_STRING)), 0, 1024);
 
         $dbFields = "UniqueId, UserIP, Email, Surname, Name, MiddleName, Gender, Birthday,
@@ -105,9 +105,9 @@ class dbConnect
 
         // Учёт старой регистрации
         if (!strcmp($_POST["ALL_DONE"], "Old")) {
-            $ownTel = substr(trim(filter_var($_POST["ownTel"], FILTER_SANITIZE_STRING)), 0, 20);
+            $ownTel = substr(trim(filter_var($_POST["ownTel"], FILTER_SANITIZE_STRING)), 0, 40);
             $certLang = substr(trim(filter_var($_POST["certLang"], FILTER_SANITIZE_STRING)), 0, 2);
-            $certName = substr(trim(filter_var($_POST["certName"], FILTER_SANITIZE_STRING)), 0, 255);
+            $certName = html_entity_decode(substr(trim(filter_var($_POST["certName"], FILTER_SANITIZE_STRING)), 0, 255));
             $health = trim(filter_var($_POST["health"], FILTER_SANITIZE_STRING));
             $insurance = trim(filter_var($_POST["insurance"], FILTER_SANITIZE_STRING));
             $notesText = trim(filter_var($_POST["notesText"], FILTER_SANITIZE_STRING));
@@ -115,8 +115,55 @@ class dbConnect
             $notebook = filter_var($_POST["notebook"], FILTER_SANITIZE_STRING);
             $shirt = filter_var($_POST["shirt"], FILTER_SANITIZE_STRING);
 
-            $dbFields .= ", AppStatus, OwnTel, CertLang, CertName, Health, Insurance, NotesText, Visa, Notebook, Shirt";
-            $dbValues .= ", '5', '$ownTel', '$certLang', '$certName', '$health', '$insurance', '$notesText', '$visa', '$notebook', '$shirt'";
+            $dbFields .= ", AppStatus";
+            $dbValues .= ", '5'";
+
+            if ($ownTel !== null) {
+                $dbFields .= ", OwnTel";
+                $dbValues .= ", '$ownTel'";
+            }
+
+            if ($certLang !== null) {
+                $dbFields .= ", CertLang";
+                $dbValues .= ", '$certLang'";
+            }
+
+            if ($certName !== null) {
+                $dbFields .= ", CertName";
+                $dbValues .= ", '$certName'";
+            }
+
+            if ($health !== null) {
+                $dbFields .= ", Health";
+                $dbValues .= ", '$health'";
+
+            }
+
+            if ($insurance !== null)
+            {
+                $dbFields .= ", Insurance";
+                $dbValues .= ", '$insurance'";
+            }
+
+            if ($notesText !== null) {
+                $dbFields .= ", NotesText";
+                $dbValues .= ", '$notesText'";
+            }
+
+            if ($visa !== null) {
+                $dbFields .= ", Visa";
+                $dbValues .= ", '$visa'";
+            }
+
+            if ($notebook !== null) {
+                $dbFields .= ", Notebook";
+                $dbValues .= ", '$notebook'";
+            }
+
+            if ($shirt !== null) {
+                $dbFields .= ", Shirt";
+                $dbValues .= ", '$shirt'";
+            }
         }
 
         // Записываем в базу
@@ -166,8 +213,6 @@ class dbConnect
         if ($result->rowCount() === 1) {
             $row = $result->fetch();
             $birthday = $row["Birthday"];
-//            $birthday = date_create_from_format("Y-m-d", $birthday);
-//            $birthday = $birthday->format("d/m/Y");
             $surname = $row["Surname"];
             $name = $row["Name"];
             $middleName = $row["MiddleName"];
@@ -203,28 +248,60 @@ class dbConnect
     }
 
     // Устанавливает флаг status для конкретного абитуриента
-    // -5: не зашли в ЛК;
-    // -4: не скачали олимпиаду;
-    // -3: нехорошо себя повели;
-    // -2: не прошёл по конкурсу;
-    // -1: отказ от регистрации;
-    // 0: только что создан;
-    // 1: входил в персональный кабинет;
-    // 2: выслана/скачана олимпиада;
-    // 3: получено решение олимпиады;
-    // 5: свой;
-    // 6: послали "прнят";
-    // 7-перекличка, свои;
-    // 9-обещали;
-    // 10-внесена предоплата
-    public function setAppStatus($uniqueId, $flag) {
-        $sql = "UPDATE registrations SET AppStatus=" . $flag . " WHERE UniqueId='" . $uniqueId ."'";
+    public $AppStatus = array(
+        -5 => "Не зашли в ЛК",
+        -4 => "Не скачали олимпиаду",
+        -3 => "Нехорошо себя повели",
+        -2 => "Не прошёл по конкурсу",
+        -1 => "Отказ от регистрации",
+         0 => "Только что создан",
+         1 => "Входил в персональный кабинет",
+         2 => "Выслана/скачана олимпиада",
+         3 => "Получено решение олимпиады",
+         5 => "Из прошлой Дельты",
+         6 => "Послали 'прнят'",
+         7 => "Перекличка, свои",
+         9 => "Обещали",
+        10 => "Внесена предоплата",
+        11 => "Без проживания",
+        15 => "Участник"
+    );
+
+    // Устанавливает статус
+    public function setAppStatus($UID, $status) {
+        $sql = "UPDATE registrations SET AppStatus=" . $status . " WHERE UniqueId='" . $UID ."'";
+        if (!isset($this->AppStatus[$status])) error("AppStatus $status is not defined");
         try {
-            return $this->conn->query($sql);
+            $this->conn->exec($sql);
         }
         catch (PDOException $exception) {
             error("setAppStatus error: ". $exception);
         }
+    }
+
+    // Возвращает статус зарегистрировавшегося
+    public function getAppStatus($UID) {
+        $sql = "SELECT AppStatus FROM registrations WHERE UniqueId='$UID'";
+        try {
+            $result = $this->conn->query($sql);
+        }
+        catch (PDOException $exception) {
+            error("getAppStatus error: $exception");
+        }
+
+        $row = $result->fetch();
+        return $row["AppStatus"];
+    }
+
+    // Возвращает строку-статус
+    public function getAppStatusText($UID)
+    {
+        return $this->AppStatus[$this->getAppStatus($UID)];
+    }
+
+    // Возвращает набор записей персон с указанным статусом
+    public function getPersonsWithStatus($status) {
+        return $this->conn->query("SELECT * FROM registrations WHERE AppStatus = $status");
     }
 
     // Устанавливает дату отсылки олимпиады и выставляет AppStatus=2
@@ -240,25 +317,6 @@ class dbConnect
         catch (PDOException $exception) {
             error("setWorkDaySent error: $exception");
         }
-    }
-
-    // Возвращает статус зарегистрировавшегося
-    public function getAppStatus($UID) {
-        $sql = "SELECT AppStatus FROM registrations WHERE UniqueId='$UID'";
-        try {
-            $result = $this->conn->query($sql);
-        }
-        catch (PDOException $exception) {
-            error("getAppStatus error: $exception");
-        }
-
-        if ($result->rowCount() == 1) {
-            foreach ($result as $row) {
-                return $row["AppStatus"];
-            }
-        }
-
-        return -1;
     }
 
     // Возвращает результат запроса вида 'SELECT $list_of_fields FROM "registations" ORDER BY $sort_by' с учётом типа статуса
@@ -346,7 +404,7 @@ class dbConnect
  */
     // Запись в базу регистраций телефона ребёнка
     public function setOwnTel($UID, $ownTel){
-        $ownTel = substr(trim(filter_var(iconv("UTF-8", "WINDOWS-1251", $ownTel), FILTER_SANITIZE_STRING)), 0, 20);
+        $ownTel = substr(trim(filter_var($ownTel, FILTER_SANITIZE_STRING)), 0, 20);
         $sql = "UPDATE registrations SET OwnTel='$ownTel' WHERE UniqueId='$UID'";
         $this->conn->exec($sql);
     }
@@ -358,9 +416,9 @@ class dbConnect
 
     // Запись в базу регистраций деталей прибытия
     public function setComingDetails($UID, $coming_with, $coming_date, $coming_time, $coming_flight, $coming_place){
-        $coming_date = substr(trim(filter_var(iconv("UTF-8", "WINDOWS-1251", $coming_date), FILTER_SANITIZE_STRING)), 0, 20);
-        $coming_time = substr(trim(filter_var(iconv("UTF-8", "WINDOWS-1251", $coming_time), FILTER_SANITIZE_STRING)), 0, 20);
-        $coming_flight = substr(trim(filter_var(iconv("UTF-8", "WINDOWS-1251", $coming_flight), FILTER_SANITIZE_STRING)), 0, 20);
+        $coming_date = substr(trim(filter_var($coming_date, FILTER_SANITIZE_STRING)), 0, 20);
+        $coming_time = substr(trim(filter_var($coming_time, FILTER_SANITIZE_STRING)), 0, 20);
+        $coming_flight = substr(trim(filter_var($coming_flight, FILTER_SANITIZE_STRING)), 0, 20);
         $sql = "UPDATE registrations SET ComingWith='$coming_with', ComingDate='$coming_date', ComingTime='$coming_time',
           ComingFlight='$coming_flight', ComingPlace='$coming_place' WHERE UniqueId='$UID'";
         $this->conn->exec($sql);
@@ -374,9 +432,9 @@ class dbConnect
     
     // Запись в базу регистраций деталей отбытия
     public function setLeavingDetails($UID, $leaving_with, $leaving_date, $leaving_time, $leaving_flight, $leaving_place){
-        $leaving_date = substr(trim(filter_var(iconv("UTF-8", "WINDOWS-1251", $leaving_date), FILTER_SANITIZE_STRING)), 0, 20);
-        $leaving_time = substr(trim(filter_var(iconv("UTF-8", "WINDOWS-1251", $leaving_time), FILTER_SANITIZE_STRING)), 0, 20);
-        $leaving_flight = substr(trim(filter_var(iconv("UTF-8", "WINDOWS-1251", $leaving_flight), FILTER_SANITIZE_STRING)), 0, 20);
+        $leaving_date = substr(trim(filter_var($leaving_date, FILTER_SANITIZE_STRING)), 0, 20);
+        $leaving_time = substr(trim(filter_var($leaving_time, FILTER_SANITIZE_STRING)), 0, 20);
+        $leaving_flight = substr(trim(filter_var($leaving_flight, FILTER_SANITIZE_STRING)), 0, 20);
         $sql = "UPDATE registrations SET LeavingWith='$leaving_with', LeavingDate='$leaving_date', LeavingTime='$leaving_time',
           LeavingFlight='$leaving_flight', LeavingPlace='$leaving_place' WHERE UniqueId='$UID'";
         $this->conn->exec($sql);
@@ -390,7 +448,7 @@ class dbConnect
 
     // Здоровье
     public function setHealthDetails($UID, $health) {
-        $health = filter_var(iconv("UTF-8", "WINDOWS-1251", $health), FILTER_SANITIZE_STRING);
+        $health = filter_var($health, FILTER_SANITIZE_STRING);
         $sql = "UPDATE registrations SET Health='$health' WHERE UniqueId='$UID'";
         $this->conn->exec($sql);
     }
@@ -401,7 +459,7 @@ class dbConnect
 
     // Страховка
     public function setInshuranceDetails($UID, $insurance) {
-        $s = filter_var(iconv("UTF-8", "WINDOWS-1251", $insurance), FILTER_SANITIZE_STRING);
+        $s = filter_var($insurance, FILTER_SANITIZE_STRING);
         if($s) $insurance = $s;
         $sql = "UPDATE registrations SET Insurance='$insurance' WHERE UniqueId='$UID'";
         $this->conn->exec($sql);
@@ -413,7 +471,7 @@ class dbConnect
 
     // Форс-мажор
     public function setNotesDetails($UID, $notes) {
-        $notes = filter_var(iconv("UTF-8", "WINDOWS-1251", $notes), FILTER_SANITIZE_STRING);
+        $notes = filter_var($notes, FILTER_SANITIZE_STRING);
         $sql = "UPDATE registrations SET NotesText='$notes' WHERE UniqueId='$UID'";
         $this->conn->exec($sql);
     }
@@ -951,6 +1009,7 @@ class dbConnect
 
         $sql = "SELECT DISTINCT CID FROM courses_by_student WHERE UID='$UID' AND NOT Time = '0'"; // без проекта
         $result = $this->conn->query($sql);
+        $courses = [];
 
         foreach ($result as $row) {
             $CID = $row['CID'];
@@ -975,7 +1034,7 @@ class dbConnect
 
             $result = $this->conn->query($sql);
             $row = $result->fetch();
-            $courseName = iconv('Windows-1251', 'UTF-8', $row['CourseName']);
+            $courseName = $row['CourseName'];
             $length = $this->getHoursOfCourse($UID, $CID);
             $courses[] = ["courseName" => $courseName, "length" => $length, "teachers" => $teachers];
         }
@@ -990,18 +1049,17 @@ class dbConnect
         $row = $result->fetch();
         switch ($row['CertLang']) {
             case 'ru':
-                return iconv('Windows-1251', 'UTF-8', $row['NameRus']);
+                return $row['NameRus'];
                 break;
             case 'de':
-                /* return iconv('Windows-1251', 'UTF-8', $row['NameGer']); */
                 return $row['NameGer'];
                 break;
             case 'en':
-                return iconv('Windows-1251', 'UTF-8', $row['NameEng']);
+                return $row['NameEng'];
                 break;
         }
 
-        return iconv('Windows-1251', 'UTF-8', $row['NameRus']);
+        return $row['NameRus'];
     }
 
     // Возвращает руководителей проекта по имени студента

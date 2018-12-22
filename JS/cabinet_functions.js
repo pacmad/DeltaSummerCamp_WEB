@@ -8,17 +8,6 @@ function setDateWorkSent(UID) {
 	xhttp.send();
 }
 
-// encode html text into html entity
-// from https://gist.github.com/CatTail/4174511
-const encodeHtmlEntity = function(str) {
-    let buf = [];
-    for (let i=str.length-1;i>=0;i--) {
-        buf.unshift(['&#', str[i].charCodeAt(), ';'].join(''));
-    }
-    return buf.join('');
-};
-
-
 $(document).ready(function () {
 
     $("#fileuploader").uploadFile({ //Подключение библиотеки jquery.uploadfile.js
@@ -440,9 +429,6 @@ $(document).ready(function () {
 
     let otherTimer = 0;
     let otherOptions = {
-        beforeSubmit: function (arr, $form, options) {
-            arr[3].value = encodeHtmlEntity($("#certName").val());  // Важно! Сменить индекс при изменении полей формы!
-        },
         success: function (data, status) {
             if (status === "success") {
                 $("#btnOtherDetails").hide();

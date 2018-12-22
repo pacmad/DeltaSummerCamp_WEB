@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+	.drawBox {
+		border: darkblue 1px solid;
+		cursor: crosshair;
+
+	}
+	body {
+		font-family: futura;
+		background-color: #c3c3c3;
+		text-align: center;
+	}
+
+	button {
+		border: none;
+		padding: 15px 15px;
+		text-align: center;
+		text-decoration: none;
+		display: inline-block;
+		font-size: 16px;
+		margin: 4px 2px;
+		cursor: pointer;
+		font-family: futura;
+	}
+
+	.red {
+		background-color: red;
+	}
+	.orange {
+		background-color: orange;
+	}
+	.yellow {
+		background-color: yellow;
+	}
+	.green {
+		background-color: green;
+	}
+	.lightblue {
+		background-color: lightblue;
+	}
+	.darkblue {
+		background-color: darkblue;
+	}
+	.purple {
+		background-color: purple;
+	}
+	.buu {
+		background-color: #b3b3b3;
+	}
+
+</style>
+
+	<script>
+
+	const MARGIN = 30;
+	const WIDTH = 960;
+	const HEIGHT = 720;
+	let isMouseDown = false;
+	let ctx;
+	let color = "black";
+	matrixColor = "black";
+	let autoColor;
+	var XX;
+	var YY;
+	var autoXX;
+	var autoYY;
+	let autoRun = false;
+	var interval;
+	const MAX_X = 48;
+	const MAX_Y = 37;
+	let matrix = [];
+	let oldmatrix = [];
+	const SIZE = 18;
+	const SIZE1 = 20;
+	var wood = 0;
+
+	var drawGrid = function(w, h, id) {
+		var canvas = document.getElementById("canvas");
+		var ctxx = canvas.getContext('2d');
+		ctxx.canvas.width = w;
+		ctxx.canvas.height = h;
+
+		for (x=0;x<=w;x+=20) { 
+				ctxx.moveTo(x, 0);
+				ctxx.lineTo(x, h);
+				ctxx.stroke();
+			}
+
+		for (y=0;y<=h;y+=20) {
+			ctxx.moveTo(0, y);
+			ctxx.lineTo(w, y);
+			ctxx.stroke();
+		}	
+		
+	}
+
+	function init() {
+		document.getElementById("body").style.margin = MARGIN + 'px';
+		document.getElementById("canvas").width = WIDTH;
+		document.getElementById("canvas").height = HEIGHT;
+		drawGrid(WIDTH, HEIGHT, "canvas");
+		let canvas = document.getElementById("canvas");
+		ctx = canvas.getContext('2d');
+
+		for (let y = 0; y < MAX_Y; y++) { // von unten nach oben
+                for (let x = 0; x < MAX_X; x++) { // von links nach rechts
+                    putXY(x, y, 0);
+	}}
+		oldmatrix = matrix.slice();
+}
+
+	function mouseDraw(ev) {
+		document.getElementById("outX").innerHTML = ev.layerX;
+		document.getElementById("outY").innerHTML = ev.layerY;
+
+		if (color == "black") {
+			matrixColor = 8;
+		} else if (color == "white") {
+			matrixColor = 0;
+		} else if (color == "red") {
+			matrixColor = 1;
+		} else if (color == "orange") {
+			matrixColor = 2;
+		} else if (color == "yellow") {
+			matrixColor = 3;
+		} else if (color == "green") {
+			matrixColor = 4;
+		} else if (color == "lightblue") {
+			matrixColor = 5;
+		} else if (color == "darkblue") {
+			matrixColor = 6;
+		} else if (color == "purple") {
+			matrixColor = 7;
+		} 
+
+		if (isMouseDown) {
+			ctx.fillStyle = color;
+			XXX = Math.round(ev.layerX / 20);
+			YYY = Math.round(ev.layerY / 20);
+			XX = XXX * 20;
+			YY = YYY * 20;
+			if (color == "green") {
+				ctx.fillStyle = color;
+				putXY(XXX + 1, YYY, matrixColor);
+				putXY(XXX - 1, YYY, matrixColor);
+				putXY(XXX, YYY + 1, matrixColor);
+				putXY(XXX, YYY - 1, matrixColor);
+				ctx.fillRect((XX + 20) + 1, YY + 1, SIZE, SIZE);
+				ctx.fillRect((XX - 20) + 1, YY + 1, SIZE, SIZE);
+				ctx.fillRect(XX + 1, (YY - 20) + 1, SIZE, SIZE);
+				ctx.fillRect(XX + 1, (YY + 20) + 1, SIZE, SIZE);
+				ctx.fillStyle = "brown";
+				putXY(XXX, YYY, 9);
+				ctx.fillRect(XX + 1, YY + 1, SIZE, SIZE);
+				ctx.fillStyle = color;
+
+			} else if (color == "yellow" && wood > 4 && getXY(XXX, YYY) != 3){
+				putXY(XXX, YYY, 3);
+				ctx.fillRect(XX + 1, YY + 1, SIZE, SIZE);
+				wood = wood - 5;
+				document.getElementById("wood").innerHTML = wood;
+			} else if (color == "yellow" && wood < 5){
+
+			} else {
+				putXY(XXX, YYY, matrixColor);	
+				ctx.fillRect(XX + 1, YY + 1, SIZE, SIZE);
+			}
+			oldmatrix = matrix.slice();
+		}
+
+	}
+
+	function putXY(X, Y, val) {
+            let index = Y * MAX_X + X; //die position y von unten mal die Randfelder und plus position x von links
+            matrix[index] = val; // schreiben den wert val in map namens matrix //map bekommt ein idex und speichert ein Wert
+        }
+
+    function getXY(X, Y) {
+            let index = Y * MAX_X + X;
+            return oldmatrix[index];
+        }
+
+
+	function stopAuto() {
+		clearInterval(interval);
+		for (let y = 0; y < MAX_Y; y++) { // von unten nach oben
+                for (let x = 0; x < MAX_X; x++) { // von links nach rechts
+                    putXY(x, y, 0);
+	}}}
+
+	function step() {
+
+		let c = document.getElementById('canvas'); //canvas wird gesucht
+        let context = c.getContext('2d'); //canvas wird 2d
+
+
+
+            for (let x = 0; x < MAX_X; x++) { // von links nach rechts
+                for (let y = 0; y < MAX_Y; y++) {
+
+                     // von unten nach oben
+                    if (getXY(x, y) === 0) { // wenn matrix 0 für aktuelle Zelle zurückgibt, dann ...
+                        context.fillStyle = 'white'; //farbe
+                        context.fillRect((SIZE1 * x) + 1, (SIZE1 * y) + 1, SIZE, SIZE);
+                    } else if (getXY(x, y) === 1) { // wenn 1 oder 2, dann...
+                        context.fillStyle = 'red'; //farbe
+                        context.fillRect((SIZE1 * x) + 1, (SIZE1 * y) + 1, SIZE, SIZE);
+                    } else if (getXY(x, y) === 2) { // wenn 1 oder 2, dann...
+                        context.fillStyle = 'orange'; //farbe
+                        context.fillRect((SIZE1 * x) + 1, (SIZE1 * y) + 1, SIZE, SIZE);
+                    } else if (getXY(x, y) === 3){
+                        context.fillStyle = 'yellow'; //farbe
+                        context.fillRect((SIZE1 * x) + 1, (SIZE1 * y) + 1, SIZE, SIZE);
+                    } else if (getXY(x, y) === 4){
+                        context.fillStyle = 'green'; //farbe
+                        context.fillRect((SIZE1 * x) + 1, (SIZE1 * y) + 1, SIZE, SIZE);
+                    } else if (getXY(x, y) === 5){
+                        context.fillStyle = 'lightblue'; //farbe
+                        context.fillRect((SIZE1 * x) + 1, (SIZE1 * y) + 1, SIZE, SIZE);
+                    } else if (getXY(x, y) === 6){
+                        context.fillStyle = 'darkblue'; //farbe
+                        context.fillRect((SIZE1 * x) + 1, (SIZE1 * y) + 1, SIZE, SIZE);
+                    } else if (getXY(x, y) === 7){
+                        context.fillStyle = 'purple'; //farbe
+                        context.fillRect((SIZE1 * x) + 1, (SIZE1 * y) + 1, SIZE, SIZE);
+                    } else if (getXY(x, y) === 8){
+                        context.fillStyle = 'black'; //farbe
+                        context.fillRect((SIZE1 * x) + 1, (SIZE1 * y) + 1, SIZE, SIZE);
+                    } else if (getXY(x, y) === 9){
+                        context.fillStyle = 'brown'; //farbe
+                        context.fillRect((SIZE1 * x) + 1, (SIZE1 * y) + 1, SIZE, SIZE);
+                    }
+                }
+            }
+
+		for (let y = 0; y < MAX_Y; y++) { // von unten nach oben
+                for (let x = 0; x < MAX_X; x++) {
+
+                    let A_1 = getXY(x - 1, y - 1);
+                    let A_2 = getXY(x, y - 1);
+                    let A_3 = getXY(x + 1, y - 1);
+                    let B_1 = getXY(x - 1, y);
+                    let B_2 = getXY(x + 1, y);
+                    let C_1 = getXY(x - 1, y + 1);
+                    let C_2 = getXY(x, y + 1);
+                    let C_3 = getXY(x + 1, y + 1); // von links nach rechts
+                    if (getXY(x, y) === 7) {
+                    	let randomStepX = Math.floor(Math.random()* 2) + 1;
+						let randomStepY = Math.floor(Math.random()* 2) + 1;
+                    	if (randomStepX == 1) {
+                    		newX = x + 1;
+                    	} 
+                    	if (randomStepX == 2) {
+                    		newX = x - 1;
+                    	}
+                    	if (randomStepY == 1) {
+                    		newY = y + 1;
+                    	} 
+                    	if (randomStepY == 2) {
+                    		newY = y - 1;
+                    	}
+                    	if (getXY(newX, newY) === 6 || getXY(newX, newY) === 5 || getXY(newX, newY) === 3 || getXY(newX, newY) === 2) {
+                    		
+                    		putXY(x, y, 7)
+                    	} else {
+                    		putXY(newX, newY, 7);
+                    		putXY(x, y, 0);
+                    	}
+                    	
+
+
+                    	}
+                    if (getXY(x, y) === 2 && (getXY(x + 1, y) === 6 || getXY(x - 1, y) === 6 || getXY(x, y + 1) === 6 || getXY(x, y - 1) === 6)) {
+                    		putXY(x, y, 6);
+                    	}
+                    	if ((getXY(x, y) === 4 || getXY(x, y) === 9 ) && (getXY(x + 1, y) === 7 || getXY(x - 1, y) === 7 || getXY(x, y + 1) === 7 || getXY(x, y - 1) === 7)) {
+                    		putXY(x, y, 0);
+                    		wood = wood + 2
+                    		document.getElementById("wood").innerHTML = wood;
+                    	}
+                    if (getXY(x, y) === 5 && (getXY(x + 1, y) === 2 || getXY(x - 1, y) === 2 || getXY(x, y + 1) === 2 || getXY(x, y - 1) === 2)) {
+                    		putXY(x, y, 2);
+                    	}
+                    if (getXY(x, y) === 5 && (getXY(x + 1, y) === 6 || getXY(x - 1, y) === 6 || getXY(x, y + 1) === 6 || getXY(x, y - 1) === 6)) {
+                    		putXY(x, y, 6);
+                    	}
+	}}
+	oldmatrix = matrix.slice();
+}
+	
+
+	function setMouseDown() {
+		isMouseDown = true;
+
+	}
+
+	function unsetMouseDown() {
+		isMouseDown = false;
+	}
+
+	function red() {
+		color = "red";
+	}
+	function orange() {
+		color = "orange";
+	}
+	function yellow() {
+		color = "yellow";
+	}
+	function green() {
+		color = "green";
+	}
+	function lightblue() {
+		color = "lightblue";
+	}
+	function darkblue() {
+		color = "darkblue";
+	}
+	function purple() {
+		color = "purple";
+	}
+
+
+	</script>
+
+</head>
+<body id="body" onload="init()">
+<h1>Life simulator</h1>
+<canvas class="drawBox" id="canvas" onmousemove="mouseDraw(event)" onmousedown="setMouseDown()" onmouseup="unsetMouseDown()" onclick="mouseDraw(event)"></canvas>
+<p>X: <span id="outX">0</span>, Y: <span id="outY">0</span>, wood: <span id="wood">0</span></p>
+<div class="buttons">
+<button onmousedown="orange()" class="orange">lava</button>
+<button onmousedown="yellow()" class="yellow">wall</button>
+<button onmousedown="green()" class="green">Tree</button>
+<button onmousedown="lightblue()" class="lightblue">Lower the ground</button>
+<button onmousedown="darkblue()" class="darkblue">Water</button>
+<button onmousedown="purple()" class="purple">Person</button>
+<button onmousedown="step()" class="buu">oneStep</button>
+<p>Life rules:<br>*Water puts lava off if lava id nearby<br>*people walk randomly and if find a tree eat them and you get +2 wood<br>*wall you can build with 5 wood and people can't go trough them<br>*Lava and water can flow over lower ground else they stay on their place<br><br>You click on a button and draw by holding you left mouse button and moving your cursor over the canvas. To simulate one step click the one step button. People can go out of the canvas so it doesn't get too crouded if you draw too much people.</p>
+</div>
+</body>
+</html>

@@ -10,7 +10,7 @@ include_once "phplib/dbConnect.php";
 <!doctype html>
 <html lang="ru">
 <head>
-    <meta charset="windows-1251">
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Преподаватели</title>
     <link href="CSS/common.css" rel="stylesheet" type="text/css">

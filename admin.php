@@ -3,13 +3,13 @@
  * Модуль входа в админку. Основной файл админки - admFetch.php
  */
 require_once 'phplib/dbConnect.php';
-require_once 'phplib/common.php';
+require_once 'phplib/common.inc';
 require_once 'phplib/adminlib.inc';
 
 session_start();
 if (isset($_SESSION['signed_in']) && $_SESSION['signed_in']) {
     if (isset($_SESSION['UID'])) {
-        include 'phplib/admMain.inc';
+        include 'phplib/admMain.inc'; // Основная страница админки
         exit();
     } else {
         admWrongUID();

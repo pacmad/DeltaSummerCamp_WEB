@@ -1,4 +1,4 @@
-@charset "windows-1251";
+@charset "utf-8";
 .title {
     display: block;
     margin: 0 0 20px 0;
@@ -24,7 +24,7 @@
 }
 
 /*
-    Иконки в шапке
+    РРєРѕРЅРєРё РІ С€Р°РїРєРµ
  */
 .icons {
     display: block;
@@ -57,7 +57,7 @@
 .iconbox:hover .icon {
     color: red;
 }
-/* Подсказки к иконкам */
+/* РџРѕРґСЃРєР°Р·РєРё Рє РёРєРѕРЅРєР°Рј */
 .tooltip {
     position: relative;
     display: inline-block;
@@ -79,7 +79,7 @@
 }
 
 /*
-    Список
+    РЎРїРёСЃРѕРє
  */
 .table {
     width: 100%;
@@ -171,7 +171,7 @@
 }
 
 /*
-    Карточка участника
+    РљР°СЂС‚РѕС‡РєР° СѓС‡Р°СЃС‚РЅРёРєР°
  */
 .details br {
     display: block;
@@ -215,11 +215,12 @@
 }
 .o_tel,
 .email,
-.tel {
+.tel,
+.status {
     display: block;
-    float: left;
     font-weight: bold;
     font-size: larger;
+    margin-bottom: 1em;
 }
 .o_tel a,
 .email a,
@@ -229,6 +230,7 @@
 }
 .sp_note {
     border: darkred 2px solid;
+    width: 100%;
     font-size: larger;
     font-weight: bold;
     color: darkred;
@@ -250,6 +252,26 @@
 .cablink a:active {
     background-color: #FDFECF;
 }
+.set_status select {
+    float: right;
+    height: 3rem;
+    width: 25rem;
+    font-size: 18px;
+    border-radius: 5px;
+}
+.set_status option {
+    font-size: 18px;
+}
+.set_status input[type=submit] {
+    float: right;
+    margin-top: 0;
+    margin-left: 1em;
+    display: unset;
+    width: 9rem;
+    height: 2.8rem;
+    border-radius: 5px;
+}
+
 #more_info {
     display: none;
 }
@@ -258,7 +280,7 @@
 }
 
 /*
-    Преподаватели
+    РџСЂРµРїРѕРґР°РІР°С‚РµР»Рё
  */
 .tch-row {
     height: auto;
@@ -287,7 +309,7 @@
 }
 
 /*
-    Курсы и проекты
+    РљСѓСЂСЃС‹ Рё РїСЂРѕРµРєС‚С‹
  */
 .courses-table {
     display: block;
@@ -418,7 +440,7 @@ input[type=button] {
 }
 
 /*
-    Студенты в курсе
+    РЎС‚СѓРґРµРЅС‚С‹ РІ РєСѓСЂСЃРµ
  */
 .student {
     width: 100px;
@@ -472,7 +494,7 @@ input[type=button] {
     .iconbox:hover .icon {
         color: red;
     }
-    /* Подсказки к иконкам */
+    /* РџРѕРґСЃРєР°Р·РєРё Рє РёРєРѕРЅРєР°Рј */
     .tooltip .tooltiptext {
         display: none;
     }
@@ -527,5 +549,19 @@ input[type=button] {
     }
     .l_owntel a:hover, .l_tel a:hover, .l_mail a:hover {
         color: darkred;
+    }
+    .set_status select {
+        height: 3rem;
+        width: 100%;
+        font-size: 18px;
+        border-radius: 5px;
+
+    }
+    .set_status input[type=submit] {
+        margin-top: 0;
+        display: unset;
+        width: 100%;
+        height: 2.8rem;
+        border-radius: 5px;
     }
 }
