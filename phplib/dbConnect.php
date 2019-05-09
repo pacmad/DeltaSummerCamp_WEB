@@ -9,6 +9,7 @@
 
 require_once 'common.inc';
 
+define("DB_ERROR", "-2"); // Ошибка записи в базу
 define("DB_NOT_FOUND", "-1"); // Запись с таким UID не существует
 define("DB_ADD_OK", "0"); // Добавление данных в баз упрошло успешно
 define("DB_ADD_DUP", "1"); // Запись не добавлена - ключ UniqueId уже есть в базе
@@ -57,9 +58,14 @@ class dbConnect
         // Уникальный ключ, проверка: если есть, значит регистрация уже была
         // Важно! По стравнению с 2018 годом убран e-mail и добавлен gender
         $unique = md5($_POST["surname"] . $_POST["name"] . $_POST["middlename"] . $_POST["birthday"] . $_POST["gender"]);
+        // Сразу пишем в Log для проверки...
+        $this->dbLog(print_r($_POST), $unique);
+        // Проверка на дубликат
         $sql = "SELECT UniqueId, Surname, Name FROM registrations WHERE UniqueId='" . $unique . "'";
         if (!($result = $this->conn->query($sql))) {
-            error("<br>Something wrong");
+            error("putRegData(): Something wrong", $unique);
+            $this->status = DB_ERROR;
+            return 0;
         } elseif ($result->rowCount() != 0) {
             $this->status = DB_ADD_DUP;
             return $unique;
@@ -111,7 +117,7 @@ class dbConnect
             $health = trim(filter_var($_POST["health"], FILTER_SANITIZE_STRING));
             $insurance = trim(filter_var($_POST["insurance"], FILTER_SANITIZE_STRING));
             $notesText = trim(filter_var($_POST["notesText"], FILTER_SANITIZE_STRING));
-            $visa = filter_var($_POST["visa"], FILTER_SANITIZE_STRING);
+            $visa = (int) substr(filter_var($_POST["visa"], FILTER_SANITIZE_STRING),0, 1);
             $notebook = filter_var($_POST["notebook"], FILTER_SANITIZE_STRING);
             $shirt = filter_var($_POST["shirt"], FILTER_SANITIZE_STRING);
 
@@ -172,11 +178,13 @@ class dbConnect
         try {
             $this->conn->exec($sql);
             $this->dbLog("Новая регистрация: $name $surname $email", $unique);
-            $this->status = DB_ADD_OK;
         }
         catch (PDOException $exception) {
             error("Error in database update: " . $exception);
+            $this->status = DB_ERROR;
+            return 0;
         }
+        $this->status = DB_ADD_OK;
         return $unique;
     }
 
@@ -185,9 +193,7 @@ class dbConnect
         if ($birthday = date_create_from_format("d/m/Y", $birthday)) {
             $birthday = $birthday->format("Y-m-d");
         }
-        $sql = "SELECT Period, Email, Gender, School, City, Country, Languages, Tel, OwnTel, Notes, CertLang, CertName, 
-          Health, Insurance, NotesText, Visa, Notebook, Shirt
-          FROM oldregs WHERE Surname = '$surname' AND Name = '$name' AND MiddleName = '$middleName' 
+        $sql = "SELECT * FROM oldregs WHERE Surname = '$surname' AND Name = '$name' AND MiddleName = '$middleName' 
           AND Birthday = '$birthday'";
         try {
             $result = $this->conn->query($sql);
@@ -197,8 +203,10 @@ class dbConnect
         $records = $result->rowCount();
         if ($records === 1) {
             $row = $result->fetch();
-            $row["ALL_DONE"] = "Old";
-            return $row;
+            if ((int)$row["AppStatus"] > 10) {
+                $row["ALL_DONE"] = "Old";
+                return $row;
+            }
         }
 
         return false;
@@ -896,8 +904,17 @@ class dbConnect
     }
 
     // Учителя, ведущие курс CID
-    public function getTeachersOfCourse ($CID) {
-        return $this->conn->query("SELECT * FROM teachers_and_courses WHERE Course_ID = '$CID'");
+    public function getTeachersOfCourse ($CID, $lang = 'ru') {
+        $teachers = [];
+        $result =  $this->conn->query("SELECT * FROM teachers_and_courses WHERE Course_ID = '$CID'");
+        foreach ($result as $item) {
+            if ($lang == 'ru') {
+                $teachers[] = $item['Name'] . ' ' . $item['Surname'];
+            } else {
+                $teachers[] = $item['Name_en'] . ' ' . $item['Surname_en'];
+            }
+        }
+        return $teachers;
     }
 
     // Изменение описания курса (удаление, если все описания нулевые)
@@ -1013,12 +1030,7 @@ class dbConnect
 
         foreach ($result as $row) {
             $CID = $row['CID'];
-            foreach ($this->getTeachersOfCourse($CID) AS $teacher) {
-                if ($certLang == 'ru')
-                    $teachers[] = $teacher['Name'] . " " . $teacher['Surname'];
-                else
-                    $teachers[] = $teacher['Name_en'] . " " . $teacher['Surname_en'];
-            }
+            $teachers = $this->getTeachersOfCourse($CID, $certLang);
 
             switch ($certLang) {
                 case 'ru':
@@ -1063,7 +1075,7 @@ class dbConnect
     }
 
     // Возвращает руководителей проекта по имени студента
-    public function getProjectLeader($UID) {
+    public function getProjectLeaders($UID) {
         $result = $this->conn->query("SELECT CID FROM courses_by_student WHERE UID='$UID' AND Time='0'");
         $row = $result->fetch();
         $CID = $row['CID'];
@@ -1071,8 +1083,29 @@ class dbConnect
     }
 
 /*
- *  Tools
+ *  Настройки
  */
+    public function setMinAppStatus($minAppStatus) {
+        $this->conn->exec("UPDATE settings SET minAppStatus = $minAppStatus WHERE ID = 1");
+    }
+
+    public function getMinAppStatus() {
+        $result = $this->conn->query("SELECT minAppStatus FROM settings")->fetch();
+        return $result['minAppStatus'];
+    }
+
+    public function setShowStat($showStat) {
+        $this->conn->exec("UPDATE settings SET showStat = $showStat WHERE ID = 1");
+    }
+
+    public function getShowStat() {
+        $result = $this->conn->query("SELECT showStat FROM settings")->fetch();
+        return $result['showStat'];
+    }
+
+    /*
+     *  Tools
+     */
 
     // Внутренний журнал
     public function dbLog($text, $UserID = "")

@@ -1,7 +1,8 @@
 /*
  *  Личный кабинет
  */
-// Установка пользователю UID флага 'status' в значение 2
+
+// Установка пользователю UID флага 'status' в значение 2 если выслана работа
 function setDateWorkSent(UID) {
 	let xhttp = new XMLHttpRequest();
 	xhttp.open("GET", "mycabinet.php?id=" + UID + "&SetStatus=2", true);
@@ -9,6 +10,23 @@ function setDateWorkSent(UID) {
 }
 
 $(document).ready(function () {
+    // Инициализируем детали приезда / отъезда, определённые в файле phplib/common.inc
+    const START_DAY = $("#START_DAY").html();
+    const FINISH_DAY = $("#FINISH_DAY").html();
+    let flights = JSON.parse($("#data")[0].value);
+    let allFlights = [];
+    for (let key in flights) {
+        let details = [];
+        if (flights.hasOwnProperty(key)) {
+            details = [];
+            for (let key2 in flights[key]) {
+                if (flights[key].hasOwnProperty(key2)) {
+                    details.push(flights[key][key2]);
+                }
+            }
+            allFlights.push([key, details]);
+        }
+    }
 
     $("#fileuploader").uploadFile({ //Подключение библиотеки jquery.uploadfile.js
 
@@ -154,28 +172,40 @@ $(document).ready(function () {
     $("#comeInForm").ajaxForm(comeInOptions);
 
     $("#comingWith").on('change', function () {
-        if (this.value === "DimaAnya") {
-            $("#comingDate").val("15/07/2018").attr('disabled', 'disabled');
-            $("#comingTime").val("13:15").attr('disabled', 'disabled');
-            $("#comingPlace").append(new Option('Аэропорт "Домодедово"', 'DME', false, true)).attr('disabled', 'disabled');
-            $("#comingFlight").val("LH2529").attr('disabled', 'disabled');
-        } else if (this.value === "Dubeniuk") {
-            $("#comingDate").val("16/07/2018").attr('disabled', 'disabled');
-            $("#comingTime").val("7:30").attr('disabled', 'disabled');
-            $("#comingPlace").append(new Option('Аэропорт "Внуково"', 'VKO', false, true)).attr('disabled', 'disabled');
-            $("#comingFlight").val("UT799").attr('disabled', 'disabled');
-        } else if (this.value === "WithParents") {
-            $("#comingDate").val("16/07/2018").removeAttr('disabled');
+        if (this.value === 'WithParents') {
+            $("#comingDate").val(START_DAY).removeAttr('disabled');
             $("#comingTime").val("").removeAttr('disabled');
             $("#comingPlace").val("gorod").removeAttr('disabled');
             $("#comingFlight").val("-").attr('disabled', 'disabled');
-        } else {
-            $("#comingDate").val("16/07/2018").removeAttr('disabled');
+            $("#comingPlace option[value='DME']").remove();
+            $("#comingPlace option[value='VKO']").remove();
+            $("#comingPlace option[value='SVO']").remove();
+        } else if (this.value === 'Singly') {
+            $("#comingDate").val(START_DAY).removeAttr('disabled');
             $("#comingTime").val("").removeAttr('disabled');
             $("#comingPlace").removeAttr('disabled');
             $("#comingFlight").val("").removeAttr('disabled');
             $("#comingPlace option[value='DME']").remove();
             $("#comingPlace option[value='VKO']").remove();
+            $("#comingPlace option[value='SVO']").remove();
+        } else {
+            for (let i = 0; i < allFlights.length; i++) {
+                if (this.value === allFlights[i][0]) {
+                    let Airport = allFlights[i][1][0];
+                    let AirportName = "";
+                    if (Airport === 'VKO') AirportName = "Внуково";
+                    else if (Airport === 'SVO') AirportName = "Шереметьево";
+                    else if (Airport === 'DME') AirportName = "Домодедово";
+                    let comingFlight = allFlights[i][1][1];
+                    let comingDate = allFlights[i][1][2];
+                    let comingTime = allFlights[i][1][3];
+                    $("#comingDate").val(comingDate).attr('disabled', 'disabled');
+                    $("#comingTime").val(comingTime).attr('disabled', 'disabled');
+                    $("#comingPlace").append(new Option('Аэропорт "' + AirportName + '"', Airport,
+                        false, true)).attr('disabled', 'disabled');
+                    $("#comingFlight").val(comingFlight).attr('disabled', 'disabled');
+                }
+            }
         }
         if (comeInTimer === 0) {
             comeInTimer = setTimeout(function () {
@@ -275,29 +305,42 @@ $(document).ready(function () {
     $("#leaveOutForm").ajaxForm(leaveOutOptions);
 
     $("#leavingWith").on('change', function () {
-        if (this.value === "DimaAnya") {
-            $("#leavingDate").val("30/07/2018").attr('disabled', 'disabled');
-            $("#leavingTime").val("23:55").attr('disabled', 'disabled');
-            $("#leavingPlace").append(new Option('Аэропорт "Домодедово"', 'DME', false, true)).attr('disabled', 'disabled');
-            $("#leavingFlight").val("LH2530").attr('disabled', 'disabled');
-        } else if (this.value === "Dubeniuk") {
-            $("#leavingDate").val("30/07/2018").attr('disabled', 'disabled');
-            $("#leavingTime").val("17:40").attr('disabled', 'disabled');
-            $("#leavingPlace").append(new Option('Аэропорт "Внуково"', 'VKO', false, true)).attr('disabled', 'disabled');
-            $("#leavingFlight").val("UT800").attr('disabled', 'disabled');
-        } else if (this.value === "WithParents") {
-            $("#leavingDate").val("30/07/2018").removeAttr('disabled');
+        if (this.value === "WithParents") {
+            $("#leavingDate").val(FINISH_DAY).removeAttr('disabled');
             $("#leavingTime").val("").removeAttr('disabled');
             $("#leavingPlace").val("gorod").removeAttr('disabled');
             $("#leavingFlight").val("-").attr('disabled', 'disabled');
-        } else {
-            $("#leavingDate").val("30/07/2018").removeAttr('disabled');
+            $("#leavingPlace option[value='DME']").remove();
+            $("#leavingPlace option[value='VKO']").remove();
+            $("#leavingPlace option[value='SVO']").remove();
+        } else if (this.value === 'Singly') {
+            $("#leavingDate").val(FINISH_DAY).removeAttr('disabled');
             $("#leavingTime").val("").removeAttr('disabled');
             $("#leavingPlace").removeAttr('disabled');
             $("#leavingFlight").val("").removeAttr('disabled');
             $("#leavingPlace option[value='DME']").remove();
             $("#leavingPlace option[value='VKO']").remove();
+            $("#leavingPlace option[value='SVO']").remove();
+        } else {
+            for (let i = 0; i < allFlights.length; i++) {
+                if (this.value === allFlights[i][0]) {
+                    let Airport = allFlights[i][1][0];
+                    let AirportName = "";
+                    if (Airport === 'VKO') AirportName = "Внуково";
+                    else if (Airport === 'SVO') AirportName = "Шереметьево";
+                    else if (Airport === 'DME') AirportName = "Домодедово";
+                    let leavingFlight = allFlights[i][1][4];
+                    let leavingDate = allFlights[i][1][5];
+                    let leavingTime = allFlights[i][1][6];
+                    $("#leavingDate").val(leavingDate).attr('disabled', 'disabled');
+                    $("#leavingTime").val(leavingTime).attr('disabled', 'disabled');
+                    $("#leavingPlace").append(new Option('Аэропорт "' + AirportName + '"', Airport,
+                        false, true)).attr('disabled', 'disabled');
+                    $("#leavingFlight").val(leavingFlight).attr('disabled', 'disabled');
+                }
+            }
         }
+
         if (leaveOutTimer === 0) {
             leaveOutTimer = setTimeout(function () {
                 $("#leaveOutForm").ajaxSubmit(leaveOutOptions);

@@ -52,14 +52,15 @@
                 <img src="images/CMPj-1.gif">
             </div>
         </div>
-        <!--
+
         <div class="project" onclick="showMore(this)">
-            <strong>&laquo;Моделирование физических процессов&raquo;</strong>
-            <video width="500" height="500" autoplay>
-                <source src="images/PhPrPrj.mp4" type="video/mp4">
-            </video>
+            <strong>&laquo;Моделирование физических процессов&raquo;</strong> На C++ были смоделированы различные физические
+            процессы, такие как сложные колебания и теплопроводность. Часть участников проекта разрабатывала "математический"
+            модуль, другие &ndash; "физический" модуль, третьи программировали графику и, наконец, ещё одна группа
+            занималась программированием загрузки/выгрузки данных.
+            <img src="images/PhPrPrj.gif">
         </div>
-        -->
+
         <div class="project" onclick="showMore(this)">
             <strong>&laquo;Оригамматика&raquo;</strong> &ndash; проект на базе одноимённого курса. Участники проекта на
             защите

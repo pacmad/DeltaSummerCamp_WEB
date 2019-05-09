@@ -70,7 +70,7 @@ if (isset($_FILES['file'])) {
     <div class="col-6">
         <p>Вступительную олимпиаду можно открыть по этой ссылке:
             <a href="documents/assignments.pdf" title="Вступительная олимпиада." target="_blank"
-            onclick='setDateWorkSent("<?php echo $row['UniqueId'] ?>");'>вступительную олимпиаду</a> (.pdf).</p>
+            onclick='setDateWorkSent("<?php echo $row['UniqueId'] ?>");'>вступительная олимпиада</a> (.pdf).</p>
         <p>Также Вы можете отправить файл с задачами себе на почту (<?php echo $row["Email"] ?>):</p>
         <form id="SentWorkByMail" name="SentWorkByMail" method="get">
             <input name="sbm" type="hidden" id="SendByMail">

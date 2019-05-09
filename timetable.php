@@ -114,7 +114,7 @@ include_once "phplib/dbConnect.php";
     <div class="row course-block">
         <?php
         try {
-            $students = $db->getStudentsList("UniqueId, Surname, Name", "Surname", "AppStatus >= 15");
+            $students = $db->getStudentsList("UniqueId, Surname, Name", "Surname", "AppStatus >= 9");
         } catch (PDOException $exception) {
             error("Error in getStudentsList: $exception");
         }
@@ -131,7 +131,7 @@ include_once "phplib/dbConnect.php";
                     $photo = $photos[0];
                 };
 
-                echo "<div class='student'><b>$surname $name</b><br><img src=$photo alt='Photo'></div>";
+                echo "<div class='student'><a href='student.php?ID=$UID'><b>$surname $name</b><br><img src=$photo alt='Photo'></a></div>";
             }
         }
         ?>
@@ -153,7 +153,7 @@ if(!$_SESSION['ReadOnly']) {
         <ul>
     ';
     try {
-        $students = $db->getStudentsList("UniqueId, Surname, Name", "Surname", "AppStatus >= 15");
+        $students = $db->getStudentsList("UniqueId, Surname, Name", "Surname", "AppStatus >= 9");
     } catch (PDOException $exception) {
         error("Error in getStudentsList: $exception");
     }

@@ -264,7 +264,7 @@ if(!$visa = $row['Visa']) $visa = "";
 if(!$notebook = $row['Notebook']) $notebook = "";
 if(!$shirt = $row['Shirt']) $shirt = "";
 ?>
-
+<input id='data' name='data' value='<?php echo json_encode($flights); ?>' hidden>
 <div class="row">
     <div class="col-12">
         <h3>Здравствуйте! </h3>
@@ -296,32 +296,48 @@ if(!$shirt = $row['Shirt']) $shirt = "";
             <input name="form" value="ComingDetails" hidden>
             <select name="comingWith" id="comingWith" required>
                 <option value="" hidden disabled <?php if($comingWith === "") {echo 'selected';}?>>С кем приезжает...</option>
-                <option value="DimaAnya" <?php if($comingWith === "DimaAnya") {echo 'selected';}?>>С организаторами, рейс Lufthansa</option>
-                <option value="Dubeniuk" <?php if($comingWith === "Dubeniuk") {echo 'selected';}?>>С организаторами, рейс Utair</option>
                 <option value="Singly" <?php if($comingWith === "Singly") {echo 'selected';}?>>Надо встретить...</option>
                 <option value="WithParents" <?php if($comingWith === "WithParents") {echo 'selected';}?>>Привозят родители</option>
+                <?php
+                foreach ($flights as $flightOwner => $flightOptions) {
+                    echo '<option value="' . $flightOwner . '"';
+                    if ($comingWith === $flightOwner) echo ' selected';
+                    echo '>С преподавателями, рейс ' . $flightOptions["FlightTo"] . '</option>';
+                }
+                ?>
             </select>
             <br>
             Дата:<br> <input type="text" name="comingDate" id="comingDate" placeholder="dd/mm/yyyy"
                              value='<?php if($comingDate === "") {echo START_DAY;} else {echo "$comingDate";}?>'
-                             <?php if($comingWith === "DimaAnya" || $comingWith === "Dubeniuk") {echo 'disabled';}?> required><br>
+                <?php if($comingWith !== "" && $comingWith !== "Singly" && $comingWith !== "WithParents") {
+                                 echo ' disabled';}?> required><br>
             Время:<br> <input type="text" name="comingTime" id="comingTime" placeholder="hh:mm"
                             value='<?php echo "$comingTime" ?>'
-                            <?php if($comingWith === "DimaAnya" || $comingWith === "Dubeniuk") {echo 'disabled';}?> required><br>
+                <?php if($comingWith !== "" && $comingWith !== "Singly" && $comingWith !== "WithParents") {
+                                echo ' disabled';}?> required><br>
             Номер рейса:<br> <input type="text" name="comingFlight" id="comingFlight" value='<?php echo "$comingFlight" ?>'
-                            <?php if($comingWith === "DimaAnya" || $comingWith === "Dubeniuk") {echo 'disabled';}
-                            elseif ($comingWith ==="WithParents") {echo 'value="-" disabled';}?> required><br>
-            Место встречи:<br> <select name="comingPlace" id="comingPlace" required <?php if($comingWith === "DimaAnya" || $comingWith === "Dubeniuk") {echo 'disabled';} ?>>
+                <?php if($comingWith !== "" && $comingWith !== "Singly" && $comingWith !== "WithParents") {
+                    echo ' disabled';
+                } elseif ($comingWith ==="WithParents") {
+                    echo 'value="-" disabled';}?> required><br>
+            Место встречи:<br> <select name="comingPlace" id="comingPlace" required
+                <?php if($comingWith !== "" && $comingWith !== "Singly" && $comingWith !== "WithParents") {
+                    echo 'disabled';} ?>>
                 <option value="" hidden disabled <?php if($comingPlace === "") {echo 'selected';}?>>...</option>
                 <option value="MUC" <?php if($comingPlace === "MUC") {echo 'selected';}?>>В аэропорту (Мюнхен)</option>
-                <option value="hbf" <?php if($comingPlace === "hbf") {echo 'selected';}?>>На вокзал Hauptbahnhof</option>
+                <option value="hbf" <?php if($comingPlace === "hbf") {echo 'selected';}?>>На вокзале Hauptbahnhof</option>
                 <option value="gorod" <?php if($comingPlace === "gorod") {echo 'selected';}?>>В культурном центре GOROD</option>
                 <option value="other" <?php if($comingPlace === "other") {echo 'selected';}?>>Иное... (свяжитесь с организаторами!)</option>
                 <?php
-                if ($comingWith === "DimaAnya") {
-                    echo "<option value='DME' selected>Аэропорт \"Домодедово\"</option>";
-                } elseif ($comingWith === "Dubeniuk") {
-                    echo "<option value='VKO' selected>Аэропорт \"Внуково\"</option>";
+                if($comingWith !== "" && $comingWith !== "Singly" && $comingWith !== "WithParents") {
+                    foreach ($flights as $flightOwner => $flightOptions) {
+                        if ($comingWith === $flightOwner) {
+                            echo '<option value=' . $flightOptions['From'] . ' selected>Аэропорт "';
+                            if ($flightOptions['From'] === 'DME') echo 'Домодедово';
+                            elseif ($flightOptions['From'] === 'SVO') echo 'Шереметьево';
+                            echo '"</option>';
+                        }
+                    }
                 }
                 ?>
             </select>
@@ -335,32 +351,48 @@ if(!$shirt = $row['Shirt']) $shirt = "";
             <input name="form" value="LeavingDetails" hidden>
             <select name="leavingWith" id="leavingWith" required>
                 <option value="" hidden disabled <?php if($leavingWith === "") {echo 'selected';}?>>С кем уезжает...</option>
-                <option value="DimaAnya" <?php if($leavingWith === "DimaAnya") {echo 'selected';}?>>С организаторами, рейс Lufthansa</option>
-                <option value="Dubeniuk" <?php if($leavingWith === "Dubeniuk") {echo 'selected';}?>>С организаторами, рейс Utair</option>
                 <option value="Singly" <?php if($leavingWith === "Singly") {echo 'selected';}?>>Надо проводить...</option>
                 <option value="WithParents" <?php if($leavingWith === "WithParents") {echo 'selected';}?>>Забирают родители</option>
+                <?php
+                foreach ($flights as $flightOwner => $flightOptions) {
+                    echo '<option value="' . $flightOwner . '"';
+                    if ($leavingWith === $flightOwner) echo ' selected';
+                    echo '>С преподавателями, рейс ' . $flightOptions["FlightOut"] . '</option>';
+                }
+                ?>
             </select>
             <br>
             Дата:<br> <input type="text" name="leavingDate" id="leavingDate" placeholder="dd/mm/yyyy"
                              value='<?php if($leavingDate === "") {echo FINISH_DAY;} else {echo "$leavingDate";}?>'
-                <?php if($leavingWith === "DimaAnya" || $leavingWith === "Dubeniuk") {echo 'disabled';}?> required><br>
+                <?php if($leavingWith !== "" && $leavingWith !== "Singly" && $leavingWith !== "WithParents") {
+                    echo 'disabled';}?> required><br>
             Время:<br> <input type="text" name="leavingTime" id="leavingTime" placeholder="hh:mm"
                               value='<?php echo "$leavingTime" ?>'
-                <?php if($leavingWith === "DimaAnya" || $leavingWith === "Dubeniuk") {echo 'disabled';}?> required><br>
+                <?php if($leavingWith !== "" && $leavingWith !== "Singly" && $leavingWith !== "WithParents") {
+                    echo 'disabled';}?> required><br>
             Номер рейса:<br> <input type="text" name="leavingFlight" id="leavingFlight" value='<?php echo "$leavingFlight" ?>'
-                <?php if($leavingWith === "DimaAnya" || $leavingWith === "Dubeniuk") {echo 'disabled';}
-                elseif ($leavingWith ==="WithParents") {echo 'value="-" disabled';}?> required><br>
-            Место отправления:<br> <select name="leavingPlace" id="leavingPlace" required <?php if($leavingWith === "DimaAnya" || $leavingWith === "Dubeniuk") {echo 'disabled';} ?>>
+                <?php if($leavingWith !== "" && $leavingWith !== "Singly" && $leavingWith !== "WithParents") {
+                    echo 'disabled';
+                } elseif ($leavingWith ==="WithParents") {
+                    echo 'value="-" disabled';}?> required><br>
+            Место отправления:<br> <select name="leavingPlace" id="leavingPlace" required
+                <?php if($leavingWith !== "" && $leavingWith !== "Singly" && $leavingWith !== "WithParents") {
+                    echo 'disabled';} ?>>
                 <option value="" hidden disabled <?php if($leavingPlace === "") {echo 'selected';}?>>...</option>
                 <option value="MUC" <?php if($leavingPlace === "MUC") {echo 'selected';}?>>Из аэропорта (Мюнхен)</option>
                 <option value="hbf" <?php if($leavingPlace === "hbh") {echo 'selected';}?>>От вокзала Hauptbahnhof</option>
                 <option value="gorod" <?php if($leavingPlace === "gorod") {echo 'selected';}?>>Из культурного центра GOROD</option>
                 <option value="other" <?php if($leavingPlace === "other") {echo 'selected';}?>>Иное... (свяжитесь с организаторами!)</option>
                 <?php
-                if ($leavingWith === "DimaAnya") {
-                    echo "<option value='DME' selected>Аэропорт \"Домодедово\"</option>";
-                } elseif ($leavingWith === "Dubeniuk") {
-                    echo "<option value='VKO' selected>Аэропорт \"Внуково\"</option>";
+                if($leavingWith !== "" && $leavingWith !== "Singly" && $leavingWith !== "WithParents") {
+                    foreach ($flights as $flightOwner => $flightOptions) {
+                        if ($leavingWith === $flightOwner) {
+                            echo '<option value=' . $flightOptions['From'] . ' selected>Аэропорт "';
+                            if ($flightOptions['From'] === 'DME') echo 'Домодедово';
+                            elseif ($flightOptions['From'] === 'SVO') echo 'Шереметьево';
+                            echo '"</option>';
+                        }
+                    }
                 }
                 ?>
             </select>
@@ -382,7 +414,8 @@ if(!$shirt = $row['Shirt']) $shirt = "";
         <br>
         <form id="insuranceForm" method="post" class="questionnaire">
             <div class="form-title">&nbsp;Страховка&nbsp;</div><br>
-            Информация о страховом полисе; телефон(ы) и язык страховой компании. Особенности использования конкретного страхового полиса.<br>
+            Все участники «Дельты» из России в обязательном порядке страхуются компанией Bernhard (страховка действительна для получения визы).
+            Если у ребёнка есть постоянная страховка страны Евросоюза, пожалуйста, опишите это здесь, включая последовательность действий в страховом случае.<br>
             <input name="form" value="InsuranceDetails" hidden>
             <textarea name="insuranceText" id="insuranceText"><?php echo $insuranceDetails ?></textarea>
             <input id="btnInsuranceDetails" type="submit" value="&#x2714" class="smallbtn">
@@ -416,7 +449,7 @@ if(!$shirt = $row['Shirt']) $shirt = "";
                 <option value="en" <?php if ($certLang === "en") echo " selected"; ?>>English</option>
             </select>
             <br>
-            Фамилия и имя участника на языке сертификата:<br>
+            Имя и фамилия участника на языке сертификата (первое слово - имя, второе - фамилия):<br>
             <input id="certName" name="certName" type="text" class="text-input" <?php if ($certName !== "") echo " value='$certName'"; ?> required>
             <br><br>
             В некоторых курсах и проектах требуется компьютер.<br>

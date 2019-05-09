@@ -5,11 +5,11 @@
 
 <?php
 if(rand(0, 1) < 0.5) {
-    include 'f_mathbaby.php';
-    include 'f_gorod.php';
+    include 'f_mathbaby.inc';
+    include 'f_gorod.inc';
 } else {
-    include 'f_gorod.php';
-    include 'f_mathbaby.php';
+    include 'f_gorod.inc';
+    include 'f_mathbaby.inc';
 }
 ?>
 </div>

@@ -15,11 +15,11 @@ $UID = $_GET["id"];
 /*
  * Обработка AJAX-запроса из функции setDateWorkSent() на изменение статуса записи
  * после того, как была открыта Олимпиада. Меняем статус абитуриента на "2"
- * (если он и так не "2") и, записываем дату отсылки олимпиады.
+ * (если он меньше двух!) и, записываем дату отсылки олимпиады.
  */
 if (isset($_GET["SetStatus"])) {
     $db = new dbConnect();
-    if ($db->getAppStatus($UID) != 2) {
+    if ($db->getAppStatus($UID) < 2) {
         $db->setWorkDaySent($UID);
         $db->dbLog("Открыта вступительная олимпиада", $UID);
     }
@@ -42,8 +42,8 @@ if (isset($_GET["app"])) {
 <meta charset="UTF-8">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <?php
-include 'phplib/yandex.metrika.php';
-include 'phplib/google.analytics.php';
+include 'phplib/yandex.metrika.inc';
+include 'phplib/google.analytics.inc';
 ?>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Личный кабинет</title>
@@ -101,15 +101,19 @@ include 'phplib/google.analytics.php';
         }
 
         // Выводим заголовок
-        echo "
-            <div class=\"title\">
-            <h1>Личный кабинет участника летнего физико-математического лагеря \"Дельта\"</h1>
-            <h2 id=\"subTitle\">$subTitle</h2>
+        echo '
+            <div class="title">
+            <h1>Личный кабинет участника летнего физико-математического лагеря "Дельта"</h1>
+            <h2 id="subTitle">' . $subTitle . '</h2>
             </div>
-        ";
+        ';
 
         // Вывод основного куска в зависимости от статуса пользователя
-        echo "<div class=\"main\">";
+        echo '
+        <div class="hidden" id="START_DAY">' . START_DAY . '</div>
+        <div class="hidden" id="FINISH_DAY">' . FINISH_DAY . '</div>
+        <div class="main">
+        ';
         if ($appStatus < 0) { // Регистрация закрыта
             include "mc_-.inc";
         } elseif ($appStatus < 2) { // Скачать олимпиаду

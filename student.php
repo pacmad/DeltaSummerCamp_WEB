@@ -1,10 +1,5 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: Dima
- * Date: 25.11.2018
- * Time: 20:52
- *
  * Вывод карточки студента
  */
 include "phplib/validate.inc";
@@ -28,7 +23,7 @@ if (isset($_POST['new_status'])) {
             "From: Delta <delta_mail_robot@cintra.ru>\r\n" .
             "To: summer.camp.delta@gmail.com\r\n" .
             "X-Mailer: PHP/" . phpversion();
-        $mailtext = "Статус для записи " . $_SESSION['ID'] . " изменён на " . $_POST['new_status'];
+        $mailtext = "Статус для записи " . $_POST['name'] . " изменён на " . $_POST['new_status'];
         mail("summer.camp.delta@gmail.com", "Delta: status has been changed", $mailtext, $headers);
     } catch (PDOException $PDOException) {
         error("student.php: Cannot change status: $PDOException");
@@ -63,7 +58,7 @@ if (!isset($_SESSION['ID'])) {
 
 $db = new dbConnect();
 try {
-    $result = $db->getStudentsList("*", $_SESSION['SortBy'], 'UniqueId="'.$_SESSION["ID"].'"');
+    $result = $db->getStudentsList("*", $_SESSION['SortBy'], 'UniqueId="'.$_SESSION["ID"].'" AND ' . $_SESSION['WHERE']);
     if ($result->rowCount() != 1) {
         header("Content-type: text/html; charset=UTF-8");
         echo '<h1>Данные не найдены</h1>';
@@ -154,7 +149,8 @@ if (isset($photos) && $photos != false && $photos !== '') {
                 <div class="full_name"><?php print $name . " " . $surname ?> (<span id="age"></span>)</div>
                 <div class="row">
                     <div class="col-2 photo"><img src="<?php print $photo ?>" alt="Фотография"></div>
-                    <div class="col-7">
+                    <div class="col-1"></div>
+                    <div class="col-6">
                         <div class="row infoblock">
                             <div class="o_tel"><a href="tel:<?php print $oTel?>">Личный телефон:&nbsp;<?php print $oTel?></a></div>
                             <div class="email"><a href="mailto:<?php print $email?>">E-mail:&nbsp;<?php print $email?></a></div>
@@ -191,10 +187,10 @@ if (!$_SESSION['ReadOnly']) {
     print "
                 <div class='row'>
                     <div class='col-3 cablink'><a href='mycabinet.php?id=$UID' >Личный кабинет</a></div>
-                    <div class='col-4'></div>
-                    <div class='col-5 set_status'>
+                    <div class='col-3'></div>
+                    <div class='col-6 set_status'>
                         <form id='SetAppStatus' method='post'>
-                            <input type='submit' value='Статус'>
+                            <input type='submit' value='Изменить'>
                             <select name='new_status'>
     ";
     foreach ($db->AppStatus as $st => $stStr) {
@@ -205,6 +201,7 @@ if (!$_SESSION['ReadOnly']) {
     }
     print "
                             </select>
+                            <input type='hidden' name='name' value='$name  $surname'>
                         </form>
                     </div>
                 </div>

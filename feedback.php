@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <?php
-include 'phplib/yandex.metrika.php';
-include 'phplib/google.analytics.php';
+include 'phplib/yandex.metrika.inc';
+include 'phplib/google.analytics.inc';
 ?>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Обратная связь</title>

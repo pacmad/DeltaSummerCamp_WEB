@@ -9,11 +9,53 @@
 const START_DAY = "22/07/2019";
 const FINISH_DAY = "5/08/2019";
 
+// Флаг "Регистрация открыта"
+const REGISTRATION = true;
+
+// Рейсы
+$flights = array(
+    'DimaAnya' => array(
+        'From' => 'DME',
+        'FlightTo' => 'LH 2527',
+        'DateTo' => '22/07/2019',
+        'TimeTo' => '9:30',
+        'FlightOut' => 'LH 2530',
+        'DateOut' => '6/08/2019',
+        'TimeOut' => '00:05'
+    ),
+    'Fedor' => array(
+        'From' => 'SVO',
+        'FlightTo' => 'SU 2322',
+        'DateTo' => '22/07/2019',
+        'TimeTo' => '6:25',
+        'FlightOut' => 'SU 2321',
+        'DateOut' => '5/08/2019',
+        'TimeOut' => '14:15'
+    ),
+    'Misha' => array(
+        'From' => 'SVO',
+        'FlightTo' => 'SU 2326',
+        'DateTo' => '22/07/2019',
+        'TimeTo' => '11:35',
+        'FlightOut' => 'SU 2327',
+        'DateOut' => '5/08/2019',
+        'TimeOut' => '21:30'
+    ),
+    'VanyaNatasha' => array(
+        'From' => 'DME',
+        'FlightTo' => 'S7 897',
+        'DateTo' => '22/07/2019',
+        'TimeTo' => '10:50',
+        'FlightOut' => 'S7 796',
+        'DateOut' => '5/08/2019',
+        'TimeOut' => '17:55'
+    ));
+
 /*
  * Обработка ошибок
  * @param string $err
  */
-function error($err) {
+function error($err, $UID="") {
     // Запись в журнал
     $servername = "localhost";
     $username = "PHP";
@@ -21,7 +63,7 @@ function error($err) {
     try {
         $PDO = new PDO("mysql:host=$servername;dbname=delta;charset=UTF8", $username, $password);
         $PDO->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // set the PDO error mode to exception
-        $sql = 'INSERT INTO log (text) VALUES ("' . $err . '")';
+        $sql = 'INSERT INTO log (text) VALUES ("' . $err . ', UID: ' . $UID .'")';
         $PDO->exec($sql);
     }
     catch (PDOException $exception) {

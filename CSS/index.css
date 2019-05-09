@@ -108,7 +108,7 @@
     position: relative;
     float: right;
     width: 70%;
-    max-width: 1150px;
+    max-width: 1600px;
     color: darkblue;
     top: -140px;
     height: 100vh;
@@ -248,8 +248,13 @@
     top: 10px;
     left: 10px;
     margin: 5px 10px;
-    width: 30%;
+    width: 340px;
     color: darkblue;
+}
+.reg {
+    width: 100%;
+    float: left;
+    padding: 15px;
 }
 .button {
     display: table;
@@ -265,6 +270,11 @@
     font-weight: bold;
     font-size: 16px;
     background: #FDFECF;
+}
+.w2 {
+    width: 320px;
+    padding: 0;
+    margin-left: -5px;
 }
 .button:hover {
     background: #f8ea39;
@@ -286,8 +296,24 @@
 }
 
 /* Mobile correction */
+@media only screen and (max-width: 1300px) {
+    .buttonholder {
+        width: 170px;
+    }
+    .reg {
+        width: 100%;
+        float: left;
+        padding: 0;
+    }
+    .w2 {
+        width: 150px;
+        padding: 10px;
+        margin: 5px 10px;
+    }
+}
+
 @media only screen and (max-width: 900px) {
-    h1, h2, h3 {
+    h1, h2, h3, p {
         font-size: smaller;
     }
     .title {
@@ -321,22 +347,22 @@
         font-size: 1.5em;
     }
     .icons {
-        top: 60px;
+        top: 40px;
         right: 20px;
         z-index: 20;
     }
     .iconbox {
         border-radius: 3px;
-        width: 15px;
-        height: 15px;
-        margin: 0 1px;
+        width: 22px;
+        height: 22px;
+        margin: 5px;
     }
     .icon {
         display: table-cell;
         vertical-align: middle;
         text-align: center;
         text-decoration: none;
-        font-size: 10px;
+        font-size: 16px;
         color: #2F4F4F;
     }
     .tooltip .tooltiptext {
@@ -377,5 +403,16 @@
         padding: 2px;
         border-radius: 7px;
         font-size: 9px;
+    }
+    .w2 {
+        width: 185px;
+    }
+}
+@media only screen and (max-width: 630px) {
+    .buttonholder {
+        width: 95px;
+    }
+    .w2 {
+        width: 90px;
     }
 }

@@ -1,12 +1,10 @@
-<!--?php header('Content-type: text/html; charset=windows-1251'); ?-->
 <!doctype html>
 <html>
 <head>
-<!--meta charset="windows-1251"-->
 <meta charset="UTF-8">
 <?php
-include 'phplib/yandex.metrika.php';
-include 'phplib/google.analytics.php';
+include 'phplib/yandex.metrika.inc';
+include 'phplib/google.analytics.inc';
 ?>
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -68,33 +66,39 @@ require_once 'phplib/news.php';
             </a>
         </div>
         <div class="tooltip">
+            <a href="https://goo.gl/maps/91cZ8KuumG2vpkVY7" target="_blank">
+                <div class="iconbox"><span class="icon fa fa-map"></span></div>
+                <span class="tooltiptext">Как нас найти</span>
+            </a>
+        </div>
+        <div class="tooltip">
             <a href="feedback.php">
             <div class="iconbox"><span class="icon fa fa-envelope-o"></span></div>
-            <span class="tooltiptext">Обратная связь</span>
+            <span class="tooltiptext">Email</span>
             </a>
         </div>
         <div class="tooltip">
             <a href="feedback.php#persons">
             <div class="iconbox"><span class="icon fa fa-phone"></span></div>
-            <span class="tooltiptext">Обратная связь</span>
+            <span class="tooltiptext">Телефон</span>
             </a>
         </div>
         <div class="tooltip">
             <a href="feedback.php#persons">
             <div class="iconbox"><span class="icon fa fa-skype"></span></div>
-            <span class="tooltiptext">Обратная связь</span>
+            <span class="tooltiptext">Skype</span>
             </a>
         </div>
         <div class="tooltip">
             <a href="feedback.php#persons">
             <div class="iconbox"><span class="icon fa fa-whatsapp"></span></div>
-            <span class="tooltiptext">Обратная связь</span>
+            <span class="tooltiptext">WhatsApp</span>
             </a>
         </div>
         <div class="tooltip">
             <a href="feedback.php#persons">
             <div class="iconbox"><span class="icon fa fa-telegram"></span></div>
-            <span class="tooltiptext">Обратная связь</span>
+            <span class="tooltiptext">Telegram</span>
             </a>
         </div>
     </div>
@@ -105,8 +109,13 @@ require_once 'phplib/news.php';
 </div>
 <div class="bgrass">
     <div class="buttonholder">
-        <a href="registration.php">
-            <div class="hot button"><p>Регистрация</p></div>
+        <div class="reg">
+            <a href="registration_closed.html">
+                <div class="hot button w2"><p>Регистрация</p></div>
+            </a>
+        </div>
+        <a href="index.php?page=about">
+            <div class="button"><p>О нас</p></div>
         </a>
         <a href="index.php?page=founders">
             <div class="button"><p>Организаторы</p></div>
@@ -129,24 +138,28 @@ require_once 'phplib/news.php';
         <?php
         settype($page, "int");
         if (isset($_GET['page'])) {
-            if ($_GET['page'] == 'founders') {
-                include 'founders.php';
+            if ($_GET['page'] == 'about') {
+                include 'about.inc';
+                pageEnd();
+            }
+            elseif ($_GET['page'] == 'founders') {
+                include 'founders.inc';
                 pageEnd();
             }
             elseif ($_GET['page'] == 'team') {
-                include 'team.php';
+                include 'team.inc';
                 pageEnd();
             }
             elseif ($_GET['page'] == 'projects') {
-                include 'projects.php';
+                include 'projects.inc';
                 pageEnd();
             }
             elseif ($_GET['page'] == 'environment') {
-                include 'environment.php';
+                include 'environment.inc';
                 pageEnd();
             }
             elseif ($_GET['page'] == 'photos') {
-                include "photos.php";
+                include "photos.inc";
                 pageEnd();
             }
             else {

@@ -2,6 +2,14 @@
 require_once 'phplib/dbConnect.php';
 require_once 'phplib/mail.php';
 require_once 'phplib/common.inc';
+
+// Проверка, открыта ли регистрация
+if (!REGISTRATION) {
+    include 'noreg.inc';
+    exit();
+}
+
+
 // Обработка AJAX-запроса
 if (isset($_POST["ALL_DONE"]) && $_POST["ALL_DONE"] === 'Check'){
     $db = new dbConnect();
@@ -19,8 +27,8 @@ if (isset($_POST["ALL_DONE"]) && $_POST["ALL_DONE"] === 'Check'){
 <head>
     <meta charset="UTF-8">
     <?php
-    include 'phplib/yandex.metrika.php';
-    include 'phplib/google.analytics.php';
+    include 'phplib/yandex.metrika.inc';
+    include 'phplib/google.analytics.inc';
     ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="title" content="Регистрация в Дельту">
@@ -262,6 +270,57 @@ if (!isset($_POST["ALL_DONE"]) || $_POST["ALL_DONE"] === "") {
                     <hr>
                     <p>Если у Вас возникли вопросы или Вы заметили неточность в регистрационных данных, пожалуйста воспользуйтесь формой
                         обратной связи или свяжитесь с нами:</p>
+                    <div class="row">
+                        <div class="col-6">
+                            <p><b>Анна Семовская</b><br>
+                                <?php printContact('sem'); ?>
+                            </p></div> <!-- col-6 -->
+                        <div class="col-6">
+                            <p><b>Дмитрий Аблов</b><br>
+                                <?php printContact('abl'); ?>
+                            </p>
+                        </div>
+                    </div> <!-- col-6, row -->
+                </div>
+            </div>  <!-- col-12, row -->
+            <div class="row"><div class="col-8">
+                    <form method="post" action="feedback.php">
+                        <p>
+                            <input name="id" type="hidden" id="id" value="<?php echo $person['UniqueId'] ?>">
+                            <input name="name" type="hidden" id="name" value="<?php echo $person['Name'] . ' ' . $person['Surname'] ?>">
+                            <input name="email" type="hidden" id="email" value="<?php echo $person['Email'] ?>">
+                            <input type="submit" value="Связь с организаторами">
+                        </p>
+                        <p>&nbsp; </p>
+                    </form>
+                </div></div> <!-- col-8, row -->
+
+        </div> <!-- class "main" -->
+        <?php
+
+    } elseif ($db->getStatus() == DB_ERROR) {
+        /*
+         * Обработка ошибки регистрации
+         */
+        $person = $db->getPerson($uniqueID);
+        $db->dbLog("Обработка ошибки при регистрации, UniqueId=" . $uniqueID, $uniqueID);
+        ?>
+        <div class="main">
+            <form id="form" name="form" method="post" action="index.php">
+                <div class="row">
+                    <div class="col-2">&nbsp;</div>
+                    <div class="col-8">
+                        <p>Внимание!</p>
+                        <p><b>При геристрации произошла ошибка!</b></p>
+                    </div>
+                    <!-- col-8 -->
+                    <div class="col-2">&nbsp;</div>
+                </div> <!-- row -->
+            </form>
+            <div class="row">
+                <div class="col-12">
+                    <hr>
+                    <p>Пожалуйста, сообщите организаторам через форму обратной связи или иным способом:</p>
                     <div class="row">
                         <div class="col-6">
                             <p><b>Анна Семовская</b><br>
