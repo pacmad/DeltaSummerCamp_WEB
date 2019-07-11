@@ -673,6 +673,7 @@ input[type=radio]:not(old):checked + label > span > span {
     -ms-transform: scale(2, 2);
     -webkit-transform: scale(2, 2);
     transform: scale(2, 2);
+    opacity: 100 !important;
 }
 .add-form label {
     display: block;
@@ -739,19 +740,19 @@ input[type=button] {
         margin-bottom: 40px;
     }
     .table-row {
-        padding-left: 50px;
+        padding-left: 100px;
         padding-bottom: 10px;
         height: unset;
         min-height: 50px;
     }
     .table-cell.l_photo {
-        width: 50px;
-        max-width: 50px;
+        width: 100px;
+        max-width: 100px;
         top: 5px;
     }
     .table-cell img {
-        height: 50px;
-        width: 50px;
+        height: 100px;
+        width: 100px;
     }
     .infoblock {
         border-style: none;

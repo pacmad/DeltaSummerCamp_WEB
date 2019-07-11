@@ -1,6 +1,8 @@
 <?php
 /*
  * Проверка анкетных данных, формирование и отсылка по почте "Приложения 2" к Договору на сопровождение ребёнка.
+ *
+ * ВНИМАНИЕ! ДАННЫЙ ФАЙЛ ДОЛЖЕН БЫТЬ В КОДИРОВКЕ WINDOWS-1251
  */
 require_once 'phplib/dbConnect.php';
 require_once 'phplib/fpdf/fpdf.php';
@@ -32,13 +34,13 @@ if ($readyToCreate) {
         sendApp2Mail($row, createPDF($row));
     } catch (\PHPMailer\PHPMailer\Exception $e) {
         error("sendApp2Mail error; " . $e . ", UID:" . $UID);
-        header("Content-type: text/html; charset=windows-1251");
+        header("Content-type: text/html; charset=Windows-1251");
         http_response_code(406);
         echo "Error in sendApp2Mail";
     }
     exit();
 } else {
-    header("Content-type: text/html; charset=windows-1251");
+    header("Content-type: text/html; charset=Windows-1251");
     http_response_code(400);
     echo "Wrong Data";
     exit();
@@ -96,8 +98,9 @@ function createPDF($p) {
     $pdf->Ln();
     $pdf->Ln();
 
-    $text = "ФИО ребёнка: " . $p['Surname'] . " " . $p['Name'];
-    if ($p['MiddleName'] !== "") $text .= " " . $p['MiddleName'];
+    $text = "ФИО ребёнка: " . iconv('UTF-8', 'Windows-1251', $p['Surname'])
+        . " " . iconv('UTF-8', 'Windows-1251', $p['Name']);
+    if ($p['MiddleName'] !== "") $text .= " " . iconv('UTF-8', 'Windows-1251', $p['MiddleName']);
     $text .= ".";
     $pdf->SetFont('Times', 'BI', 12);
     $pdf->Cell(0, 7, $text);
@@ -110,7 +113,8 @@ function createPDF($p) {
     $Pl = $p['ComingPlace'];
     if($Pl === 'DME') $Pl = 'аэропорт Домодедово';
     elseif ($Pl === 'VKO') $Pl = 'аэропорт Внуково';
-    elseif ($Pl === 'gorod') $Pl = 'Культурный центр GOROD (KULTURZENTRUM GOROD) по адресу Hansastrasse 181, 81373 Muenchen';
+    elseif ($Pl === 'SVO') $Pl = 'аэропорт Шереметьево';
+    elseif ($Pl === 'gorod') $Pl = 'Культурный центр GOROD (KULTURZENTRUM GOROD) по адресу Arnulfstrasse 197, 80634 Muenchen';
     elseif ($Pl === 'hbf') $Pl = 'Центральный железнодорожный вокзал г.Мюнхена (Muenchen Hauptbahnhof), поезд: ' . $p['ComingFlight'];
     elseif ($Pl === 'MUC') $Pl = 'Международный аэропорт г.Мюнхена имени Франца-Йозефа Штрауса (Flughafen Muenchen «Franz Josef Strauss»), рейс: ' . $p['ComingFlight'];
     elseif ($Pl === 'other') $Pl = "\nиное: _____________________________________________________________________________________________________________";
@@ -119,6 +123,7 @@ function createPDF($p) {
     $Pl = $p['ComingPlace'];
     if ($Pl === 'DME') $Pl = 'аэропорт Домодедово, номер рейса ' . $p['ComingFlight'] . ', ' . $p['ComingDate'] . ' в ' . $p['ComingTime'] . ' (указано время встречи с Поверенным в аэропорту, за три часа до отправления рейса)';
     elseif ($Pl === 'VKO') $Pl = 'аэропорт Внуково, номер рейса ' . $p['ComingFlight'] . ', ' . $p['ComingDate'] . ' в ' . $p['ComingTime'] . ' (указано время встречи с Поверенным в аэропорту, за три часа до отправления рейса)';
+    elseif ($Pl === 'SVO') $Pl = 'аэропорт Шереметьево, номер рейса ' . $p['ComingFlight'] . ', ' . $p['ComingDate'] . ' в ' . $p['ComingTime'] . ' (указано время встречи с Поверенным в аэропорту, за три часа до отправления рейса)';
     else $Pl = 'без сопровождения при перелёте';
     $text .= "3.   Сопровождение (если есть) при перелёте Москва – Мюнхен (аэропорт вылета, номер рейса, дата и время вылета): " . $Pl . ".\n";
 
@@ -127,6 +132,7 @@ function createPDF($p) {
     $Pl = $p['LeavingPlace'];
     if ($Pl === 'DME') $Pl = 'аэропорт Домодедово, номер рейса ' . $p['LeavingFlight'] . ', ' . $p['LeavingDate'] . ' в ' . $p['LeavingTime'];
     elseif ($Pl === 'VKO')  $Pl = 'аэропорт Внуково, номер рейса ' . $p['LeavingFlight'] . ', ' . $p['LeavingDate'] . ' в ' . $p['LeavingTime'];
+    elseif ($Pl === 'SVO')  $Pl = 'аэропорт Шереметьево, номер рейса ' . $p['LeavingFlight'] . ', ' . $p['LeavingDate'] . ' в ' . $p['LeavingTime'];
     else $Pl = 'без сопровождения при перелёте';
     $text .= "5.   Сопровождение (если есть) при перелёте Мюнхен – Москва (аэропорт прибытия, номер рейса, дата и время прибытия): " . $Pl . ".\n";
 
@@ -135,15 +141,16 @@ function createPDF($p) {
     $Pl = $p['LeavingPlace'];
     if($Pl === 'DME') $Pl = 'аэропорт Домодедово';
     elseif ($Pl === 'VKO') $Pl = 'аэропорт Внуково';
-    elseif ($Pl === 'gorod') $Pl = 'Культурный центр GOROD (KULTURZENTRUM GOROD) по адресу Hansastrasse 181, 81373 Muenchen';
+    elseif ($Pl === 'SVO') $Pl = 'аэропорт Шереметьево';
+    elseif ($Pl === 'gorod') $Pl = 'Культурный центр GOROD (KULTURZENTRUM GOROD) по адресу Arnulfstrasse 197, 80634 Muenchen';
     elseif ($Pl === 'hbf') $Pl = 'Центральный железнодорожный вокзал г.Мюнхена (Muenchen Hauptbahnhof), поезд: ' . $p['LeavingFlight'];
     elseif ($Pl === 'MUC') $Pl = 'Международный аэропорт г. Мюнхена имени Франца-Йозефа Штрауса (Flughafen Muenchen «Franz Josef Strauss»), рейс: ' . $p['LeavingFlight'];
     elseif ($Pl === 'other') $Pl = "\nиное: _____________________________________________________________________________________________________________";
     $text .= "7.   Место передачи ребёнка под ответственность Доверителя: " . $Pl . ".\n";
 
     $Pl = $p['LeavingWith'];
-    if ($Pl === 'DimaAnya' || $Pl === 'Dubeniuk' || $Pl === 'WithParents') $Pl = 'передать ребёнка непосредственно Доверителю или указанному им третьему лицу';
-    elseif ($Pl === 'Singly') {
+    if ($Pl !== 'Singly') $Pl = 'передать ребёнка непосредственно Доверителю или указанному им третьему лицу';
+    else {
         if ($p['LeavingPlace'] === 'MUC') $Pl = 'проводить ребёнка до зоны контроля на рейс ' . $p['LeavingFlight'] . ' в Международном аэропорту г. Мюнхена имени Франца-Йозефа Штрауса (Flughafen Muenchen «Franz Josef Strauss»)';
         elseif ($p['LeavingPlace'] === 'hbf') $Pl = 'посадить ребёнка на поезд ' . $p['LeavingFlight'] . ' на центральном железнодорожном вокзале г.Мюнхена (Muenchen Hauptbahnhof)';
         else $Pl = "\nиное: _____________________________________________________________________________________________________________";
@@ -160,21 +167,21 @@ function createPDF($p) {
     $text = "11.  ФИО и контактные данные лиц по п. 1.3 Договора, а также дополнительные указания по п. 1.2 Договора: ";
     $pdf->MultiCell(0, 7, $text, 0, 'L');
     $pdf->SetFont('', 'I', 12);
-    $text = $p['NotesText'];
+    $text = iconv('UTF-8', 'Windows-1251', $p['NotesText']);
     $pdf->MultiCell(0, 7, $text, 0, 'L');
     $pdf->SetFont('', '', 12);
 
     $text = "12.  Сведения о страховом полисе ребёнка: ";
     $pdf->MultiCell(0, 7, $text, 0, 'L');
     $pdf->SetFont('', 'I', 12);
-    $text = $p['Insurance'];
+    $text = iconv('UTF-8', 'Windows-1251', $p['Insurance']);
     $pdf->MultiCell(0, 7, $text, 0, 'L');
     $pdf->SetFont('', '', 12);
 
     $text = "13.  Данные о здоровье согласно п. 3.2 Договора: ";
     $pdf->MultiCell(0, 7, $text, 0, 'L');
     $pdf->SetFont('', 'I', 12);
-    $text = $p['Health'];
+    $text = iconv('UTF-8', 'Windows-1251', $p['Health']);
     $pdf->MultiCell(0, 6, $text, 0, 'L');
 
     $pdf->Ln();

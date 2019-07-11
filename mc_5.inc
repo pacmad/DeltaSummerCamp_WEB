@@ -335,6 +335,7 @@ if(!$shirt = $row['Shirt']) $shirt = "";
                             echo '<option value=' . $flightOptions['From'] . ' selected>Аэропорт "';
                             if ($flightOptions['From'] === 'DME') echo 'Домодедово';
                             elseif ($flightOptions['From'] === 'SVO') echo 'Шереметьево';
+                            elseif ($flightOptions['From'] === 'VKO') echo 'Внуково';
                             echo '"</option>';
                         }
                     }
@@ -435,6 +436,7 @@ if(!$shirt = $row['Shirt']) $shirt = "";
         <form id="otherForm" method="post" class="questionnaire">
             <input name="form" value="OtherDetails" hidden>
             Нужна ли ребёнку виза:<br>
+            <input name="visa" type="radio" required id="visa_onprocess" value="2" <?php if($visa == 2) echo "checked"; ?> hidden>
             <input name="visa" type="radio" required id="visa_yes" value="1" <?php if($visa == 1) echo "checked"; ?>>
             <label for="visa_yes"><span><span></span></span>нужна</label>&nbsp;&nbsp;
             <input name="visa" type="radio" required id="visa_no" value="0" <?php if($visa == 0) echo "checked"; ?>>

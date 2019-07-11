@@ -163,7 +163,7 @@ if(!$_SESSION['ReadOnly']) {
         $surname = $student['Surname'];
         $checked = ($db->isStudentInCourse($UID, $CID, $timeSlot)) ? "checked" : "";
 
-        $output .= "<li><label for='UID-$UID'><input type='checkbox' name='UID-$UID' id='UID-$UID' value='$UID' $checked>$name $surname</li>";
+        $output .= "<li><label for='UID-$UID'><input type='checkbox' name='UID-$UID' id='UID-$UID' value='$UID' $checked>$surname&nbsp;$name</li>";
     };
     $output .= '
         </ul>

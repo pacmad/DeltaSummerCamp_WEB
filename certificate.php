@@ -11,6 +11,7 @@ else
 
 include_once "phplib/dbConnect.php";
 require_once 'vendor/phpoffice/phpword/bootstrap.php'; // Библиотека PhpWord
+require_once 'phplib/common.inc';
 
 function single_array($arr){
     foreach($arr as $key){
@@ -277,7 +278,17 @@ try {
 } catch (\PhpOffice\PhpWord\Exception\Exception $e) {
     error("Ошибка создания файла phpWord: " . $e->getMessage());
 }
-$objWriter->save("certificates/$fullName.docx");
+$fileName = $surname . ' ' . $name;
+$hrefName = $fullName;
+if ($lang == 'ru') {
+    $fileName = iconv('UTF-8', 'Windows-1251', $fileName);
+    $hrefName = $fullName;
+}
+elseif ($lang == 'de') {
+    $fileName = remove_accents($fileName);
+    $hrefName = $fileName;
+}
+$objWriter->save("certificates/$fileName.docx");
 ?>
 <!doctype html>
 <html lang="ru">
@@ -290,6 +301,6 @@ $objWriter->save("certificates/$fullName.docx");
 
 <body>
     <h1>Создан файл сертификата:</h1>
-    <h1><a href="certificates/<?php echo $fullName;?>.docx"><?php echo $fullName;?>.docx</a> </h1>
+    <h1><a href="certificates\<?php echo $hrefName;?>.docx"><?php echo $fileName;?></a></h1>
 </body>
 </html>

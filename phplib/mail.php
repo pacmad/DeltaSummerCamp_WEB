@@ -528,7 +528,7 @@ function sendComfirmMail($person){
  */
 function sendApp2Mail($person, $attachment) {
     global $from;
-    $to = 'ablov@cintra.ru';//$person['Email'];
+    $to = (_DEBUG) ? 'ablov@cintra.ru' : $person['Email'];
     $cc = 'summer.camp.delta@gmail.com';
     global $bcc;
     global $reply_to;
