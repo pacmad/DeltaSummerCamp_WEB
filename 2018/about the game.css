@@ -1,0 +1,24 @@
+body {
+    margin: 0;
+}
+
+.title2 {
+    color: black;
+    text-align: center;
+    font-size: 40px;
+}
+
+.info
+{
+    border: 5px #93ccff dotted;
+    padding: 10px;
+    margin: auto;
+    border-style: none;
+    border-radius:8px;
+    font-size: 18px;
+    position: absolute;
+    left: 10px;
+    top: 100px;
+
+}
+

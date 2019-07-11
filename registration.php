@@ -1,259 +1,356 @@
-<!doctype html>
-<html>
-<head>
-<meta charset="windows-1251">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Регистрация</title>
-<link href="CSS/common.css" rel="stylesheet" type="text/css">
-<link href="CSS/form.css" rel="stylesheet" type="text/css">
-<script src="JS/form_functions.js"></script>
-</head>
-
-<body>
 <?php
 require_once 'phplib/dbConnect.php';
 require_once 'phplib/mail.php';
-require_once 'phplib/common.php';
-if (!isset($_POST["ALL_DONE"])) {
-    /****
-     *
-     * Форма регистрации
-     *
-     */
-?>
-<div class="row"><div class="col-12">
-<h1>Регистрация в летний физико-математический лагерь "Дельта"</h1>
-<p class="explanation">Поля, помеченные звёздочкой <span class="required">*</span> обязательны.</p>
-</div></div> <!-- col12, row -->
+require_once 'phplib/common.inc';
 
+// РџСЂРѕРІРµСЂРєР°, РѕС‚РєСЂС‹С‚Р° Р»Рё СЂРµРіРёСЃС‚СЂР°С†РёСЏ
+if (!REGISTRATION) {
+    include 'noreg.inc';
+    exit();
+}
+
+
+// РћР±СЂР°Р±РѕС‚РєР° AJAX-Р·Р°РїСЂРѕСЃР°
+if (isset($_POST["ALL_DONE"]) && $_POST["ALL_DONE"] === 'Check'){
+    $db = new dbConnect();
+    $row = $db->checkOldRegistration($_POST["surname"], $_POST["name"], $_POST["middlename"], $_POST["birthday"]);
+    if ($row) {
+        exit(json_encode($row));
+    } else {
+        http_response_code(204); // No content
+        exit();
+    }
+}
+?>
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <?php
+    include 'phplib/yandex.metrika.inc';
+    include 'phplib/google.analytics.inc';
+    ?>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="title" content="Р РµРіРёСЃС‚СЂР°С†РёСЏ РІ Р”РµР»СЊС‚Сѓ">
+    <title>Р РµРіРёСЃС‚СЂР°С†РёСЏ РІ Р”РµР»СЊС‚Сѓ</title>
+    <link href="CSS/common.css" rel="stylesheet" type="text/css">
+    <link href="CSS/mycabinet.css" rel="stylesheet" type="text/css">
+    <script src="JS/common.js"></script>
+    <script src="JS/form_functions.js"></script>
+    <script src="JS/lib/is.min.js"></script>
+</head>
+
+<body>
+<div class="title">
+    <h1>Р РµРіРёСЃС‚СЂР°С†РёСЏ РІ Р»РµС‚РЅРёР№ С„РёР·РёРєРѕ-РјР°С‚РµРјР°С‚РёС‡РµСЃРєРёР№ Р»Р°РіРµСЂСЊ "Р”РµР»СЊС‚Р°" <span class="highlighted">РЅР° РёСЋР»СЊ-Р°РІРіСѓСЃС‚ 2019 РіРѕРґР°</span> </h1>
+</div>
+
+<?php
+if (!isset($_POST["ALL_DONE"]) || $_POST["ALL_DONE"] === "") {
+/****
+ *
+ * Р¤РѕСЂРјР° СЂРµРіРёСЃС‚СЂР°С†РёРё
+ *
+ */
+?>
 <div class="main">
-<form id="form" name="form" method="post" onsubmit="return checkForm()">
-  <div class="row">
-  <div class="col-4">
-  <p>E-Mail <span class="required">*</span><br>
-    <input class="text-input" name="email" type="email" required id="email" placeholder="ivan@ivanov.earth" title="Адрес электронной почты">
-    <br>
-  <span class="explanation">Ваш адрес электронной почты. На него придёт подтверждение регистрации.</span></p>
-  </div> <!-- col- -->
-  <div class="col-4">
-  <p> Контактный телефон <span class="required">*</span><br>
-    <input name="tel" type="tel" required class="text-input" id="tel" title="Телефон для связи">
-  </p>
-  </div> <!-- col- -->
-  </div> <!-- row -->
-  <div class="row">
-  <div class="col-3">
-  <p>Фамилия <span class="required">*</span><br>
-    <input class="text-input" name="surname" type="text" required id="surname" placeholder="Иванов" title="Фамилия ребёнка">
-  </p>
-  </div> <!-- col-4 -->
-  <div class="col-3">
-  <p>Имя <span class="required">*</span><br>
-    <input class="text-input" name="name" type="text" required id="name" placeholder="Иван" title="Имя ребёнка">
-  </p>
-  </div> <!-- col-4 -->
-  <div class="col-3">
-  <p>Отчество<br>
-    <input class="text-input" name="middlename" type="text" id="middlename" placeholder="Иванович" title="Отчество ребёнка">
-  </p>
-  </div> <!-- col-4 -->
-  </div> <!-- row -->
-  <div class="row">
-  <div class="col-3">
-  <p>Дата рождения <span class="required">*</span><br>
-    <input class="text-input" name="birthday" type="text" required id="birthday" placeholder="dd/mm/yyyy"
-           title="Дата рождения" onChange="checkDate(this);">
-    <span class="hidden_error" id="date_error">Неверный формат даты!<br>Используйте "день/месяц/год"<br>Например: 27/03/1999</span>
-    <span class="explanation"><span class="age" id="age"><br>Возраст на начало лагеря: </span></span>
-  </p>
-  </div> <!-- col-3 -->
-  <div class="col-3">
-  <div id="gender">
-  <p>Пол <span class="required">*</span><br>
-    <input name="gender" type="radio" required id="female" value="f"><label for="female"><span><span></span></span>девочка</label>&nbsp;&nbsp;
-    <input name="gender" type="radio" required id="male" value="m"><label for="male"><span><span></span></span>мальчик</label>
-  </p>
-  </div> <!-- gender -->
-  </div> <!-- col-3 -->
-  </div> <!-- raw -->
-  <div class="row">
-  <div class="col-3">
-  <p>Класс<br>
-    <input class="text-input" name="class" type="number" id="class" title="Класс">
-    <br>
-  <span class="explanation">Из расчёта 11-летней системы или год обучения ребёнка в школе.</span> </p>
-  </div> <!-- col-3 -->
-  <div class="col-3">
-  <p>Школа <span class="required">*</span><br>
-    <input class="text-input" name="school" type="text" required id="school" title="Школа">
-  </p>
-  </div> <!-- col-3 -->
-  <div class="col-3">
-  <p>Город <span class="required">*</span><br>
-    <input class="text-input" name="city" type="text" required id="sity" title="Город проживания">
-  </p>
-  </div> <!-- col-3 -->
-  <div class="col-3">
-  <p>Страна <span class="required">*</span><br>
-    <input class="text-input" name="country" type="text" required id="country" title="Страна проживания">
-  </p>
-  </div> <!-- col-3 -->
-  </div> <!-- row -->
-  <div class="row"> <div class="col-6">
-  <p>Языки <span class="required">*</span><br>
-    <input class="text-input" name="langs" type="text" required id="langs" title="Какими языками владеет ребёнок" value="русский" size="60">
-    <br>
-  <span class="explanation">Языки, которыми владеет ребёнок. Перечислите через запятую.</span></p>
-  <p>Дополнительная информация<br>
-    <textarea class="text-input" name="notes" cols="60" rows="4" id="notes" title="Замечания"></textarea>
-    <br>
-  <span class="explanation">Всё, что Вы ещё хотели бы нам сообщить. Также Вы можете задать свои вопросы письмом на delta@mathbaby.ru</span></p>
-  <div class="indented" id="agree"><p>На основании ст.64 п.1 Семейного кодекса РФ даю свое согласие на   обработку указанных выше данных моего ребенка для участия в выездной   школе, получения информации о школе, отъезде, возвращении. Использование   данных для других целей не предусмотрено.<br>
-  <b>Согласен</b><span class="required" title="Обязательно для заполнения.">*</span>: 
-  <input name="agree" type="checkbox" id="agree" value="agree" title="Согласие">
-  <label for="agree"><span><span></span></span></label>
-  </p></div>
-  <p>
-    <input name="submit" type="submit" id="submit" value="Зарегистрировать">
-  </p>
-  </div></div> <!-- col-6 row -->
-  <p><input name="ALL_DONE" type="hidden" id="ALL_DONE" value="Ok"><br>
-  </p>
-</form>
+    <form id="form" name="form" method="post" onsubmit="return checkForm()">
+        <div class="row">
+            <div class="col-8">
+                <h3>Р—РґСЂР°РІСЃС‚РІСѓР№С‚Рµ! Р—Р°РїРѕР»РЅРёС‚Рµ, РїРѕР¶Р°Р»СѓР№СЃС‚Р°, СЂРµРіРёСЃС‚СЂР°С†РёРѕРЅРЅСѓСЋ Р°РЅРєРµС‚Сѓ.</h3>
+                <p>РџРѕР»СЏ, РїРѕРјРµС‡РµРЅРЅС‹Рµ Р·РІС‘Р·РґРѕС‡РєРѕР№ <span class="required">*</span> РѕР±СЏР·Р°С‚РµР»СЊРЅС‹.</p>
+                <p id="known"><b>Р•СЃР»Рё РІС‹ СѓР¶Рµ Р±С‹РІР°Р»Рё РІ "Р”РµР»СЊС‚Рµ"</b>, РґРѕСЃС‚Р°С‚РѕС‡РЅРѕ Р·Р°РїРѕР»РЅРёС‚СЊ С‚РѕР»СЊРєРѕ РїРѕР»СЏ<br>
+                    'Р¤Р°РјРёР»РёСЏ', 'РРјСЏ', 'РћС‚С‡РµСЃС‚РІРѕ' (РµСЃР»Рё РµСЃС‚СЊ) Рё 'Р”Р°С‚Р° СЂРѕР¶РґРµРЅРёСЏ'.</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                E-Mail <span class="required">*</span><br>
+                <input class="text-input" name="email" type="email" required id="email" placeholder="ivan@ivanov.earth"
+                       title="РђРґСЂРµСЃ СЌР»РµРєС‚СЂРѕРЅРЅРѕР№ РїРѕС‡С‚С‹">
+                <br>
+                <span class="explanation">Р’Р°С€ Р°РґСЂРµСЃ СЌР»РµРєС‚СЂРѕРЅРЅРѕР№ РїРѕС‡С‚С‹. РќР° РЅРµРіРѕ РїСЂРёРґС‘С‚ РїРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ СЂРµРіРёСЃС‚СЂР°С†РёРё.</span>
+            </div> <!-- col- -->
+            <div class="col-4">
+                РљРѕРЅС‚Р°РєС‚РЅС‹Р№ С‚РµР»РµС„РѕРЅ <span class="required">*</span><br>
+                <input name="tel" type="tel" required class="text-input" id="tel" title="РўРµР»РµС„РѕРЅ РґР»СЏ СЃРІСЏР·Рё"
+                       placeholder="+71234567890">
+            </div> <!-- col- -->
+        </div> <!-- row -->
+        <div class="row">
+            <div class="col-3">
+                Р¤Р°РјРёР»РёСЏ <span class="required">*</span><br>
+                <input class="text-input" name="surname" type="text" required id="surname" placeholder="РРІР°РЅРѕРІ"
+                       title="Р¤Р°РјРёР»РёСЏ СЂРµР±С‘РЅРєР°">
+            </div> <!-- col-4 -->
+            <div class="col-3">
+                РРјСЏ <span class="required">*</span><br>
+                <input class="text-input" name="name" type="text" required id="name" placeholder="РРІР°РЅ"
+                       title="РРјСЏ СЂРµР±С‘РЅРєР°">
+            </div> <!-- col-4 -->
+            <div class="col-3">
+                РћС‚С‡РµСЃС‚РІРѕ<br>
+                <input class="text-input" name="middlename" type="text" id="middlename" placeholder="РРІР°РЅРѕРІРёС‡"
+                       title="РћС‚С‡РµСЃС‚РІРѕ СЂРµР±С‘РЅРєР°">
+            </div> <!-- col-4 -->
+        </div> <!-- row -->
+        <div class="row">
+            <div class="col-3">
+                Р”Р°С‚Р° СЂРѕР¶РґРµРЅРёСЏ <span class="required">*</span><br>
+                <input class="text-input" name="birthday" type="tel" required id="birthday" placeholder="dd/mm/yyyy"
+                       title="Р”Р°С‚Р° СЂРѕР¶РґРµРЅРёСЏ" onChange="checkDate(this);">
+                <span class="hidden_error" id="date_error">РќРµРІРµСЂРЅС‹Р№ С„РѕСЂРјР°С‚ РґР°С‚С‹!<br>РСЃРїРѕР»СЊР·СѓР№С‚Рµ "РґРµРЅСЊ/РјРµСЃСЏС†/РіРѕРґ"<br>РќР°РїСЂРёРјРµСЂ: 27/03/1999</span>
+                <span class="explanation"><span class="age" id="age"><br>Р’РѕР·СЂР°СЃС‚ РЅР° РЅР°С‡Р°Р»Рѕ Р»Р°РіРµСЂСЏ: </span></span>
+            </div> <!-- col-3 -->
+            <div class="col-3">
+                <div id="gender">
+                    РџРѕР» <span class="required">*</span><br>
+                    <input name="gender" type="radio" required id="female" value="f"><label
+                            for="female"><span><span></span></span>РґРµРІРѕС‡РєР°</label>&nbsp;&nbsp;
+                    <input name="gender" type="radio" required id="male" value="m"><label for="male"><span><span></span></span>РјР°Р»СЊС‡РёРє</label>
+                </div> <!-- gender -->
+            </div> <!-- col-3 -->
+            <div class="col-3">
+                РљР»Р°СЃСЃ<br>
+                <input class="text-input" name="class" type="tel" id="class" title="РљР»Р°СЃСЃ">
+                <br>
+                <span class="explanation">РР· СЂР°СЃС‡С‘С‚Р° 11-Р»РµС‚РЅРµР№ СЃРёСЃС‚РµРјС‹ РёР»Рё РіРѕРґ РѕР±СѓС‡РµРЅРёСЏ СЂРµР±С‘РЅРєР° РІ С€РєРѕР»Рµ.</span>
+            </div> <!-- col-3 -->
+        </div> <!-- raw -->
+        <div class="row">
+            <div class="col-3">
+                РЁРєРѕР»Р° <span class="required">*</span><br>
+                <input class="text-input" name="school" type="text" required id="school" title="РЁРєРѕР»Р°">
+            </div> <!-- col-3 -->
+            <div class="col-3">
+                Р“РѕСЂРѕРґ <span class="required">*</span><br>
+                <input class="text-input" name="city" type="text" required id="city" title="Р“РѕСЂРѕРґ РїСЂРѕР¶РёРІР°РЅРёСЏ">
+            </div> <!-- col-3 -->
+            <div class="col-3">
+                РЎС‚СЂР°РЅР° <span class="required">*</span><br>
+                <input class="text-input" name="country" type="text" required id="country" title="РЎС‚СЂР°РЅР° РїСЂРѕР¶РёРІР°РЅРёСЏ">
+            </div> <!-- col-3 -->
+        </div> <!-- row -->
+        <div class="row">
+            <div class="col-6">
+                РЇР·С‹РєРё <span class="required">*</span><br>
+                <input class="text-input" name="langs" type="text" required id="langs"
+                       title="РљР°РєРёРјРё СЏР·С‹РєР°РјРё РІР»Р°РґРµРµС‚ СЂРµР±С‘РЅРѕРє" value="СЂСѓСЃСЃРєРёР№" size="60">
+                <br>
+                <span class="explanation">РЇР·С‹РєРё, РєРѕС‚РѕСЂС‹РјРё РІР»Р°РґРµРµС‚ СЂРµР±С‘РЅРѕРє. РџРµСЂРµС‡РёСЃР»РёС‚Рµ С‡РµСЂРµР· Р·Р°РїСЏС‚СѓСЋ.</span>
+                <p>Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅР°СЏ РёРЅС„РѕСЂРјР°С†РёСЏ<br>
+                    <textarea class="text-input" name="notes" cols="60" rows="4" id="notes"
+                              title="Р—Р°РјРµС‡Р°РЅРёСЏ"></textarea>
+                    <br>
+                    <span class="explanation">Р’СЃС‘, С‡С‚Рѕ Р’С‹ РµС‰С‘ С…РѕС‚РµР»Рё Р±С‹ РЅР°Рј СЃРѕРѕР±С‰РёС‚СЊ. РўР°РєР¶Рµ Р’С‹ РјРѕР¶РµС‚Рµ Р·Р°РґР°С‚СЊ СЃРІРѕРё РІРѕРїСЂРѕСЃС‹ РїРёСЃСЊРјРѕРј РЅР° summer.camp.delta@gmail.com</span>
+                </p>
+                <div class="indented" id="agree_box">РќР° РѕСЃРЅРѕРІР°РЅРёРё СЃС‚.64 Рї.1 РЎРµРјРµР№РЅРѕРіРѕ РєРѕРґРµРєСЃР° Р Р¤ РґР°СЋ СЃРІРѕРµ СЃРѕРіР»Р°СЃРёРµ РЅР°
+                    РѕР±СЂР°Р±РѕС‚РєСѓ СѓРєР°Р·Р°РЅРЅС‹С… РІС‹С€Рµ РґР°РЅРЅС‹С… РјРѕРµРіРѕ СЂРµР±РµРЅРєР° РґР»СЏ СѓС‡Р°СЃС‚РёСЏ РІ РІС‹РµР·РґРЅРѕР№ С€РєРѕР»Рµ, РїРѕР»СѓС‡РµРЅРёСЏ РёРЅС„РѕСЂРјР°С†РёРё Рѕ
+                    С€РєРѕР»Рµ, РѕС‚СЉРµР·РґРµ, РІРѕР·РІСЂР°С‰РµРЅРёРё. РСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ РґР°РЅРЅС‹С… РґР»СЏ РґСЂСѓРіРёС… С†РµР»РµР№ РЅРµ РїСЂРµРґСѓСЃРјРѕС‚СЂРµРЅРѕ.<br>
+                    <b>РЎРѕРіР»Р°СЃРµРЅ</b><span class="required" title="РћР±СЏР·Р°С‚РµР»СЊРЅРѕ РґР»СЏ Р·Р°РїРѕР»РЅРµРЅРёСЏ.">*</span>:
+                    <input name="agree" id="agree" type="checkbox" value="agree" title="РЎРѕРіР»Р°СЃРёРµ">
+                    <label for="agree"><span><span></span></span></label>
+                </div>
+                <p>
+                    <input name="submit" type="submit" id="submit" value="Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ">
+                </p>
+            </div>
+        </div> <!-- col-6 row -->
+        <input name="ALL_DONE" type="hidden" id="ALL_DONE" value="Ok">
+        <p>&nbsp;<br></p>
+    </form>
 </div> <!-- class "main" -->
 <?php
-} elseif ($_POST["ALL_DONE"] !== 'Ok') {
-    error('Что-то пошло не так...');
-} else {
+} elseif ($_POST["ALL_DONE"] === "Error") {
+    error('Р§С‚Рѕ-С‚Рѕ РїРѕС€Р»Рѕ РЅРµ С‚Р°Рє: ALL_DONE = Error POST[]=' . print_r($_POST));
+} elseif ($_POST["ALL_DONE"] === "Ok" || $_POST["ALL_DONE"] === "Old") {
     /***
      *
-     * Обработка данных после заполнения формы регистрации
+     * РћР±СЂР°Р±РѕС‚РєР° РґР°РЅРЅС‹С… РїРѕСЃР»Рµ Р·Р°РїРѕР»РЅРµРЅРёСЏ С„РѕСЂРјС‹ СЂРµРіРёСЃС‚СЂР°С†РёРё
      *
      */
-    try {
-        $db = new dbConnect();
-        $uniqueID = $db->putRegData();
-        if ($db->getStatus() == DB_ADD_OK) {
-            /*****
-             *
-             * Сообщение об успешной регистрации
-             *
-             */
-            $person = $db->getPerson($uniqueID);
+    $db = new dbConnect();
+    $uniqueID = $db->putRegData();
+    if ($db->getStatus() == DB_ADD_OK) {
+        /*****
+         *
+         * РЈСЃРїРµС€РЅР°СЏ СЂРµРіРёСЃС‚СЂР°С†РёСЏ
+         *
+         */
+        $person = $db->getPerson($uniqueID);
+
+        // Р•СЃР»Рё Р±С‹Р»Рё РІ РїСЂРѕС€Р»РѕРј РіРѕРґСѓ
+        if ($_POST["ALL_DONE"] === "Old" && $OldUID = $db->getOldUID($uniqueID)) {
+            // ...РїРµСЂРµРєРёРґС‹РІР°РµРј С„РѕС‚РѕРіСЂР°С„РёСЋ РёР· Р±РµРєР°РїР° РІ РЅРѕРІСѓСЋ РїР°РїРєСѓ
+            $source_pattern = "_2018/photos/" . $OldUID . ".*";
+            if ($all_source_photos = glob($source_pattern)) {
+                $source = $all_source_photos[0];
+                $dest = "photos/" . $uniqueID . ".JPG";
+                $result = copy($source, $dest);
+                if (!$result) error("Unable to copy photo from old account for UID: $uniqueID, old_UID: $OldUID");
+            }
+
+            // ... Рё РѕС‚РїСЂР°РІР»СЏРµРј РїРёСЃСЊРјРѕ РѕР± СѓСЃРїРµС€РЅРѕР№ СЂРµРіРёСЃС‚СЂР°С†РёРё
+            try {
+                sendGreetingsMail($person);
+            } catch (PHPMailer\PHPMailer\Exception $e) {
+                error("Error in sendGreetingsMail function, with person UID=" . $uniqueID . ": " . $e->errorMessage());
+            }
+        } else {
+            // РћС‚РїСЂР°РІР»СЏРµРј РїРёСЃСЊРјРѕ РЅРѕРІРµРЅСЊРєРёРј
             try {
                 sendRegMail($person);
-            } catch (\PHPMailer\PHPMailer\Exception $e) {
-                error($e->errorMessage());
+                $db->dbLog("Р’С‹СЃР»Р°РЅРѕ РїРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ СЂРµРіРёСЃС‚СЂР°С†РёРё, UID=" . $uniqueID, $uniqueID);
+            } catch (PHPMailer\PHPMailer\Exception $e) {
+                error("Error in sendRegMail function, with person UID=" . $uniqueID . ": " . $e->errorMessage());
             }
-            $db->dbLog("Отправлено письмо-подтверждение регистрации, UniqueId=" . $uniqueID);
-            ?>
-            <div class="row">
-                <div class="col-12">
-                    <h1>Регистрация в летний физико-математический лагерь "Дельта"</h1>
-                    <p class="explanation">&nbsp;</p>
-                </div>
-            </div> <!-- col12, row -->
-
-            <div class="main">
-                <form id="form" name="form" method="post" action="index.php">
-                    <div class="row">
-                        <div class="col-2">&nbsp;</div>
-                        <div class="col-8">
-                            <p>Спасибо за регистрацию!</p>
-                            <p>На Ваш адрес будет выслано письмо.</p>
-                        </div>
-                        <!-- col-8 -->
-                        <div class="col-2">&nbsp;</div>
-                    </div> <!-- row -->
-                    <div class="row">
-                        <div class="col-6">
-                            <p>
-                                <input name="submit" type="submit" id="submit" value="Вернуться на сайт">
-                            </p>
-                        </div>
-                    </div> <!-- col-6 row -->
-                    <p><input name="ALL_DONE" type="hidden" id="ALL_DONE" value="Ok"><br>
-                    </p>
-                </form>
-            </div> <!-- class "main" -->
-            <?php
-        } elseif ($db->getStatus() == DB_ADD_DUP) {
-            /*
-             * Обработка повторной регистрации
-             */
-            $person = $db->getPerson($uniqueID);
-            try {
-                sendRegMail($person);
-            } catch (\PHPMailer\PHPMailer\Exception $e) {
-                error($e->errorMessage());
-            }
-            $db->dbLog("Повторно отправлено письмо-подтверждение регистрации, UniqueId=" . $uniqueID);
-            ?>
-            <div class="row">
-                <div class="col-12">
-                    <h1>Регистрация в летний физико-математический лагерь "Дельта"</h1>
-                    <p class="explanation">&nbsp;</p>
-                </div>
-            </div> <!-- col12, row -->
-
-            <div class="main">
-                <form id="form" name="form" method="post" action="index.php">
-                    <div class="row">
-                        <div class="col-2">&nbsp;</div>
-                        <div class="col-8">
-                            <p>Внимание!</p>
-                            <p><b><?php echo $person['Name'] . " " . $person['Surname']?></b> с датой рождения
-                                <?php echo $person['Birthday']?> уже зарегистрирован!</p>
-                            <p>На всякий случай мы высылаем повторное письмо на Ваш адрес (<?php echo $person['Email'] ?>).</p>
-                        </div>
-                        <!-- col-8 -->
-                        <div class="col-2">&nbsp;</div>
-                    </div> <!-- row -->
-                    <div class="row">
-                        <div class="col-6">
-                            <p>
-                                <input name="submit" type="submit" id="submit" value="Вернуться на сайт">
-                            </p>
-                        </div>
-                    </div> <!-- col-6 row -->
-                    <p><input name="ALL_DONE" type="hidden" id="ALL_DONE" value="Ok"><br>
-                    </p>
-                </form>
-                <div class="row"><div class="col-12">
-                        <hr>
-                        <p>Если у Вас возникли вопросы или Вы заметили неточность в регистрационных данных, пожалуйста воспользуйтесь формой
-                            обратной связи или свяжитесь с нами:</p>
-                    </div></div>  <!-- col-12, row -->
-                <div class="row"><div class="col-6">
-                        <p><b>Анна Семовская</b><br>
-                            +7(903)749-4851 (телефон, Telegram)<br>
-                            anna.sem@gmail.com<br>
-                            Skype: aselect1976</p></div> <!-- col-6 -->
-                    <div class="col-6">
-                        <p><b>Дмитрий Аблов</b><br>
-                            +7(903)795-4223 (телефон, Telegram, Viber, WhatsUpp)<br>
-                            d.ablov@gmail.com<br>
-                            Skype: d.ablov</p></div></div> <!-- col-6, row -->
-                <div class="row"><div class="col-8">
-                        <form method="post" action="feedback.php">
-                            <p>
-                                <input name="id" type="hidden" id="id" value="<?php echo $person['UniqueId'] ?>">
-                                <input name="name" type="hidden" id="name" value="<?php echo $person['Name'] . ' ' . $person['Surname'] ?>">
-                                <input name="email" type="hidden" id="email" value="<?php echo $person['Email'] ?>">
-                                <input type="submit" value="Связь с организаторами">
-                            </p>
-                            <p>&nbsp; </p>
-                        </form>
-                    </div></div> <!-- col-8, row -->
-
-            </div> <!-- class "main" -->
-            <?php
-
         }
-        $db = null;
-    } catch (PDOException $e) {
-        error("PDO Exception: " . $e->getMessage());
+        ?>
+        <div class="main">
+            <form id="form" name="form" method="post" action="index.php">
+                <div class="row">
+                    <div class="col-2">&nbsp;</div>
+                    <div class="col-8">
+                        <p>РЎРїР°СЃРёР±Рѕ Р·Р° СЂРµРіРёСЃС‚СЂР°С†РёСЋ!</p>
+                        <p>РќР° Р’Р°С€ Р°РґСЂРµСЃ Р±СѓРґРµС‚ РІС‹СЃР»Р°РЅРѕ РїРёСЃСЊРјРѕ.</p>
+                    </div>
+                    <!-- col-8 -->
+                    <div class="col-2">&nbsp;</div>
+                </div> <!-- row -->
+                <div class="row">
+                    <div class="col-6">
+                        <p>
+                            <input name="submit" type="submit" id="submit" value="Р’РµСЂРЅСѓС‚СЊСЃСЏ РЅР° СЃР°Р№С‚">
+                        </p>
+                    </div>
+                </div> <!-- col-6 row -->
+                <p><input name="ALL_DONE" type="hidden" id="ALL_DONE" value="Ok"><br>
+                </p>
+            </form>
+        </div> <!-- class "main" -->
+        <?php
+    } elseif ($db->getStatus() == DB_ADD_DUP) {
+        /*
+         * РћР±СЂР°Р±РѕС‚РєР° РїРѕРІС‚РѕСЂРЅРѕР№ СЂРµРіРёСЃС‚СЂР°С†РёРё
+         */
+        $person = $db->getPerson($uniqueID);
+        try {
+            sendRegMail($person);
+        } catch (\PHPMailer\PHPMailer\Exception $e) {
+            error($e->errorMessage());
+        }
+        $db->dbLog("РџРѕРІС‚РѕСЂРЅРѕ РѕС‚РїСЂР°РІР»РµРЅРѕ РїРёСЃСЊРјРѕ-РїРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ СЂРµРіРёСЃС‚СЂР°С†РёРё, UniqueId=" . $uniqueID, $uniqueID);
+        ?>
+        <div class="main">
+            <form id="form" name="form" method="post" action="index.php">
+                <div class="row">
+                    <div class="col-2">&nbsp;</div>
+                    <div class="col-8">
+                        <p>Р’РЅРёРјР°РЅРёРµ!</p>
+                        <p><b><?php echo $person['Name'] . " " . $person['Surname']?></b> СЃ РґР°С‚РѕР№ СЂРѕР¶РґРµРЅРёСЏ
+                            <?php echo $person['Birthday']?> СѓР¶Рµ Р·Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅ<?php if ($person['Gender'] === 'f') {
+                            echo "Р°";} ?>!</p>
+                        <p>РќР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№ РјС‹ РІС‹СЃС‹Р»Р°РµРј РїРѕРІС‚РѕСЂРЅРѕРµ РїРёСЃСЊРјРѕ РЅР° Р’Р°С€ Р°РґСЂРµСЃ (<?php echo $person['Email'] ?>).</p>
+                    </div>
+                    <!-- col-8 -->
+                    <div class="col-2">&nbsp;</div>
+                </div> <!-- row -->
+                <div class="row">
+                    <div class="col-6">
+                        <p>
+                            <input name="submit" type="submit" id="submit" value="Р’РµСЂРЅСѓС‚СЊСЃСЏ РЅР° СЃР°Р№С‚">
+                        </p>
+                    </div>
+                </div> <!-- col-6 row -->
+                <p><input name="ALL_DONE" type="hidden" id="ALL_DONE" value="Ok"><br>
+                </p>
+            </form>
+            <div class="row">
+                <div class="col-12">
+                    <hr>
+                    <p>Р•СЃР»Рё Сѓ Р’Р°СЃ РІРѕР·РЅРёРєР»Рё РІРѕРїСЂРѕСЃС‹ РёР»Рё Р’С‹ Р·Р°РјРµС‚РёР»Рё РЅРµС‚РѕС‡РЅРѕСЃС‚СЊ РІ СЂРµРіРёСЃС‚СЂР°С†РёРѕРЅРЅС‹С… РґР°РЅРЅС‹С…, РїРѕР¶Р°Р»СѓР№СЃС‚Р° РІРѕСЃРїРѕР»СЊР·СѓР№С‚РµСЃСЊ С„РѕСЂРјРѕР№
+                        РѕР±СЂР°С‚РЅРѕР№ СЃРІСЏР·Рё РёР»Рё СЃРІСЏР¶РёС‚РµСЃСЊ СЃ РЅР°РјРё:</p>
+                    <div class="row">
+                        <div class="col-6">
+                            <p><b>РђРЅРЅР° РЎРµРјРѕРІСЃРєР°СЏ</b><br>
+                                <?php printContact('sem'); ?>
+                            </p></div> <!-- col-6 -->
+                        <div class="col-6">
+                            <p><b>Р”РјРёС‚СЂРёР№ РђР±Р»РѕРІ</b><br>
+                                <?php printContact('abl'); ?>
+                            </p>
+                        </div>
+                    </div> <!-- col-6, row -->
+                </div>
+            </div>  <!-- col-12, row -->
+            <div class="row"><div class="col-8">
+                    <form method="post" action="feedback.php">
+                        <p>
+                            <input name="id" type="hidden" id="id" value="<?php echo $person['UniqueId'] ?>">
+                            <input name="name" type="hidden" id="name" value="<?php echo $person['Name'] . ' ' . $person['Surname'] ?>">
+                            <input name="email" type="hidden" id="email" value="<?php echo $person['Email'] ?>">
+                            <input type="submit" value="РЎРІСЏР·СЊ СЃ РѕСЂРіР°РЅРёР·Р°С‚РѕСЂР°РјРё">
+                        </p>
+                        <p>&nbsp; </p>
+                    </form>
+                </div></div> <!-- col-8, row -->
+
+        </div> <!-- class "main" -->
+        <?php
+
+    } elseif ($db->getStatus() == DB_ERROR) {
+        /*
+         * РћР±СЂР°Р±РѕС‚РєР° РѕС€РёР±РєРё СЂРµРіРёСЃС‚СЂР°С†РёРё
+         */
+        $person = $db->getPerson($uniqueID);
+        $db->dbLog("РћР±СЂР°Р±РѕС‚РєР° РѕС€РёР±РєРё РїСЂРё СЂРµРіРёСЃС‚СЂР°С†РёРё, UniqueId=" . $uniqueID, $uniqueID);
+        ?>
+        <div class="main">
+            <form id="form" name="form" method="post" action="index.php">
+                <div class="row">
+                    <div class="col-2">&nbsp;</div>
+                    <div class="col-8">
+                        <p>Р’РЅРёРјР°РЅРёРµ!</p>
+                        <p><b>РџСЂРё РіРµСЂРёСЃС‚СЂР°С†РёРё РїСЂРѕРёР·РѕС€Р»Р° РѕС€РёР±РєР°!</b></p>
+                    </div>
+                    <!-- col-8 -->
+                    <div class="col-2">&nbsp;</div>
+                </div> <!-- row -->
+            </form>
+            <div class="row">
+                <div class="col-12">
+                    <hr>
+                    <p>РџРѕР¶Р°Р»СѓР№СЃС‚Р°, СЃРѕРѕР±С‰РёС‚Рµ РѕСЂРіР°РЅРёР·Р°С‚РѕСЂР°Рј С‡РµСЂРµР· С„РѕСЂРјСѓ РѕР±СЂР°С‚РЅРѕР№ СЃРІСЏР·Рё РёР»Рё РёРЅС‹Рј СЃРїРѕСЃРѕР±РѕРј:</p>
+                    <div class="row">
+                        <div class="col-6">
+                            <p><b>РђРЅРЅР° РЎРµРјРѕРІСЃРєР°СЏ</b><br>
+                                <?php printContact('sem'); ?>
+                            </p></div> <!-- col-6 -->
+                        <div class="col-6">
+                            <p><b>Р”РјРёС‚СЂРёР№ РђР±Р»РѕРІ</b><br>
+                                <?php printContact('abl'); ?>
+                            </p>
+                        </div>
+                    </div> <!-- col-6, row -->
+                </div>
+            </div>  <!-- col-12, row -->
+            <div class="row"><div class="col-8">
+                    <form method="post" action="feedback.php">
+                        <p>
+                            <input name="id" type="hidden" id="id" value="<?php echo $person['UniqueId'] ?>">
+                            <input name="name" type="hidden" id="name" value="<?php echo $person['Name'] . ' ' . $person['Surname'] ?>">
+                            <input name="email" type="hidden" id="email" value="<?php echo $person['Email'] ?>">
+                            <input type="submit" value="РЎРІСЏР·СЊ СЃ РѕСЂРіР°РЅРёР·Р°С‚РѕСЂР°РјРё">
+                        </p>
+                        <p>&nbsp; </p>
+                    </form>
+                </div></div> <!-- col-8, row -->
+
+        </div> <!-- class "main" -->
+        <?php
+
     }
+    $db = null;
 }
 ?>
 </body>

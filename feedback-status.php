@@ -1,76 +1,80 @@
 <!doctype html>
 <html>
 <head>
-    <meta charset="windows-1251">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Обратная связь</title>
+    <title>РћР±СЂР°С‚РЅР°СЏ СЃРІСЏР·СЊ</title>
     <link href="CSS/common.css" rel="stylesheet" type="text/css">
-    <link href="CSS/form.css" rel="stylesheet" type="text/css">
+    <link href="CSS/mycabinet.css" rel="stylesheet" type="text/css">
 </head>
 <body>
+<div class="logo"></div>
 <?php
 require_once 'phplib/mail.php';
-require_once 'phplib/common.php';
+require_once 'phplib/common.inc';
 require_once 'phplib/dbConnect.php';
 
 if (!(isset($_POST['email'])) && isset($_POST['name']) && isset($_POST['message'])) {
-    error("Bad data from feedback form received.");
+    error("feedback-status: Bad data from feedback form received.");
 }
 
-if(sendFeedbackMail($_POST['email'],$_POST['name'],$_POST['message'])) {
+try {
+    sendFeedbackMail(filter_var($_POST['email'], FILTER_VALIDATE_EMAIL),
+        trim(filter_var($_POST["name"], FILTER_SANITIZE_STRING)),
+        trim(filter_var($_POST['message'])));
     $db = new dbConnect();
-    $db->dbLog("Отправлено сообщение из формы обратной связи: " . $_POST['email'] . " " . $_POST['name'] . " " . $_POST['message']);
+    $db->dbLog("РћС‚РїСЂР°РІР»РµРЅРѕ СЃРѕРѕР±С‰РµРЅРёРµ РёР· С„РѕСЂРјС‹ РѕР±СЂР°С‚РЅРѕР№ СЃРІСЏР·Рё: " . $_POST['email'] . " " . $_POST['name'] . " " . $_POST['message']);
     /*
-     * Вывод подтверждения
+     * Р’С‹РІРѕРґ РїРѕРґС‚РІРµСЂР¶РґРµРЅРёСЏ
      *
      */ ?>
-    <div class="row">
-        <div class="col-12">
-            <h1>Форма обратной связи с организаторами летнего физико-математического лагеря &quot;Дельта&quot; в
-                Мюнхене</h1>
+        <div class="title">
+            <h1>Р¤РѕСЂРјР° РѕР±СЂР°С‚РЅРѕР№ СЃРІСЏР·Рё СЃ РѕСЂРіР°РЅРёР·Р°С‚РѕСЂР°РјРё Р»РµС‚РЅРµРіРѕ С„РёР·РёРєРѕ-РјР°С‚РµРјР°С‚РёС‡РµСЃРєРѕРіРѕ Р»Р°РіРµСЂСЏ &quot;Р”РµР»СЊС‚Р°&quot; РІ
+                РњСЋРЅС…РµРЅРµ</h1>
         </div>
-    </div>
-    <div class="main">
-        <form id="feedback" name="feedback" method="post" action="index.php">
-            <div class="row">
-                <div class="col-8">
-                    <h3>Благодарим Вас!</h3>
-                    <p>Сообщение отправлено. Мы скоро свяжемся с Вами!</p>
-                </div>
-            </div> <!-- col-8, row -->
-            <div class="row">
-                <div class="col-8">
-                    <p><input type="submit" value="Вернуться на главную страницу."></p>
-                </div>
-            </div> <!-- row --><!-- col-8-->
-        </form>
-    </div><!-- main -->
+        <div class="main">
+            <form id="feedback" name="feedback" method="post" action="index.php">
+                <div class="row">
+                    <div class="col-8">
+                        <h3>Р‘Р»Р°РіРѕРґР°СЂРёРј Р’Р°СЃ!</h3>
+                        <p>РЎРѕРѕР±С‰РµРЅРёРµ РѕС‚РїСЂР°РІР»РµРЅРѕ. РњС‹ СЃРєРѕСЂРѕ СЃРІСЏР¶РµРјСЃСЏ СЃ Р’Р°РјРё!</p>
+                    </div>
+                </div> <!-- col-8, row -->
+                <div class="row">
+                    <div class="col-8">
+                        <p><input type="submit" value="Р’РµСЂРЅСѓС‚СЊСЃСЏ РЅР° РіР»Р°РІРЅСѓСЋ СЃС‚СЂР°РЅРёС†Сѓ."></p>
+                    </div>
+                </div> <!-- row --><!-- col-8-->
+            </form>
+        </div><!-- main -->
     <?php
-} else {
+    } catch (\PHPMailer\PHPMailer\Exception $e) {
     /*
-     * Сообщаем об ошибке
-     */ ?>
+     * РЎРѕРѕР±С‰Р°РµРј РѕР± РѕС€РёР±РєРµ
+     */
+    error('feedback-status: PHPMailer exception: ' . $e .
+        '\n\r Message: ' . $_POST['message'] . '\n\r From: ' .
+        $_POST['email'] . '\n\r Name: ' . $_POST['name']);
+    ?>
     <div class="row">
         <div class="col-12">
-            <h1>Внимание! Произошла ошибка при отправке данных!</h1>
-            <h1>Пожалуйста, свяжитесь с нами "вручную":</h1>
+            <h1>Р’РЅРёРјР°РЅРёРµ! РџСЂРѕРёР·РѕС€Р»Р° РѕС€РёР±РєР° РїСЂРё РѕС‚РїСЂР°РІРєРµ РґР°РЅРЅС‹С…!</h1>
+            <h1>РџРѕР¶Р°Р»СѓР№СЃС‚Р°, СЃРІСЏР¶РёС‚РµСЃСЊ СЃ РЅР°РјРё "РІСЂСѓС‡РЅСѓСЋ":</h1>
         </div>
     </div>
     <div class="main">
         <form id="feedback" name="feedback" method="post" action="index.php">
             <div class="row"><div class="col-6">
-                    <p><b>Анна Семовская</b><br>
-                        +7(903)749-4851 (телефон, Telegram)<br>
-                        anna.sem@gmail.com<br>
-                        Skype: aselect1976</p></div> <!-- col-6 -->
+                    <p><b>РђРЅРЅР° РЎРµРјРѕРІСЃРєР°СЏ</b><br>
+                        <?php printContact('sem');?>
+                    </p></div> <!-- col-6 -->
                 <div class="col-6">
-                    <p><b>Дмитрий Аблов</b><br>
-                        +7(903)795-4223 (телефон, Telegram, Viber, WhatsApp)<br>
-                        d.ablov@gmail.com<br>
-                        Skype: d.ablov</p></div></div> <!-- col-6, row -->
+                    <p><b>Р”РјРёС‚СЂРёР№ РђР±Р»РѕРІ</b><br>
+                        <?php printContact('abl');?>
+                    </p></div></div> <!-- col-6, row -->
             <div class="row">
                 <div class="col-8">
-                    <p><input type="submit" value="Вернуться на главную страницу."></p>
+                    <p><input type="submit" value="Р’РµСЂРЅСѓС‚СЊСЃСЏ РЅР° РіР»Р°РІРЅСѓСЋ СЃС‚СЂР°РЅРёС†Сѓ."></p>
                 </div>
             </div> <!-- row --><!-- col-8-->
         </form>

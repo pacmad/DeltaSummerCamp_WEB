@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset='UTF-8'>
+  <title>Sandbox: Lichens</title>
+  <link rel='stylesheet' href='vova-styles.css'>
+  <script>
+    //var matrix = [];
+    //var oldmatrix = [];
+    const CANVASSIDE = 560;
+    const SIZEX = 140;
+    const SIZEY = 140;
+    const SQUAREX = Math.floor(CANVASSIDE/SIZEX);
+    const SQUAREY = Math.floor(CANVASSIDE/SIZEY);
+    var FREQ = 20; //ms per tick
+    var going = false;
+
+    function getold(x, y) {
+      return oldmatrix[y][x];
+    }
+    function get(x, y) {
+      return matrix[y][x];
+    }
+    function put(x, y, val) {
+      matrix[y][x] = val;
+    }
+    function init() {
+      canvas = document.getElementById('Canvas');
+      canvas.width = canvas.clientWidth;
+      canvas.height = canvas.clientHeight;
+      ctx = canvas.getContext('2d');
+      canvas.addEventListener('mousemove', on_mouse_move, false);
+      canvas.addEventListener('mousedown', canvas_on_mouse_down, false);
+      canvas.addEventListener('contextmenu', event=>event.preventDefault(), false);
+      prepare();
+    }
+    function prepare() {
+      //fill matrix
+      if (going) start_stop();
+      matrix = []
+      for (var y=0; y<SIZEY; y++) {
+        let list = [];
+        for (var x=0; x<SIZEX; x++) {list.push(0);}
+        matrix.push(list);
+      }
+      oldmatrix = [];
+      for (let i=0; i<SIZEX; i++) oldmatrix.push(matrix[i].slice(0));
+      show();
+    }
+    function grid() {
+      ctx.fillStyle = '#aaa';
+      for (var x=0; x<SIZEX+1; x++) {
+        ctx.fillRect(x*SQUAREX, 0, 1, CANVASSIDE);
+      }
+      for (var y=0; y<SIZEY+1; y++) {
+        ctx.fillRect(0, y*SQUAREY, CANVASSIDE, 1);
+      }
+    }
+    var grid_on = true;
+    function show() {
+      var colours = ['#fff', '#33f'];
+      for (var x=0; x<SIZEX; x++) {
+        for (var y=0; y<SIZEX; y++) {
+          ctx.fillStyle = colours[get(x, y)];
+          ctx.fillRect(SQUAREX*x, SQUAREY*y, SQUAREX, SQUAREY);
+        }
+      }
+      if (grid_on) grid();
+    }
+    function step() {
+      //get hard copy of matrix
+      oldmatrix = [];
+      for (let i=0; i<SIZEX; i++) { oldmatrix.push(matrix[i].slice(0)); }
+      //go through matrix, updating squares
+      for (let x=0; x<SIZEX; x++) {
+        for (let y=0; y<SIZEY; y++) {
+          //count alive squares around current
+          let alive = 0;
+          let check = [[x-1,y-1],[x,y-1],[x+1,y-1],[x-1,y],[x+1,y],[x-1,y+1],[x,y+1],[x+1,y+1]];
+          for (let i=0; i<8; i++) {
+            let [x1, y1] = check[i]
+            if (x1==-1) x1 = SIZEX-1;
+            else if (x1==SIZEX) x1 = 0;
+            if (y1==-1) y1 = SIZEY-1;
+            else if (y1==SIZEY) y1 = 0;
+            if (getold(x1, y1)==1) { alive++; }
+          }
+          //main logic
+          if (get(x,y)==0) { if (alive==3 || alive==7 || alive==8) {put(x, y, 1);} }
+          else { if (alive==4) {put(x, y, 0);} }
+        }
+      }
+      show();
+    }
+    var process;
+    function start_stop() {
+      if (!going) {
+        process = setInterval(step, FREQ);
+        going = true;
+        document.getElementById('StartBtn').innerHTML = 'Stop';
+      } else {
+        clearInterval(process);
+        going = false;
+        document.getElementById('StartBtn').innerHTML = 'Start';
+      }
+    }
+    //------------------------------ patterns ------------------------------
+    function randomize() {
+      prepare();
+      let FULL = 10;
+      let x0 = Math.floor(SIZEX/2)-2;
+      let y0 = Math.floor(SIZEY/2)-2;
+      let x1 = 5; let y1 = 4;
+      for (let i=0; i<FULL; i++) {
+        let x = x0+Math.floor(Math.random()*x1);
+        let y = y0+Math.floor(Math.random()*y1);
+        put(x, y, 1);
+      }
+      show();
+    }
+    function plus() {
+      prepare();
+      let x = Math.floor(SIZEX/2);
+      let y = Math.floor(SIZEY/2);
+      put(x, y, 1);
+      put(x, y-1, 1);
+      put(x, y+1, 1);
+      put(x-1, y, 1);
+      put(x+1, y, 1);
+      show();
+    }
+    //------------------------- mouse activity ---------------------------
+    function offset(elem) {
+      var x = elem.offsetLeft;
+      var y = elem.offsetTop;
+      while (elem = elem.offsetParent) {
+        x += elem.offsetLeft;
+        y += elem.offsetTop;
+      }
+      return { left: x, top_: y };
+    }
+    function getSquare(evt) {
+      let canvasOffset = offset(canvas);
+      return { x: Math.floor((evt.clientX-canvasOffset.left)/SQUAREX),
+               y: Math.floor((evt.clientY-canvasOffset.top_)/SQUAREY) };
+    }
+    var left_mouse_down = false;
+    var right_mouse_down = false;
+    function canvas_on_mouse_down(evt) {
+      var square = getSquare(evt);
+      let rightclick;
+      if (evt.which) rightclick = (evt.which==3);
+      else if (evt.button) rightclick = (evt.button==2);
+      if (rightclick) { put(square.x, square.y, 0); prev_plot_0 = [square.x, square.y]; }
+      else { put(square.x, square.y, 1); prev_plot_1 = [square.x, square.y]; }
+      show();
+    }
+    function on_mouse_down(evt) {
+      let rightclick;
+      if (evt.which) rightclick = (evt.which==3);
+      else if (evt.button) rightclick = (evt.button==2);
+      if (rightclick) right_mouse_down = true;
+      else left_mouse_down = true;
+    }
+    function on_mouse_up(evt) {
+      let rightclick;
+      if (evt.which) rightclick = (evt.which==3);
+      else if (evt.button) rightclick = (evt.button==2);
+      if (rightclick) right_mouse_down = false;
+      else left_mouse_down = false;
+      prev_plot_0 = [];
+      prev_plot_1 = [];
+    }
+    var prev_plot_0 = [];
+    var prev_plot_1 = [];
+    var smoothDrawingOn = true;
+    function on_mouse_move(evt) {
+      if (left_mouse_down && !right_mouse_down) {
+        var square = getSquare(evt);
+        if (smoothDrawingOn && prev_plot_1) plotLine(prev_plot_1[0],prev_plot_1[1], square.x,square.y, 1);
+        else put(square.x, square.y, 1);
+        prev_plot_1 = [square.x, square.y];
+        show();
+      }
+      else if (right_mouse_down && !left_mouse_down) {
+        var square = getSquare(evt);
+        if (smoothDrawingOn && prev_plot_0) plotLine(prev_plot_0[0],prev_plot_0[1], square.x,square.y, 0);
+        else put(square.x, square.y, 0);
+        prev_plot_0 = [square.x, square.y];
+        show();
+      }
+    }
+    
+    function toggleSmoothDrawing() {
+      if (smoothDrawingOn) {
+        document.getElementById('smoothToggle').innerHTML = "Continuous Drawing: Off";
+        smoothDrawingOn = false;
+      } else {
+        document.getElementById('smoothToggle').innerHTML = "Continuous Drawing: On";
+        smoothDrawingOn = true;
+        prev_plot_0 = [];
+        prev_plot_1 = [];
+      }
+    }
+    function plotLineHigh(x0, y0, x1, y1, value) {
+      let dx = x1-x0;
+      let dy = y1-y0;
+      let xi = 1;
+      if (dx<0) { xi = -1; dx = -dx }
+      let D = 2*dx-dy;
+      let x = x0;
+      for (let y=y0; y<=y1; y++) {
+        put(x, y, value);
+        if (D>0) { x += xi; D -= 2*dy; }
+        D += 2*dx;
+      }
+    }
+    function plotLineLow(x0, y0, x1, y1, value) {
+      let dx = x1-x0;
+      let dy = y1-y0;
+      let yi = 1;
+      if (dy<0) { yi = -1; dy = -dy; }
+      let D = 2*dy - dx;
+      let y = y0;
+      for (let x=x0; x<=x1; x++) {
+        put(x, y, value);
+        if (D>0) { y += yi; D -= 2*dx; }
+        D += 2*dy;
+      }
+    }
+    function plotLine(x0, y0, x1, y1, value) {
+      if (Math.abs(y1-y0) < Math.abs(x1-x0)) {
+        if (x0 > x1) plotLineLow(x1,y1,x0,y0, value);
+        else plotLineLow(x0,y0,x1,y1, value);
+      } else {
+        if (y0 > y1) plotLineHigh(x1,y1,x0,y0, value);
+        else plotLineHigh(x0,y0,x1,y1, value);
+      }
+      show();
+    }
+    
+    function toggleGrid() {
+      let button = document.getElementById('gridToggle');
+      if (grid_on) {
+        button.innerHTML = 'Grid: Off';
+        grid_on = false;
+        show();
+      } else {
+        button.innerHTML = 'Grid: On';
+        grid_on = true;
+        grid();
+      }
+    }
+  </script>
+</head>
+
+<body>
+  <table>
+  <tr><td style='vertical-align:top'><div style='max-width:180px'>
+    <h4><u>Interesting Patterns</u></h4>
+    <table>
+      <tr><td><button onclick="randomize()">Random</button></td></tr>
+      <tr><td><button onclick="plus()">Plus</button></td></tr>
+    </table>
+    <h4><u>Drawing Help</u></h4>
+    <div style='color:#33f'>Left mouse: alive</div><br>
+    <div>Right mouse: dead</div><br>
+    <p><button onclick='toggleGrid()' id='gridToggle'>Grid: On</button></p>
+    <p style='color:gray; max-width:inherit'><button onclick='toggleSmoothDrawing()' id='smoothToggle' style='color:black'>Continuous Drawing: On</button><br>
+    This will ensure that drawing will be continuous even when the mouse is moving too quickly, but may cause a lot of lag.</p>
+  </div></td><td><div>
+    <canvas id='Canvas' style='width:560px; height:560px;'></canvas>
+    <br>
+    <table>
+      <tr><td><button onclick="prepare()">Reset</button></td>
+          <td width='150'><div>Speed (ms/tick):   </div><div id="speedDisplay">50</div></td>
+          <td><div class='slidecontainer'>
+              <input type="range" min="5" max="1000" value="50" class="slider" id="speedSlider"></input>
+              </div></td></tr>
+      <tr><td><button onclick="start_stop()" id="StartBtn">Start</button></td></tr>
+      <tr><td><button onclick="step()">Step</button></td></tr>
+    </table>
+  </div></td><td style='vertical-align:top'><div>
+    <h2><u>Rules</u></h2>
+    <p>Each generation/tick, each cell counts the number of cells next to it that are alive.</p>
+    <ul><li>Alive cells (blue) die of loneliness of there are less than 2 others next to it.</li>
+        <li>Alive cells die of overcrowding if there are more than 3 others surrounding it.</li>
+        <li>Dead cells are 'born' (turn alive) if there are exactly 3 alive cells surrounding it.</li>
+    </ul>
+  </div></td></tr>
+  </table>
+
+  <script>
+    setTimeout(init, 100);
+    function setupSlider() {
+      slider = document.getElementById("speedSlider");
+      display = document.getElementById("speedDisplay");
+      slider.oninput = function() {
+        FREQ = this.value;
+        display.innerHTML = FREQ
+        if (going) {
+          clearInterval(process);
+          process = setInterval(step, FREQ);
+        }
+      };
+    }
+    setTimeout(setupSlider, 10);
+    document.addEventListener('mousedown', on_mouse_down, false);
+    document.addEventListener('mouseup', on_mouse_up, false);
+  </script>
+</body>
+
+</html>

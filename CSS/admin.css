@@ -1,0 +1,829 @@
+@charset "utf-8";
+
+/*
+    Общие настройки
+ */
+body {
+    min-width: 320px;
+}
+.title {
+    font-size: 16px;
+    display: block;
+    position: fixed;
+    left: 0;
+    top: 0;
+    margin: 0 0 20px 0;
+    padding: 10px 10px 10px 30px;
+    width: 100%;
+    height: 130px;
+    background-color: #EEEEEE;
+    border-bottom: darkblue 1px solid;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    z-index: 1;
+}
+.main {
+    font-size: 14px;
+    display: block;
+    width: 95%;
+    padding: 20px;
+    margin: 135px auto 40px auto;
+    align-content:center;
+    background-color:#EEE;
+    border: darkblue 1px solid;
+    border-radius: 15px;
+}
+.debug {
+    border: #0acf00 1px solid;
+}
+
+@media only screen and (max-width: 1023px) {
+    .main {
+        width: 100%;
+    }
+}
+
+@media only screen and (max-width: 850px) {
+    .title {
+        margin: 0;
+        padding: 5px 5px 5px 15px;
+        height: 60px;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    .title h1 {
+        font-size: 1em;
+    }
+
+    .main {
+        position: relative;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 0;
+        margin: 0 !important;
+        align-content: center;
+        border-style: none;
+        border-radius: 0;
+    }
+
+    .main h3 {
+        margin-top: 0;
+    }
+}
+
+@media only screen and (max-width: 425px) {
+    .title {
+        height: 50px;
+        text-align: right;
+    }
+
+    .title .hello {
+        display: none;
+    }
+}
+
+    /*
+        Иконки в шапке
+     */
+.icons {
+    display: block;
+    position: absolute;
+    top: 40px;
+    right: 40px;
+    z-index: 20;
+}
+.iconbox {
+    display: table;
+    float: left;
+    border: darkblue 1px solid;
+    border-radius: 5px;
+    width: 40px;
+    height: 40px;
+    margin: 0 10px;
+    cursor: pointer;
+}
+.icon {
+    display: table-cell !important;
+    vertical-align: middle;
+    text-align: center;
+    text-decoration: none;
+    color: #2F4F4F;
+    font-size: xx-large !important;
+}
+.icon.big {
+    font-size: 40px;
+    color: #EEEEEE;
+}
+.iconbox:hover .icon {
+    border-color: red;
+}
+/* Подсказки к иконкам */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    bottom: 110%;
+    left: 50%;
+    margin-left: -60px;
+    color: #2F4F4F;
+    text-align: center;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 20;
+}
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}
+
+@media only screen and (max-width: 850px) {
+    .icons {
+        top: 15px;
+        right: 15px;
+    }
+
+    .iconbox {
+        width: 30px;
+        height: 30px;
+        margin: 0 10px;
+    }
+
+    .icon {
+        font-size: large !important;
+    }
+
+    /* Подсказки к иконкам */
+    .tooltip .tooltiptext {
+        display: none;
+    }
+}
+
+
+@media only screen and (max-width: 425px) {
+    .icons {
+        position: unset;
+    }
+}
+
+/*
+    Настройки
+ */
+.settings_wrapper {
+    display: none;
+    width: 100%;
+    background-color: #EEEEEE;
+    z-index: 2;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.settings_wrapper .hidden {
+    display: none !important;
+}
+
+.settings {
+    height: 6em;
+    width: 100%;
+    padding: 10px 25px;
+    border-top: darkblue 1px solid;
+}
+
+.settings .input-wrapper {
+    display: inline-block;
+}
+
+@media only screen and (max-width: 1023px) {
+    .settings {
+        height: 10em;
+    }
+    .settings .slidecontainer {
+        width: 100%;
+    }
+}
+
+.settings .left {
+    float: left;
+}
+
+.settings .right {
+    float: right;
+}
+
+.settings .smallfont {
+    font-size: 6px !important;
+}
+
+.settings .bigfont {
+    font-size: 24px !important;
+}
+
+.settings .slidecontainer {
+    width: 50%;
+}
+
+.settings .slider {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 90%;
+    border: darkblue 1px solid;
+    border-radius: 3px;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: opacity .2s;
+    -moz-transition: opacity .2s;
+    -ms-transition: opacity .2s;
+    -o-transition: opacity .2s;
+    transition: opacity .2s;
+}
+
+.settings .slider:hover {
+    opacity: 1;
+}
+
+.settings .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 1em;
+    height: 1.2em;
+    background: #303030;
+    border: darkblue 1px none;
+    border-radius: 3px;
+}
+
+.settings .slider::-moz-range-thumb {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 1em;
+    height: 1.2em;
+    background: #2F2F2F;
+    border: darkblue 1px none;
+    border-radius: 3px;
+}
+
+/* checkbox and radio styling: http://code.stephenmorley.org/html-and-css/styling-checkboxes-and-radio-buttons/ */
+input[type=checkbox]:not(old),
+input[type=radio]:not(old){
+    width: 2em;
+    margin: 0;
+    padding: 0;
+    font-size: 1em;
+    opacity: 0;
+}
+input[type=checkbox]:not(old) + label,
+input[type=radio]:not(old) + label {
+    display: inline-block;
+    margin-left: -2em;
+    line-height: 1.5em;
+    font-size: 18px;
+    color: #333;
+}
+input[type=checkbox]:not(old) + label > span,
+input[type=radio]:not(old) + label > span {
+    display: inline-block;
+    width: 0.875em;
+    height: 0.875em;
+    margin: 0.25em 0.5em 0.25em 0.25em;
+    border: 0.0625em solid rgb(192,192,192);
+    border-radius: 0.25em;
+    background: rgb(224,224,224);
+    background-image: -moz-linear-gradient(rgb(240,240,240),rgb(224,224,224));
+    background-image: -ms-linear-gradient(rgb(240,240,240),rgb(224,224,224));
+    background-image: -o-linear-gradient(rgb(240,240,240),rgb(224,224,224));
+    background-image: -webkit-linear-gradient(rgb(240,240,240),rgb(224,224,224));
+    background-image: linear-gradient(rgb(240,240,240),rgb(224,224,224));
+    vertical-align: bottom;
+}
+input[type=checkbox]:not(old):checked + label > span,
+input[type=radio]:not(old):checked + label > span {
+    background-image: -moz-linear-gradient(rgb(224,224,224),rgb(240,240,240));
+    background-image: -ms-linear-gradient(rgb(224,224,224),rgb(240,240,240));
+    background-image: -o-linear-gradient(rgb(224,224,224),rgb(240,240,240));
+    background-image: -webkit-linear-gradient(rgb(224,224,224),rgb(240,240,240));
+    background-image: linear-gradient(rgb(224,224,224),rgb(240,240,240));
+}
+input[type=checkbox]:not(old):checked + label > span:before {
+    content: '\2718';
+    display: block;
+    width: 1em;
+    color: rgb(153,204,102);
+    font-size: 0.875em;
+    line-height: 0.75em;
+    text-align: center;
+    text-shadow: 0 0 0.0714em rgb(115,153,77);
+    font-weight: bold;
+}
+input[type=radio]:not(old):checked + label > span > span {
+    display: block;
+    width: 0.5em;
+    height: 0.5em;
+    margin: 0.15em;
+    border: 0.0625em solid rgb(115,153,77);
+    border-radius: 0.125em;
+    background: rgb(153,204,102);
+    background-image: -moz-linear-gradient(rgb(179,217,140),rgb(153,204,102));
+    background-image: -ms-linear-gradient(rgb(179,217,140),rgb(153,204,102));
+    background-image: -o-linear-gradient(rgb(179,217,140),rgb(153,204,102));
+    background-image: -webkit-linear-gradient(rgb(179,217,140),rgb(153,204,102));
+    background-image: linear-gradient(rgb(179,217,140),rgb(153,204,102));
+}
+
+/*
+    Список
+ */
+.table {
+    width: 100%;
+    border: darkblue 1px solid;
+    border-collapse: collapse;
+}
+.search-block {
+    display: block;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    font-weight: bold;
+    padding: 5px 20px 5px 0;
+    color: lightgrey;
+    background-color: black;
+}
+.search-block .search {
+    float: right;
+}
+.search-block .search input {
+    margin-right: 1em;
+    height: 2em;
+    padding: 0 0.25em;
+}
+.search-block .search .fa {
+    cursor: pointer;
+    width: 1.2em;
+}
+.search-block .stat {
+    float: left;
+    line-height: 2em;
+    margin-left: 3em;
+}
+.stat .invisible {
+    visibility: hidden;
+}
+.stat .short-text {
+    display: none;
+}
+.stat .long-text {
+    display: inline;
+}
+.table-row {
+    position: relative;
+    padding-left: 100px;
+    width: 100%;
+    height: 100px;
+    border-bottom: #333 1px solid;
+}
+/*.table-row:nth-child(even) {
+    background-color: #BBB;
+}*/
+.table-cell {
+    display: block;
+    vertical-align: middle;
+}
+.table-cell.l_photo {
+    width: 100px;
+    max-width: 100px;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+.table-cell img {
+    height: 100px;
+    width: 100px;
+    padding: 0;
+    cursor: pointer;
+}
+.table-info {
+    width: 100%;
+    margin-left: 10px;
+}
+.table-cell.l_name,
+.table-cell.l_owntel,
+.table-cell.l_tel,
+.table-cell.l_submit{
+    display: inline-block;
+    width: 20%;
+}
+.table-cell.l_mail {
+    display: inline-block;
+    width: 35%;
+}
+
+.table-cell.l_name {
+    cursor: pointer;
+}
+.l_owntel a, .l_tel a, .l_mail a {
+    font-weight: bold;
+    text-decoration: none;
+    color: #333;
+}
+.l_owntel a:hover, .l_tel a:hover, .l_mail a:hover {
+    color: darkred;
+}
+.mobview {
+    display: none;
+}
+.card img {
+    width: 180px;
+    height: 180px;
+}
+.card textarea {
+    width: 80%;
+    height: 10em;
+}
+
+/*
+    Карточка участника
+ */
+.details br {
+    display: block;
+    margin-top: 0.3em;
+    content: " ";
+}
+.navigator {
+    display: block;
+    background-color: #404040;
+    margin: 0 0 1em 0;
+    padding-left: 1em;
+}
+.navigator .nav-button {
+    display: inline-block;
+    width: 4em;
+    height: 2em;
+    padding: 0.5em 0;
+    color: wheat;
+    font-size: 1.3em;
+    text-align: center;
+    cursor: pointer;
+}
+.navigator .nav-button:hover {
+    background-color: wheat;
+    color: #404040;
+}
+.full_name {
+    display: block;
+    font-size: large;
+    font-weight: bold;
+    padding-bottom: 0.5em;
+}
+.photo img {
+    width: 200px;
+    height: 200px;
+}
+.infoblock {
+    border: gray 1px dashed;
+    padding: 5px;
+    border-radius: 5px;
+}
+.o_tel,
+.email,
+.tel,
+.status {
+    display: block;
+    font-weight: bold;
+    font-size: larger;
+    margin-bottom: 1em;
+}
+.o_tel a,
+.email a,
+.tel a {
+    text-decoration: none;
+    color: initial;
+}
+.sp_note {
+    border: darkred 2px solid;
+    width: 100%;
+    font-size: larger;
+    font-weight: bold;
+    color: darkred;
+}
+.cablink a {
+    display: inline-block;
+    width: 100%;
+    height: 3em;
+    border: darkblue 1px solid;
+    border-radius: 5px;
+    background-color: #99CCFF;
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+    text-align: center;
+    padding: 1em;
+}
+.cablink a:hover,
+.cablink a:active {
+    background-color: #FDFECF;
+}
+.set_status select {
+    float: right;
+    height: 3rem;
+    width: 25rem;
+    font-size: 18px;
+    border-radius: 5px;
+}
+.set_status option {
+    font-size: 18px;
+}
+.set_status input[type=submit] {
+    float: right;
+    margin-top: 0;
+    margin-left: 1em;
+    display: unset;
+    width: 9rem;
+    height: 2.8rem;
+    border-radius: 5px;
+}
+
+#more_info {
+    display: none;
+}
+.clickable {
+    cursor: pointer;
+}
+
+/*
+    Преподаватели
+ */
+.tch-row {
+    height: auto;
+    padding: 1em;
+}
+.tch-row .table-cell {
+    line-height: 2em;
+    font-size: large;
+}
+.tch-add {
+    padding: 10px;
+    height: 100px;
+}
+.tch-add input[type=text],
+.tch-add input[type=tel] {
+    padding: 2px;
+    height: 2em;
+    font-size: large;
+}
+.tch-add input[type=submit] {
+    width: 110px;
+    height: 30px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+/*
+    Курсы и проекты
+ */
+.courses-table {
+    display: block;
+    border-collapse: collapse;
+}
+.course-block {
+    border: darkblue 1px solid;
+}
+.course-title {
+    font-size: 1.7em;
+}
+.course-authors {
+    font-weight: bold;
+    font-style: italic;
+}
+.course-icon {
+    display: block;
+    width: 9em;
+    height: 6em;
+    margin: 0;
+    padding: 0;
+}
+.course-icon table,
+.course-icon td,
+.course-icon tr {
+    border: darkblue 1px solid;
+    border-collapse: collapse;
+}
+.course-icon-row {
+    display: block;
+    width: 9em;
+    height: 2em;
+}
+.course-icon td {
+    height: 2em;
+    width: 3em;
+}
+.course-icon-project {
+    background-color: coral;
+}
+.course-icon-1 {
+    background-color: gold;
+}
+.course-icon-2 {
+    background-color: aquamarine;
+}
+.course-icon-3 {
+    background-color: violet;
+}
+.add-form {
+    padding: 2em;
+    margin-top: 1em;
+}
+.add-form .course-icon {
+    cursor: pointer;
+}
+.add-form .course-icon td:hover {
+    border-width: 2px;
+}
+.add-form ul {
+    height: 9em;
+    overflow: auto;
+    width: 100%;
+    list-style-type: none;
+    overflow-x: hidden;
+    font-size: 1em;
+    box-sizing: border-box;
+    border: 1px solid gray;
+    border-radius: 3px;
+    background-color: white;
+    margin: 8px 0 8px 0;
+    padding: 12px 0 12px 5px;
+    resize: none;
+    box-shadow: 0 0 2px #333;
+}
+#change-block ul{
+    height: 30em !important;
+}
+.add-form li {
+    margin: 0;
+    padding: 5px 0;
+}
+.add-form input[type=checkbox]:not(old){
+    width: 3em;
+    -ms-transform: scale(2, 2);
+    -webkit-transform: scale(2, 2);
+    transform: scale(2, 2);
+    opacity: 100 !important;
+}
+.add-form label {
+    display: block;
+    color: WindowText;
+    background-color: Window;
+    font-size: 1.7em;
+    margin: 0;
+    padding: 0;
+}
+.add-form label:hover {
+    background-color: Highlight;
+    color: HighlightText;
+}
+.add-form input[type=text],
+.add-form select,
+.add-form option {
+    font-size: 1em;
+    box-sizing: border-box;
+    border: 1px solid gray;
+    border-radius: 3px;
+    background-color: white;
+    width: 100%;
+    margin: 8px 0 8px 0;
+    padding: 12px 0 12px 5px;
+    resize: none;
+    box-shadow: 0 0 2px #333;
+}
+input[type=submit],
+button,
+.button,
+input[type=button] {
+    display: block;
+    width: 300px;
+    height: 70px;
+    font-size:18px;
+    text-shadow: 0 0 0.015em #063;
+    color: darkgreen;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 2em;
+}
+
+/*
+    Студенты в курсе
+ */
+.student {
+    width: 100px;
+    height: 120px;
+    display: inline-block;
+    margin: 5px;
+}
+.student img {
+    width: 100px;
+}
+.student a {
+    text-decoration: none;
+    color: darkred;
+}
+@media only screen and (max-width: 850px) {
+    /* Основная таблица */
+    .table {
+        border: darkblue 1px none;
+        margin-top: 60px;
+        margin-bottom: 40px;
+    }
+    .table-row {
+        padding-left: 100px;
+        padding-bottom: 10px;
+        height: unset;
+        min-height: 50px;
+    }
+    .table-cell.l_photo {
+        width: 100px;
+        max-width: 100px;
+        top: 5px;
+    }
+    .table-cell img {
+        height: 100px;
+        width: 100px;
+    }
+    .infoblock {
+        border-style: none;
+        padding: 0;
+        border-radius: 0;
+    }
+    .table-info {
+        margin-left: 10px;
+        font-size: small;
+        line-height: 1.6;
+    }
+    .table-cell.l_name,
+    .table-cell.l_owntel,
+    .table-cell.l_tel,
+    .table-cell.l_mail {
+        width: 40%;
+    }
+    .table-cell.l_name p,
+    .table-cell.l_owntel p,
+    .table-cell.l_tel p,
+    .table-cell.l_mail p {
+        display: inline;
+    }
+    .table-cell.l_name {
+        cursor: pointer;
+    }
+    .l_owntel a, .l_tel a, .l_mail a {
+        font-weight: bold;
+        text-decoration: none;
+        color: #333;
+    }
+    .l_owntel a:hover, .l_tel a:hover, .l_mail a:hover {
+        color: darkred;
+    }
+    .set_status select {
+        height: 3rem;
+        width: 100%;
+        font-size: 18px;
+        border-radius: 5px;
+
+    }
+    .set_status input[type=submit] {
+        margin-top: 0;
+        display: unset;
+        width: 100%;
+        height: 2.8rem;
+        border-radius: 5px;
+    }
+
+    .search-block .stat {
+        margin-left: 1em;
+    }
+    .stat .long-text {
+        display: none;
+    }
+    .stat .short-text {
+        display: inline;
+    }
+}
+
+@media screen and (max-width: 500px) {
+    .table-cell.l_name,
+    .table-cell.l_owntel,
+    .table-cell.l_tel,
+    .table-cell.l_mail {
+        width: 100%;
+    }
+}
+
+@media only screen and (max-width: 425px) {
+    .table {
+        margin-top: 50px;
+    }
+}

@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /CSS
+Disallow: /documents
+Disallow: /JS
+Disallow: /phplib
+Disallow: /uploads
+Disallow: /_2018
+Disallow: /.documentation
+Sitemap: https://https://delta.gorod.de/sitemap.xml
+Host: https://delta.gorod.de

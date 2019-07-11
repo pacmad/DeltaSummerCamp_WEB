@@ -1,140 +1,161 @@
+<?php
+
+// РћР±СЂР°Р±РѕС‚РєР° AJAX-Р·Р°РїСЂРѕСЃРѕРІ
+
+require_once 'phplib/dbConnect.php';
+require_once 'phplib/mail.php';
+require_once 'phplib/common.inc';
+
+if (!isset($_GET["id"])) {
+    include 'mc_err_empty.inc';
+    http_response_code(404);
+    exit();
+} else {
+$UID = $_GET["id"];
+/*
+ * РћР±СЂР°Р±РѕС‚РєР° AJAX-Р·Р°РїСЂРѕСЃР° РёР· С„СѓРЅРєС†РёРё setDateWorkSent() РЅР° РёР·РјРµРЅРµРЅРёРµ СЃС‚Р°С‚СѓСЃР° Р·Р°РїРёСЃРё
+ * РїРѕСЃР»Рµ С‚РѕРіРѕ, РєР°Рє Р±С‹Р»Р° РѕС‚РєСЂС‹С‚Р° РћР»РёРјРїРёР°РґР°. РњРµРЅСЏРµРј СЃС‚Р°С‚СѓСЃ Р°Р±РёС‚СѓСЂРёРµРЅС‚Р° РЅР° "2"
+ * (РµСЃР»Рё РѕРЅ РјРµРЅСЊС€Рµ РґРІСѓС…!) Рё, Р·Р°РїРёСЃС‹РІР°РµРј РґР°С‚Сѓ РѕС‚СЃС‹Р»РєРё РѕР»РёРјРїРёР°РґС‹.
+ */
+if (isset($_GET["SetStatus"])) {
+    $db = new dbConnect();
+    if ($db->getAppStatus($UID) < 2) {
+        $db->setWorkDaySent($UID);
+        $db->dbLog("РћС‚РєСЂС‹С‚Р° РІСЃС‚СѓРїРёС‚РµР»СЊРЅР°СЏ РѕР»РёРјРїРёР°РґР°", $UID);
+    }
+    exit();
+}
+
+/*
+ * РћС‚СЂР°Р±РѕС‚РєР° AJAX-Р·Р°РїСЂРѕСЃР° РЅР° РіРµРЅРµСЂР°С†РёСЋ Рё РѕС‚СЃС‹Р»РєСѓ "РџСЂРёР»РѕР¶РµРЅРёСЏ 2" РїРѕ Р°РЅРєРµС‚Рµ
+ */
+if (isset($_GET["app"])) {
+    include 'mc_app2gen.inc';
+    exit();
+}
+?>
+
+
 <!doctype html>
 <html>
 <head>
-<meta charset="windows-1251">
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<?php
+include 'phplib/yandex.metrika.inc';
+include 'phplib/google.analytics.inc';
+?>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Личный кабинет</title>
+<title>Р›РёС‡РЅС‹Р№ РєР°Р±РёРЅРµС‚</title>
 <link href="CSS/common.css" rel="stylesheet" type="text/css">
-<link href="CSS/form.css" rel="stylesheet" type="text/css">
+<link href="CSS/mycabinet.css" rel="stylesheet" type="text/css">
+<link href="CSS/uploader.css" rel="stylesheet" type="text/css">
+<link href="CSS/uploadfile.css" rel="stylesheet" type="text/css">
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="JS/lib/jquery.form.min.js"></script>
+<!-- Р”Р»СЏ Р·Р°РіСЂСѓР·РєРё С„Р°Р№Р»РѕРІ РёСЃРїРѕР»СЊР·СѓРµРј СѓР¶Р°СЃРЅСѓСЋ Р±РёР±Р»РёРѕС‚РµРєСѓ jquery.uploadfile.js -->
+<!-- Р’ РґР°Р»СЊРЅРµР№С€РµРј РЅР°РґРѕ РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ РїРµСЂРµРїРёСЃР°С‚СЊ!!! -->
+<script src="JS/lib/jquery.uploadfile.js"></script>
 <script src="JS/cabinet_functions.js"></script>
 </head>
 <body>
-<?php
-require_once 'phplib/dbConnect.php';
-require_once 'phplib/mail.php';
-require_once 'phplib/common.php';
+<div class="logo"></div>
 
-if (!isset($_GET["id"])) {
-?>
-<p>Страница не предназначена для просмотра без параметров.</p>
 <?php
-} else {
+
     /*
-     * Обработка AJAX-запроса на изменение статуса записи
+     * РћСЃРЅРѕРІРЅРѕР№ РјРѕРґСѓР»СЊ Р»РёС‡РЅРѕРіРѕ РєР°Р±РёРЅРµС‚Р°
      */
-    if (isset($_GET["SetStatus"])) {
-        $db = new dbConnect();
-        $db->setRegStatus($_GET["id"], $_GET["SetStatus"]);
-        exit();
-    }
     $db = new dbConnect();
-    if ($row = $db->getPerson($_GET["id"])) {
-        $db->dbLog($row['Name'] . " " . $row['Surname'] . " зашёл в Личный кабинет");
-        $db->setRegStatus($_GET["id"], 1); // Пользователь зашёл в Личный кабинет
+    if ($row = $db->getPerson($UID)) {
+        $db->dbLog($row['Name'] . " " . $row['Surname'] . " Р·Р°С€С‘Р» РІ Р›РёС‡РЅС‹Р№ РєР°Р±РёРЅРµС‚", $UID);
+        if ($row['AppStatus'] == 0) {
+            $db->setAppStatus($UID, 1); // РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ РїРµСЂРІС‹Р№ СЂР°Р· Р·Р°С€С‘Р» РІ Р›РёС‡РЅС‹Р№ РєР°Р±РёРЅРµС‚
+        }
+        /*
+         * Р’С‹РІРѕРґ СЃС‚СЂР°РЅРёС†С‹ Р»РёС‡РЅРѕРіРѕ РєР°Р±РёРЅРµС‚Р°
+         *
+         */
+
+        $appStatus = $db->getAppStatus($UID);
+
+        // РЎРЅР°С‡Р°Р»Р° РІС‹СЃС‚Р°РІР»СЏРµРј subTitle
+        $subTitle = "";
+        if ($appStatus > 1) {
+            $name = $row["Name"];
+            $surname = $row["Surname"];
+            $email = $row["Email"];
+            $phone = $row["Tel"];
+            $subTitle = "<strong>$name $surname</strong>";
+        } elseif ($appStatus < 0) {
+            $subTitle = "Р РµРіРёСЃС‚СЂР°С†РёСЏ Р·Р°РєСЂС‹С‚Р°.";
+        } else {
+            $subTitle = "Р—РґРµСЃСЊ РјС‹ Р±СѓРґРµРј РІС‹РєР»Р°РґС‹РІР°С‚СЊ РІСЃСЋ РЅРµРѕР±С…РѕРґРёРјСѓСЋ РёРЅС„РѕСЂРјР°С†РёСЋ РїРѕ РѕСЂРіР°РЅРёР·Р°С†РёРё РїРѕРµР·РґРєРё.";
+        }
+
+        // Р’С‹РІРѕРґРёРј Р·Р°РіРѕР»РѕРІРѕРє
+        echo '
+            <div class="title">
+            <h1>Р›РёС‡РЅС‹Р№ РєР°Р±РёРЅРµС‚ СѓС‡Р°СЃС‚РЅРёРєР° Р»РµС‚РЅРµРіРѕ С„РёР·РёРєРѕ-РјР°С‚РµРјР°С‚РёС‡РµСЃРєРѕРіРѕ Р»Р°РіРµСЂСЏ "Р”РµР»СЊС‚Р°"</h1>
+            <h2 id="subTitle">' . $subTitle . '</h2>
+            </div>
+        ';
+
+        // Р’С‹РІРѕРґ РѕСЃРЅРѕРІРЅРѕРіРѕ РєСѓСЃРєР° РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ СЃС‚Р°С‚СѓСЃР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
+        echo '
+        <div class="hidden" id="START_DAY">' . START_DAY . '</div>
+        <div class="hidden" id="FINISH_DAY">' . FINISH_DAY . '</div>
+        <div class="main">
+        ';
+        if ($appStatus < 0) { // Р РµРіРёСЃС‚СЂР°С†РёСЏ Р·Р°РєСЂС‹С‚Р°
+            include "mc_-.inc";
+        } elseif ($appStatus < 2) { // РЎРєР°С‡Р°С‚СЊ РѕР»РёРјРїРёР°РґСѓ
+            include "mc_01.inc";
+        } elseif ($appStatus < 4) { // РџСЂРёСЃР»Р°С‚СЊ СЂРµР·СѓР»СЊС‚Р°С‚С‹
+            include "mc_23.inc";
+        } elseif ($appStatus < 25) { // Р—Р°РїРѕР»РЅРёС‚СЊ Р°РЅРєРµС‚Сѓ (СЃС‚Р°С‚СѓСЃ = 15) Рё СЃРіРµРЅРµСЂРёСЂРѕРІР°С‚СЊ РїСЂРёР»РѕР¶РµРЅРёРµ Рє РґРѕРіРѕРІРѕСЂСѓ (СЃС‚Р°С‚СѓСЃ = 20)
+            include "mc_5.inc";
+        }
+        include "mc_bottom.inc";
+        echo "</div>";
+
 
         /*
-         * Вывод страницы личного кабинета
-         *
-         */ ?>
-<div class="row"><div class="col-12"> 
-<h1>Личный кабинет участника летнего физико-математического лагеря "Дельта"</h1>
-<p>Здесь мы будем выкладывать всю необходимую информацию по организации поездки.</p>
-</div></div>
-<div class="main">
-<div class="row">
-<div class="col-6">
-<h3>Здравствуйте! </h3>
-<p>Скачайте, пожалуйста, <a href="documents/assignments.pdf" title="Вступительная олимпиада." target="_blank" onclick='setStatus("<?php echo $row['UniqueId'] ?>", 2);'>вступительную олимпиаду</a> (.pdf).</p>
-<p>Вы можете, также, отправить файл с задачами себе на почту (<?php echo $row["Email"] ?>):</p>
-<form id="form1" name="form1" method="get">
-<input name="sbm" type="hidden" id="SendByMail">
-<input name="id" type="hidden" id="UniqueId" value="<?php echo $row['UniqueId'] ?>">
-<input type="submit" value="Выслать на почту!" onClick='document.getElementById("SendByMail").value = "yes";'>
-<div id="sendStatus"></div>
-</form>
-</div> 
-<!-- col-6 -->
-<div class="col-4">
-<h3><?php echo $row["Name"] . " " . $row["MiddleName"] . " " . $row["Surname"]; ?></h3>
-<p><b>Email: </b><?php echo $row["Email"]?></p>
-<p><b>Телефон: </b><?php echo $row["Tel"]?></p>
-<p><b>Дата рождения: </b><?php echo date_format(date_create($row["Birthday"]),'d/m/Y');?>
-</p>
-</div> <!-- col-4 -->
-</div> <!-- row -->
-<div class="row"><div class="col-12">
-<hr>
-<p>Если у Вас возникли вопросы или Вы заметили неточность в регистрационных данных, пожалуйста воспользуйтесь формой
-    обратной связи или свяжитесь с нами:</p>
-</div></div>  <!-- col-12, row -->
-<div class="row"><div class="col-6">
-    <p><b>Анна Семовская</b><br>
-    +7(903)749-4851 (телефон, Telegram)<br>
-    anna.sem@gmail.com<br>
-    Skype: aselect1976</p></div> <!-- col-6 -->
-<div class="col-6">
-    <p><b>Дмитрий Аблов</b><br>
-    +7(903)795-4223 (телефон, Telegram, Viber, WhatsApp)<br>
-    d.ablov@gmail.com<br>
-    Skype: d.ablov</p></div></div> <!-- col-6, row -->
-<div class="row"><div class="col-8">
-<form method="post" action="feedback.php">
-  <p>
-  <input name="id" type="hidden" id="id" value="<?php echo $row['UniqueId'] ?>">
-  <input name="name" type="hidden" id="name" value="<?php echo $row['Name'] . ' ' . $row['Surname'] ?>">
-  <input name="email" type="hidden" id="email" value="<?php echo $row['Email'] ?>">
-  <input type="submit" value="Связь с организаторами">
-  </p>
-  <p>&nbsp; </p>
-</form>
-</div></div> <!-- col-8, row -->
-</div> 
-<!-- main -->
-  <?php
-        /*
-         * Обработка запроса выслать файл-олимпиады письмом
+         * РћР±СЂР°Р±РѕС‚РєР° Р·Р°РїСЂРѕСЃР° РІС‹СЃР»Р°С‚СЊ С„Р°Р№Р»-РѕР»РёРјРїРёР°РґС‹ РїРёСЃСЊРјРѕРј
          */
         if (isset($_GET['sbm']) && $_GET['sbm']==='yes') {
-            if(sendAssignmentsMail($row)) {
-                $db->dbLog($row['Name'] . " " . $row['Surname'] . ": выслана вступительная олимпиада");
-                $db->setRegStatus($row['UniqueId'], 2);
-                echo <<<SUCCESS
-<script>
-document.getElementById("sendStatus").innerHTML = "Письмо со вступительной олимпиадой выслано Вам на почту.";
-document.getElementById("sendStatus").style.color = "#188";
-document.getElementById("sendStatus").style.opacity = "1";
-</script>
-SUCCESS;
-            } else {
-                echo <<<ERROR
-<script>
-document.getElementById("sendStatus").innerHTML = "Проблема с отправкой письма. Свяжитесь, пожалуйста, с организаторами!";
-document.getElementById("sendStatus").style.color = "#A33";
-document.getElementById("sendStatus").style.opacity = "1";
-</script>
-ERROR;
-                error("Unable to send file assignments.pdf to " . $row['Email']);
+            try {
+                sendAssignmentsMail($row);
+                $db->dbLog($row['Name'] . " " . $row['Surname'] . ": РІС‹СЃР»Р°РЅР° РІСЃС‚СѓРїРёС‚РµР»СЊРЅР°СЏ РѕР»РёРјРїРёР°РґР°", $_GET["id"]);
+                $db->setWorkDaySent($_GET["id"]);
+                echo '
+                    <script>
+                    document.getElementById("sendStatus").innerHTML = "РџРёСЃСЊРјРѕ СЃРѕ РІСЃС‚СѓРїРёС‚РµР»СЊРЅРѕР№ РѕР»РёРјРїРёР°РґРѕР№ РІС‹СЃР»Р°РЅРѕ Р’Р°Рј РЅР° РїРѕС‡С‚Сѓ.";
+                    document.getElementById("sendStatus").style.color = "#188";
+                    document.getElementById("sendStatus").style.opacity = "1";
+                    </script>
+                ';
+            } catch (\PHPMailer\PHPMailer\Exception $e) {
+                echo '
+                    <script>
+                    document.getElementById("sendStatus").innerHTML = "РџСЂРѕР±Р»РµРјР° СЃ РѕС‚РїСЂР°РІРєРѕР№ РїРёСЃСЊРјР°. РЎРІСЏР¶РёС‚РµСЃСЊ, РїРѕР¶Р°Р»СѓР№СЃС‚Р°, СЃ РѕСЂРіР°РЅРёР·Р°С‚РѕСЂР°РјРё!";
+                    document.getElementById("sendStatus").style.color = "#A33";
+                    document.getElementById("sendStatus").style.opacity = "1";
+                    </script>
+                ';
+                error("Unable to send file assignments.pdf to " . $row['Email'] . " UID=" . $UID);
             }
         }
 
-    } else {
-?>
-<div class="row"><div class="col-12"> 
-<h2>Инентификатор пользователя не найден.</h2>
-</div></div>
-<div class="row"><div class="col-8"><div class="main">
-<p>Если Вы зарегистрировались в Летний физико-математический лагерь "Дельта" в Мюнхене и попали на эту страницу из ссылки
-    в письме с подтверждением регистрации, пожалуйста свяжитесь с организаторами"</p>
-<form method="post" action="feedback.php">
-  <p>
-  <input name="id" type="hidden" id="id" value="<?php echo $row['UniqueId'] ?>">
-  <input name="name" type="hidden" id="name" value="<?php echo $row['Name'] . ' ' . $row['Surname'] ?>">
-  <input name="email" type="hidden" id="email" value="<?php echo $row['Email'] ?>">
-  <input type="submit" value="Связь с организаторами">
-  </p>
-</form>
-</div> </div> </div>
-<?php
+    } else { // РћР±СЂР°Р±РѕС‚РєР° Р·Р°РїСЂРѕСЃР° СЃ РЅРµРІРµСЂРЅС‹Рј UID
+        include "mc_err_unknown_id.inc";
     }
 }
 ?>

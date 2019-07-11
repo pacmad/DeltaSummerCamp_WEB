@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="On explicit save action" promptOnRemoteOverwrite="CHECK_CONTENT" serverName="rebus.ablov.ru" deleteMissingItems="true" createEmptyFolders="true" autoUploadExternalChanges="true" notifyRemoteChanges="true">
+  <component name="PublishConfigData" autoUpload="On explicit save action" promptOnRemoteOverwrite="CHECK_CONTENT" serverName="delta.gorod.de" deleteMissingItems="true" createEmptyFolders="true" autoUploadExternalChanges="true" notifyRemoteChanges="true">
     <serverData>
-      <paths name="rebus.ablov.ru">
+      <paths name="delta.gorod.de">
         <serverdata>
           <mappings>
             <mapping deploy="/" local="$PROJECT_DIR$" web="/" />
           </mappings>
+          <excludedPaths>
+            <excludedPath path="/2016" />
+          </excludedPaths>
         </serverdata>
       </paths>
     </serverData>

@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Game of Life</title>
+	<link rel = "shortcut icon" href = "C:\Users\User\Documents\Artem_U\favicon.ico" />
+
+    <style>
+        canvas {
+            cursor: crosshair;
+        }
+
+        .controls * {
+            margin: 4.7px;
+        }
+
+        .controls input {
+            position: relative;
+            top: 5px;
+        }
+    </style>
+
+    <script>
+        /*      *Features*
+         * init() to initialize global vars
+         * step() for logic + redraw()
+         * interface speed control + stop/start
+         */
+        let matrix = [];
+        let oldmatrix = [];
+        let isRunning = false;
+        let isDrawing = false;
+        let penChosen = false;
+        var delay = 500;  //Стартовая задержка (в мс.), потом в эту же переменную записывается новое значение задержки.
+        var canvas;
+        var ctx;
+        var cellW;
+        var cellH;
+        var colors = ["white", "brown", "yellow", "#d9ae6a", "#d9ae6a", "#d9ae6a", "green", "orange", "red"];
+        const MAX_X = 50;
+        const MAX_Y = 50;
+
+
+        function putXY(X, Y, val) { // = matrix.set
+            let index = Y * MAX_X + X;
+            matrix[index] = val;
+        }
+
+        function putoldXY(X, Y, val) { // = oldMatrix.set
+            let index = Y * MAX_X + X;
+            oldmatrix[index] = val;
+        }
+
+        function getXY(X, Y) {// = oldMatrix.get
+			X = (X < 0) ? X + MAX_X : ((X >= MAX_X) ? X-MAX_X : X);
+			Y = (Y < 0) ? Y + MAX_Y : ((Y >= MAX_Y) ? Y-MAX_Y : Y);
+            let index = Y * MAX_X + X;
+            return oldmatrix[index];
+        }
+
+        function getnewXY(X, Y) {// = matrix.get
+			X = (X < 0) ? X + MAX_X : ((X >= MAX_X) ? X-MAX_X : X);
+			Y = (Y < 0) ? Y + MAX_Y : ((Y >= MAX_Y) ? Y-MAX_Y : Y);
+            let index = Y * MAX_X + X;
+            return matrix[index];
+        }
+
+        //show current state of matrix + grid
+        function show() {
+
+            let c = document.getElementById('myCanvas');
+            let context = c.getContext('2d');
+
+            for (x = 0; x < MAX_X; x++) {
+                for (y = 0; y < MAX_Y; y++) {
+                    let val = getnewXY(x, y);
+                    if (val == 100){
+                        val = 0;
+                    } else if (val > 100) {
+                        val = val % 100;
+                    }
+					if (typeof(colors[val]) == "string") {
+                        context.fillStyle = colors[val];
+                        if (y > 35 && val ==0){
+                            console.log();
+                        }
+                    } else {
+                        context.fillStyle = "green";
+
+                    }
+                    context.fillRect(x * cellW, y * cellH, cellW, cellH);
+
+                }
+            }
+
+            for (i = 0; i < MAX_X; i++) {
+                ctx.beginPath();
+                ctx.moveTo(0, i * cellH);
+                ctx.lineTo(canvas.width, i * cellH);
+                ctx.stroke();
+            }
+
+            for (j = 0; j < MAX_Y; j++) {
+                ctx.beginPath();
+                ctx.moveTo(j * cellW, 0);
+                ctx.lineTo(j * cellW, canvas.height);
+                ctx.stroke();
+            }
+        }
+
+        // randomize every cell to 1 or 0
+        function prepare() {
+            for (let y = 0; y < 35; y +=1) {//откуда, докуда, с шагом
+                for (let x = 0; x < MAX_X; x +=1) {
+                    putXY(x, y, 0); // Тут было * на кол во цветов.
+                }
+            }
+
+            for (let y = 35; y < MAX_Y; y +=1) {//откуда, докуда, с шагом
+                for (let x = 0; x < MAX_X; x +=1) {
+                    putXY(x, y, 1); // Тут было * на кол во цветов.
+                }
+            }
+            oldmatrix = matrix.slice();
+        }
+
+        function startstop(btn) {
+            if (isRunning) {
+                stop();
+                isRunning = false;
+                btn.innerHTML = 'Start';
+            } else {
+                play();
+                isRunning = true;
+                btn.innerHTML = 'Stop';
+            }
+        }
+
+        function play() {
+            id = setInterval(step, delay);
+        }
+
+        function stop() {
+            clearInterval(id);
+        }
+
+
+        function init() {
+            initCanvas(MAX_X, MAX_Y);
+            prepare();
+        }
+
+        function clearMatrix() {
+            for (let y = 0; y < MAX_X; y++) {
+                for (let x = 0; x < MAX_Y; x++) {
+                    putXY(x, y, 0);
+                }
+            }
+            oldmatrix = matrix.slice();
+            show();
+        }
+
+        // set global variables
+        function initCanvas(w, h) {
+            canvas = document.getElementById('myCanvas');
+            ctx = canvas.getContext('2d');
+            cellW = canvas.width / w;
+            cellH = canvas.height / h;
+        }
+
+        function showPos(ev) {
+            document.getElementById("outX").innerHTML = ev.layerX;
+            document.getElementById("outY").innerHTML = ev.layerY;
+        }
+
+
+        ///==============================================///
+        let CellState = {
+            V: 0, // воздух
+            G: 1, //земля
+            S: 2, //семечко
+            KL: 3, //корень на лево
+            KD: 4, //корень вниз
+            KR: 5, //корень на право
+            R: 6,
+            F: 7,
+            H: 8,
+             //корень на право !!!!!    ЗАРЕЗЕРВИРОВАНО ДЛЯ КОРНЯ  ОТ 103,4,5   ДО 905
+        }
+
+
+        function countGroundAround(cell) {
+            var counter = 0;
+            if (cell.N == CellState.G) counter += 1;
+            if (cell.NE == CellState.G) counter += 1;
+            if (cell.E == CellState.G) counter += 1;
+            if (cell.SE == CellState.G) counter += 1;
+            if (cell.S == CellState.G) counter += 1;
+            if (cell.SW == CellState.G) counter += 1;
+            if (cell.W == CellState.G) counter += 1;
+            if (cell.NW == CellState.G) counter += 1;
+            return (counter);
+        }
+        function countRootAround(cell) {
+            var counteR = 0;
+            if (cell.SE == CellState.K) counteR += 1;
+            if (cell.S == CellState.K) counteR += 1;
+            if (cell.SW == CellState.K) counteR += 1;
+            return (counteR);
+        }
+        function countAirAround(cell) {
+            var countER = 0;
+            if (cell.NE == CellState.K) countER += 1;
+            if (cell.N == CellState.K) countER += 1;
+            if (cell.NW == CellState.K) countER += 1;
+            return (countER);
+        }
+
+        function rule (cell) {
+            let newCell={C: 0};
+
+            if (cell.C==CellState.G){
+                newCell.C=cell.C; //                                            земля остается землёй
+            }
+            /*if (cell.C==CellState.S && cell.S==CellState.V && countGroundAround(cell) != 0){
+                newCell.C=CellState.V;
+            }*/
+            if (cell.C==CellState.V && cell.N==CellState.S){
+                newCell.C=CellState.S; //                                       семечко падает до чего-то
+            }
+            /*if (cell.C==CellState.S && cell.S==CellState.G && cell.N==CellState.V && cell.E==CellState.V && cell.W==CellState.V){// семечко лежит на земле
+                newCell.C=CellState.V;
+            }*/
+            if (cell.C == CellState.G && cell.N == CellState.S && cell.NW == CellState.V && cell.NE == CellState.V){
+                newCell.C = CellState.S;
+            }
+            if ((cell.C % 100 == CellState.S && cell.E != CellState.V && cell.W != CellState.V)) {
+                if (cell.C <= 1000) {
+                    newCell.C = cell.C + 100;
+                } else {
+                    newCell.C = cell.C;
+                }
+            }
+            if (countGroundAround(cell) >= 7 && cell.N==CellState.S){
+                let rand1 = Math.random();
+                if (rand1 <= 0.33) {
+                    newCell.C=CellState.KL;
+                }
+                else if (rand1 <= 0.66) {
+                    newCell.C=CellState.KD;
+                }
+                else {
+                    newCell.C=CellState.KR;
+                }
+            }
+            if (cell.C == CellState.G && cell.W % 100 == CellState.KR && cell.W < 3000){
+                let rand2 = Math.random();
+                let generation = cell.W - CellState.KR;
+                if (rand2 <= 0.5){
+                    newCell.C=CellState.KR + generation + 100;
+                }
+                if (rand2 > 0.5){
+                    newCell.C=CellState.KD + generation + 100;
+                }
+            }
+            if (cell.C % 100 == CellState.KR && cell.C >= 3000) {
+                newCell.C = cell.C;
+            }
+
+            if (cell.C % 100 == CellState.KR && cell.C < 3000){
+                newCell.C=cell.C + 100;//                                   Корень на право
+            }
+            if (cell.C == CellState.G && cell.E % 100 == CellState.KL && cell.E < 3000){
+                let rand2 = Math.random();
+                let generation = cell.E - CellState.KL;
+                if (rand2 <= 0.5){
+                    newCell.C=CellState.KL + generation + 100;
+                }
+                if (rand2 > 0.5){
+                    newCell.C=CellState.KD + generation + 100;
+                }
+            }
+            if (cell.C % 100 == CellState.KL && cell.C >= 3000) {
+                    newCell.C = cell.C;
+                }
+            if (cell.C % 100 == CellState.KL && cell.C < 3000){
+                newCell.C=cell.C + 100;//                                   Корень на лево
+            }
+            if (cell.C == CellState.G && cell.N % 100 == CellState.KD && cell.N < 3000){
+                let rand2 = Math.random();
+                let generation = cell.N - CellState.KD;
+                if (rand2 <= 0.33){
+                    newCell.C  =CellState.KL + generation + 100;
+                }
+                else if (rand2 <= 0.66){
+                    newCell.C=CellState.KR + generation + 100;
+                }
+                else {
+                    newCell.C=CellState.KD + generation + 100;
+                }
+            }
+            if (cell.C % 100 == CellState.KD && cell.C >= 3000) {
+                newCell.C = cell.C;
+            }
+            if (cell.C % 100 == CellState.KD && cell.C < 3000){
+                newCell.C=cell.C + 100;//                                   Корень вниз
+            }
+            if (cell.C==CellState.V  && cell.S % 100 ==CellState.S && cell.S > 1000){
+                newCell.C = CellState.R;
+            }
+            if (cell.C % 100 == CellState.R && cell.E == CellState.V && cell.W == CellState.V) {
+                if (cell.C <= 1000) {
+                    newCell.C = cell.C + 100;
+                } else {
+                    newCell.C = cell.C;
+                }
+            }
+            if (cell.C == CellState.V && cell.S % 100 == CellState.R && cell.S <= 1000){
+                let generation = cell.S - CellState.R;
+                newCell.C = CellState.R + generation + 100;
+            }
+            if (cell.C == CellState.V && cell.S % 100 == CellState.R && cell.S >= 1000){
+                newCell.C = CellState.F;
+            }
+            if (cell.C % 100 == CellState.F && (cell.E == CellState.V && cell.W == CellState.V)){
+                if (cell.C <= 1000) {
+                    newCell.C = cell.C + 100;
+                } else {
+                    newCell.C = cell.C;
+                }
+            }
+            if (cell.C == CellState.V && cell.S % 100 == CellState.F && cell.S <= 400){
+                let generation = cell.S - CellState.F;
+                newCell.C = CellState.F + generation + 100;
+            }
+            if (cell.E % 100 == CellState.F && cell.C == CellState.V && cell.E >= 100 && cell.E <= 200){
+                let generation = cell.E - CellState.F;
+                newCell.C = CellState.F + generation + 100;
+            }
+            if (cell.C % 100 == CellState.F && cell.C > 100){
+                newCell.C = cell.C + 100;
+            }
+            if (cell.E % 100 == CellState.F && cell.C == CellState.V && cell.E >= 200 && cell.E <= 300){
+                let generation = cell.E - CellState.F;
+                newCell.C = CellState.F + generation + 100;
+            }
+            if (cell.E % 100 == CellState.F && cell.C == CellState.V && cell.E >= 300 && cell.E <= 400){
+                let generation = cell.E - CellState.F;
+                newCell.C = CellState.F + generation + 100;
+            }
+            if (cell.W % 100 == CellState.F && cell.C == CellState.V && cell.W >= 100 && cell.W <= 200){
+                let generation = cell.W - CellState.F;
+                newCell.C = CellState.F + generation + 100;
+            }
+            if (cell.C % 100 == CellState.F && cell.C > 100){
+                newCell.C = cell.C + 100;
+            }
+            if (cell.W % 100 == CellState.F && cell.C == CellState.V && cell.W >= 200 && cell.W <= 300){
+                let generation = cell.W - CellState.F;
+                newCell.C = CellState.F + generation + 100;
+            }
+            if (cell.W % 100 == CellState.F && cell.C == CellState.V && cell.W >= 300 && cell.W <= 400){
+                let generation = cell.W - CellState.F;
+                newCell.C = CellState.F + generation + 100;
+            }
+            /*if (cell.C == CellState.H){
+                newCell.C == cell.C;
+            }*/
+
+
+
+            return(newCell);
+        }
+
+
+        function step() {
+
+            for (let x = 1; x < MAX_X - 1; x+=1) {
+                for (let y = 1; y < MAX_Y - 1; y+=1) {
+                    //выделяем окрестность
+                    let xl = x - 1;
+                    let xr = x + 1;
+                    let yu = y - 1;
+                    let yb = y + 1;
+
+
+                    let cell = {SW: getXY(xl,yb), SE: getXY(xr,yb), NW: getXY(xl,yu), NE: getXY(xr,yu),
+                        N: getXY(x,yu), E: getXY(xr,y), S: getXY(x,yb), W: getXY(xl,y),
+                        C: getXY(x,y)};
+                    //теперь у нас есть 9 клеток, надо их обрабатывать, согласно правилу
+                    cell=rule(cell);
+                    putXY(x,y,cell.C);
+
+                }
+
+
+            }
+            /*for (let i = 0; i < MAX_X - 1; i += 1){
+                putXY(1, i, 200);
+                putXY(i + 1, 0, 200);
+                putXY(MAX_X - 1, i, 200);
+                putXY(i + 1, MAX_X - 1, 200);
+                //теперь у нас есть край. за него нельзя залезать.
+            }*/
+
+            show();
+            oldmatrix = matrix.slice();
+        }
+
+
+        //mouse activity
+        function mouse() {
+            isDrawing = true;
+        }
+
+        function mouseSec() {
+            isDrawing = false;
+            oldmatrix = matrix.slice();
+        }
+
+        function pen() {
+            penChosen = true;
+        }
+
+        function eraser() {
+            penChosen = false;
+        }
+
+        function onClick(evt) {
+            let x = Math.floor(evt.layerX / cellW);
+            let y = Math.floor(evt.layerY / cellH);
+            if (isDrawing) {
+                if (penChosen) {
+                    putXY(x, y, 2);
+                } else {
+                    putXY(x, y, 0);
+                }
+                show();
+            }
+        }
+
+
+        //changes speed with new value
+        function newspeed(value) {
+            stop();
+            delay = value;
+            if (isRunning == true) {
+                play();
+            }
+        }
+    </script>
+</head>
+
+<body onLoad='init()'> 																	<!-- Собственно, запускает создание коробки при открытии файла. -->
+    <canvas width='600px' height='600px' style="border:1px solid black;" id='myCanvas' onmousemove='onClick(event) , showPos(event)' onmousedown="mouse()" onmouseup="mouseSec()"></canvas><br> <!-- А вот и сама коробка -->
+    <div class='controls'>
+        <button onclick='startstop(this)'>Play</button> 								<!-- Запустить / остановить программу, динамическая кнопка. -->
+        <button onclick='step()'>Next</button>											<!-- Один шаг программы -->
+        <button onclick="clearMatrix()">Clear</button>									<!-- Очистить все поле -->
+		<button onclick='init()'>Reset</button>											<!-- Запускает игру заного (можно также нажать f5) -->
+        <button onclick="pen()">Pen</button>											<!-- Запускает процесс рисования мышью -->
+        <button onclick="eraser()">Eraser</button>										<!-- Запускает процесс стирания -->
+        <span> Refresh speed: </span>
+        <input type="range" min="10" max="1000" value="500" step="10" class="slider" id="myRange" oninput='newspeed(this.value)'>  <!-- Создает слайдер, меняющий задержку до следующего шага. -->
+		<br> 																			<!-- Переход на следующую строку. -->
+        <span>Mouse position: <span>X: <span id="outX"> ??? </span> Y: <span id="outY"> ??? </span> </span>	<!-- Выводит на экран положение мыши внутри квадрата ) в пикселях -->
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,299 @@
+@charset "windows-1251";
+.title {
+    display: block;
+    margin: 0 0 20px 0;
+    padding: 10px 10px 10px 30px;
+    width: 100%;
+    background-color: #EEEEEE;
+    border-bottom: darkblue 1px solid;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+}
+.main {
+	display: block;
+	width: 90%;
+	padding: 0 20px;
+	margin: auto auto 40px auto;
+	box-shadow: 0 0 10px Grey;
+	align-content:center;
+	background-color:#EEE;
+	border: darkblue 1px solid;
+    border-radius: 15px;
+}
+h2 {
+    display: inline-block;
+    font-family: Calibri, Geneva, Arial, Helvetica, sans-serif;
+    font-weight: normal;
+    color: lightcyan;
+    background-color: darkgreen;
+    border-radius: 3px;
+    padding: 5px 15px;
+}
+.explanation {
+	font-size: small;
+}
+.required {
+	color: #C00;
+	font-weight: bold;
+}
+.indented {
+	display: block;
+	position: relative;
+	left: 20px;
+	width: 60%;
+	padding: 10px;
+	border: 1px solid darkgrey;
+	box-shadow: 2px 3px grey;
+}
+.highlighted {
+    color: orange;
+}
+.form-title {
+    display: inline-block;
+    position: relative;
+    left: 1em;
+    top: -1em;
+    font-weight: bold;
+    background-color: #EEE;
+}
+.questionnaire {
+    border: gray 1px dashed;
+    padding: 5px;
+    border-radius: 15px;
+}
+.questionnaire.active {
+    background-color: #c0fcff;
+    border-style: solid;
+    border-color: darkblue;
+}
+.text-input,
+input[type=password],
+input[type=text],
+textarea,
+select {
+	font-size: 16px;
+	box-sizing: border-box;
+	border: 1px solid gray;
+	border-radius: 3px;
+    background-color: white;
+	width: 75%;
+	max-width: 500px;
+	margin: 8px 0 8px 0;
+	padding: 12px 0 12px 5px;
+	resize: none;
+	box-shadow: 0 0 2px #333;
+}
+textarea {
+    width: 90%;
+	max-width: 1024px;
+	overflow: auto;
+	height: 7em;
+}
+select:invalid:not(:focus) {
+    color: gray;
+}
+select:invalid:focus {
+    color: transparent;
+}
+select:focus option {
+    color: initial;
+}
+.opera input[type=password],
+.webkit input[type=password],
+input[type=password] {
+    font: large Verdana,sans-serif;
+    letter-spacing: 1px;
+    padding-left: 12px;
+}
+.text-input:focus,
+input[type=password]:focus{
+    border-color: blue;
+    background-color: #CFC;
+}
+#birthday {
+    width: 10em;
+}
+
+/* checkbox and radio styling: http://code.stephenmorley.org/html-and-css/styling-checkboxes-and-radio-buttons/ */
+input[type=checkbox]:not(old),
+input[type=radio]:not(old){
+	width: 2em;
+	margin: 0;
+	padding: 0;
+	font-size: 1em;
+	opacity: 0;
+}
+input[type=checkbox]:not(old) + label,
+input[type=radio]:not(old) + label {
+	display: inline-block;
+	margin-left: -2em;
+	line-height: 1.5em;
+	font-size: 18px;
+	color: #333;
+    padding-top: 1em;
+}
+input[type=checkbox]:not(old) + label > span,
+input[type=radio]:not(old) + label > span {
+	display: inline-block;
+	width: 0.875em;
+	height: 0.875em;
+	margin: 0.25em 0.5em 0.25em 0.25em;
+	border: 0.0625em solid rgb(192,192,192);
+	border-radius: 0.25em;
+	background: rgb(224,224,224);
+	background-image: -moz-linear-gradient(rgb(240,240,240),rgb(224,224,224));
+	background-image: -ms-linear-gradient(rgb(240,240,240),rgb(224,224,224));
+	background-image: -o-linear-gradient(rgb(240,240,240),rgb(224,224,224));
+	background-image: -webkit-linear-gradient(rgb(240,240,240),rgb(224,224,224));
+	background-image: linear-gradient(rgb(240,240,240),rgb(224,224,224));
+	vertical-align: bottom;
+}
+input[type=checkbox]:not(old):checked + label > span,
+input[type=radio]:not(old):checked + label > span {
+	background-image: -moz-linear-gradient(rgb(224,224,224),rgb(240,240,240));
+	background-image: -ms-linear-gradient(rgb(224,224,224),rgb(240,240,240));
+	background-image: -o-linear-gradient(rgb(224,224,224),rgb(240,240,240));
+	background-image: -webkit-linear-gradient(rgb(224,224,224),rgb(240,240,240));
+	background-image: linear-gradient(rgb(224,224,224),rgb(240,240,240));	
+}
+input[type=checkbox]:not(old):checked + label > span:before {
+	content: '\2718';
+	display: block;
+	width: 1em;
+	color: rgb(153,204,102);
+	font-size: 0.875em;
+	line-height: 0.75em;
+	text-align: center;
+	text-shadow: 0 0 0.0714em rgb(115,153,77);
+	font-weight: bold;
+}
+input[type=radio]:not(old):checked + label > span > span {
+	display: block;
+	width: 0.5em;
+	height: 0.5em;
+	margin: 0.15em;
+	border: 0.0625em solid rgb(115,153,77);
+	border-radius: 0.125em;
+	background: rgb(153,204,102);
+	background-image: -moz-linear-gradient(rgb(179,217,140),rgb(153,204,102));
+	background-image: -ms-linear-gradient(rgb(179,217,140),rgb(153,204,102));
+	background-image: -o-linear-gradient(rgb(179,217,140),rgb(153,204,102));
+	background-image: -webkit-linear-gradient(rgb(179,217,140),rgb(153,204,102));
+	background-image: linear-gradient(rgb(179,217,140),rgb(153,204,102));
+}
+input[type=submit], button, .button, input[type=button] {
+	display: block;
+	width: 300px;
+	height: 70px;
+	font-size:18px;
+	text-shadow: 0 0 0.015em #063;
+	color: darkgreen;
+	border-radius: 10px;
+	cursor: pointer;
+}
+input[type=submit].smallbtn {
+    display: inline-block;
+    vertical-align: top;
+    width: 2.65em;
+    height: 2.65em;
+    border-radius: 3px;
+    margin: 0.2em;
+}
+.photo img {
+    width: 250px;
+    height: 250px;
+    margin: 20px;
+    padding: 0;
+	float: left;
+}
+.hidden_error {
+	display: none;
+	background-color: #CC0000;
+    color: azure;
+    font-size: x-small;
+    width: 200px;
+    height: auto;
+	opacity: 0;
+}
+.hidden_error.showed {
+	display: block !important;
+	opacity: 1;
+	-webkit-animation: toshow 1s;
+	animation: toshow 1s;
+}
+@-webkit-keyframes toshow {
+	from {opacity: 0;}
+	to {opacity: 1;}
+}
+@keyframes toshow {
+	from {opacity: 0;}
+	to {opacity: 1;}
+}
+#sendStatus {
+	display: block;
+	opacity: 0;
+	font-size: small;
+	font-weight: bold;
+	padding: 20px 0 0 0;
+	margin: 0;
+}
+@media only screen and (max-width: 850px) {
+    .title {
+        font-size: smaller;
+        border-style: none;
+        border-bottom-left-radius: unset;
+        border-bottom-right-radius: unset;
+        margin-bottom: 0;
+    }
+	.main {
+		display: block;
+		width: 100%;
+		padding: 0;
+		margin: 0;
+		box-shadow: 0 0 3px Grey;
+		align-content:center;
+		background-color:#EEE;
+        border-style: none;
+        border-radius: unset;
+        margin-top: 0;
+	}
+	.text-input,
+	input[type=password],
+	input[type=text],
+	textarea,
+	select {
+		width: 100%;
+		font-size: large;
+		padding: 12px 10px;
+		margin: 0;
+		box-sizing: border-box;
+		border: 1px solid white;
+		border-radius: 5px;
+	}
+	textarea {
+		width: 100%;
+	}
+	.explanation {
+		font-size: small;
+	}
+	input[type=submit], button {
+		width: 100%;
+	}
+	input[type=submit].smallbtn {
+		display: block;
+		width: 100%;
+		height: 70px;
+		border-radius: 10px;
+		margin-top: 10px;
+		margin-left: 0;
+	}
+    .photo img {
+        float: unset;
+    }
+	.questionnaire {
+		border: gray 1px dashed;
+		padding: 2px;
+		border-radius: 8px;
+		margin-left: 0;
+	}
+}

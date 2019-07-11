@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset='UTF-8'>
+  <title>Sandbox: Sandbox</title>
+  <link rel='stylesheet' href='vova-styles.css'>
+  <style>
+    .rulesTable {
+      border: solid;
+      border-width: 1px;
+    }
+    .rulesEntry {
+      border:solid;
+      border-width: 1px;
+      border-left-width: 0;
+    }
+  </style>
+  <script>
+    //var matrix = [];
+    //var oldmatrix = [];
+    const CANVASSIDE = 500;
+    const SIZEX = 250;
+    const SIZEY = 250;
+    const SQUAREX = Math.floor(CANVASSIDE/SIZEX);
+    const SQUAREY = Math.floor(CANVASSIDE/SIZEY);
+    var FREQ = 20; //ms per tick
+    var going = false;
+
+    function getold(x, y) {
+      return oldmatrix[y][x];
+    }
+    function get(x, y) {
+      return matrix[y][x];
+    }
+    function put(x, y, val) {
+      matrix[y][x] = val;
+    }
+    function init() {
+      canvas = document.getElementById('Canvas');
+      canvas.width = canvas.clientWidth;
+      canvas.height = canvas.clientHeight;
+      ctx = canvas.getContext('2d');
+      canvas.addEventListener('mousemove', on_mouse_move, false);
+      canvas.addEventListener('mousedown', canvas_on_mouse_down, false);
+      canvas.addEventListener('contextmenu', event=>event.preventDefault(), false);
+      prepare();
+      rules = [[[[[0,0],[0,0]],[[0,0],[0,0]]],[[[0,0],[0,0]],[[0,0],[0,0]]]],[[[[0,0],[0,0]],[[0,0],[0,0]]],[[[0,0],[0,0]],[[0,0],[0,0]]]]]; //based on CNESW
+    }
+    function prepare() {
+      //fill matrix
+      if (going) start_stop();
+      matrix = []
+      for (var y=0; y<SIZEY; y++) {
+        let list = [];
+        for (var x=0; x<SIZEX; x++) {list.push(0);}
+        matrix.push(list);
+      }
+      oldmatrix = [];
+      for (let i=0; i<SIZEX; i++) oldmatrix.push(matrix[i].slice(0));
+      show();
+    }
+    function grid() {
+      ctx.fillStyle = '#aaa';
+      for (var x=0; x<SIZEX+1; x++) {
+        ctx.fillRect(x*SQUAREX, 0, 1, CANVASSIDE);
+      }
+      for (var y=0; y<SIZEY+1; y++) {
+        ctx.fillRect(0, y*SQUAREY, CANVASSIDE, 1);
+      }
+    }
+    var grid_on = false;
+    function show() {
+      var colours = ['#fff', '#33f'];
+      for (var x=0; x<SIZEX; x++) {
+        for (var y=0; y<SIZEX; y++) {
+          ctx.fillStyle = colours[get(x, y)];
+          ctx.fillRect(SQUAREX*x, SQUAREY*y, SQUAREX, SQUAREY);
+        }
+      }
+      if (grid_on) grid();
+    }
+    function step() {
+      //get hard copy of matrix
+      oldmatrix = [];
+      for (let i=0; i<SIZEX; i++) { oldmatrix.push(matrix[i].slice(0)); }
+      //go through matrix, updating squares
+      let c, n, e, s, w;
+      for (let x=0; x<SIZEX; x++) {
+        for (let y=0; y<SIZEY; y++) {
+          //get values of neighbouring squares
+          c = getold(x, y);
+          //(wraparound)
+          if (y==0) n = getold(x, SIZEY-1);
+          else n = getold(x, y-1);
+          if (x==SIZEX-1) e = getold(0, y);
+          else e = getold(x+1, y);
+          if (y==SIZEY-1) s = getold(x, 0);
+          else s = getold(x, y+1);
+          if (x==0) w = getold(SIZEX-1, y);
+          else w = getold(x-1, y);
+          //set square to result
+          put(x, y, rules[c][n][e][s][w]);
+        }
+      }
+      show();
+    }
+    var process;
+    function start_stop() {
+      if (!going) {
+        process = setInterval(step, FREQ);
+        going = true;
+        document.getElementById('StartBtn').innerHTML = 'Stop';
+      } else {
+        clearInterval(process);
+        going = false;
+        document.getElementById('StartBtn').innerHTML = 'Start';
+      }
+    }
+    //---------------------- patterns --------------------------
+    function randomize() {
+      prepare();
+      var FULL = Math.floor(SIZEX*SIZEY*9/25);
+      for (var i=0; i<FULL; i++) {
+        x = Math.floor(SIZEX*Math.random());
+        y = Math.floor(SIZEX*Math.random());
+        put(x, y, 1);
+      }
+      show();
+    }
+    function centre() {
+      prepare();
+      put(Math.floor(SIZEX/2), Math.floor(SIZEY/2), 1);
+      show();
+    }
+    function vertical() {
+      prepare();
+      let x = Math.floor(SIZEX/2);
+      for (let y=0; y<SIZEY; y++) put(x, y, 1);
+      show();
+    }
+    function horizontal() {
+      prepare();
+      let y = Math.floor(SIZEY/2);
+      for (let x=0; x<SIZEX; x++) put(x, y, 1);
+      show();
+    }
+    function square() {
+      prepare();
+      let x = Math.floor(SIZEX/2);
+      let y = Math.floor(SIZEY/2);
+      put(x, y, 1);   put(x+1, y, 1);
+      put(x, y+1, 1); put(x+1, y+1, 1);
+      show();
+    }
+    //-------------------- mouse activity ----------------------
+    function offset(elem) {
+      var x = elem.offsetLeft;
+      var y = elem.offsetTop;
+      while (elem = elem.offsetParent) {
+        x += elem.offsetLeft;
+        y += elem.offsetTop;
+      }
+      return { left: x, top_: y };
+    }
+    function getSquare(evt) {
+      let canvasOffset = offset(canvas);
+      return { x: Math.floor((evt.clientX-canvasOffset.left)/SQUAREX),
+               y: Math.floor((evt.clientY-canvasOffset.top_)/SQUAREY) };
+    }
+    var left_mouse_down = false;
+    var right_mouse_down = false;
+    function canvas_on_mouse_down(evt) {
+      var square = getSquare(evt);
+      let rightclick;
+      if (evt.which) rightclick = (evt.which==3);
+      else if (evt.button) rightclick = (evt.button==2);
+      if (rightclick) { put(square.x, square.y, 0); prev_plot_0 = [square.x,square.y]; }
+      else { put(square.x, square.y, 1); prev_plot_1 = [square.x, square.y]; }
+      show();
+    }
+    function on_mouse_down(evt) {
+      let rightclick;
+      if (evt.which) rightclick = (evt.which==3);
+      else if (evt.button) rightclick = (evt.button==2);
+      if (rightclick) right_mouse_down = true;
+      else left_mouse_down = true;
+    }
+    function on_mouse_up(evt) {
+      let rightclick;
+      if (evt.which) rightclick = (evt.which==3);
+      else if (evt.button) rightclick = (evt.button==2);
+      if (rightclick) right_mouse_down = false;
+      else left_mouse_down = false;
+      prev_plot_0 = [];
+      prev_plot_1 = [];
+    }
+    var prev_plot_0 = [];
+    var prev_plot_1 = [];
+    var smoothDrawingOn = true;
+    function on_mouse_move(evt) {
+      if (left_mouse_down && !right_mouse_down) {
+        var square = getSquare(evt);
+        if (smoothDrawingOn && prev_plot_1) plotLine(prev_plot_1[0],prev_plot_1[1], square.x,square.y, 1);
+        else put(square.x, square.y, 1);
+        prev_plot_1 = [square.x, square.y];
+        show();
+      }
+      else if (right_mouse_down && !left_mouse_down) {
+        var square = getSquare(evt);
+        if (smoothDrawingOn && prev_plot_0) plotLine(prev_plot_0[0],prev_plot_0[1], square.x,square.y, 0);
+        else put(square.x, square.y, 0);
+        prev_plot_0 = [square.x, square.y];
+        show();
+      }
+    }
+    
+    function toggleSmoothDrawing() {
+      if (smoothDrawingOn) {
+        document.getElementById('smoothToggle').innerHTML = "Continuous Drawing: Off";
+        smoothDrawingOn = false;
+      } else {
+        document.getElementById('smoothToggle').innerHTML = "Continuous Drawing: On";
+        smoothDrawingOn = true;
+        prev_plot_0 = [];
+        prev_plot_1 = [];
+      }
+    }
+    function plotLineHigh(x0, y0, x1, y1, value) {
+      let dx = x1-x0;
+      let dy = y1-y0;
+      let xi = 1;
+      if (dx<0) { xi = -1; dx = -dx }
+      let D = 2*dx-dy;
+      let x = x0;
+      for (let y=y0; y<=y1; y++) {
+        put(x, y, value);
+        if (D>0) { x += xi; D -= 2*dy; }
+        D += 2*dx;
+      }
+    }
+    function plotLineLow(x0, y0, x1, y1, value) {
+      let dx = x1-x0;
+      let dy = y1-y0;
+      let yi = 1;
+      if (dy<0) { yi = -1; dy = -dy; }
+      let D = 2*dy - dx;
+      let y = y0;
+      for (let x=x0; x<=x1; x++) {
+        put(x, y, value);
+        if (D>0) { y += yi; D -= 2*dx; }
+        D += 2*dy;
+      }
+    }
+    function plotLine(x0, y0, x1, y1, value) {
+      if (Math.abs(y1-y0) < Math.abs(x1-x0)) {
+        if (x0 > x1) plotLineLow(x1,y1,x0,y0, value);
+        else plotLineLow(x0,y0,x1,y1, value);
+      } else {
+        if (y0 > y1) plotLineHigh(x1,y1,x0,y0, value);
+        else plotLineHigh(x0,y0,x1,y1, value);
+      }
+      show();
+    }
+
+    function toggleGrid() {
+      let button = document.getElementById('gridToggle');
+      if (grid_on) {
+        button.innerHTML = 'Grid: Off';
+        grid_on = false;
+        show();
+      } else {
+        button.innerHTML = 'Grid: On';
+        grid_on = true;
+        grid();
+      }
+    }
+    var hintGiven = false;
+    function changeRule(c, n, e, s, w) {
+      let current = rules[c][n][e][s][w];
+      let ruleEntry = document.getElementById('rule-'+c.toString()+n.toString()+e.toString()+s.toString()+w.toString());
+      if (current==0) { rules[c][n][e][s][w] = 1; ruleEntry.innerHTML = '&nbsp;1&nbsp;'; }
+      else            { rules[c][n][e][s][w] = 0; ruleEntry.innerHTML = '&nbsp;0&nbsp;'; }
+    }
+    function takeAwayHint() {
+      if (!hintGiven) document.getElementById('rulesHint').innerHTML = ''; hintGiven = true;
+    }
+    //--------------------- rule sets -----------------------
+    function reset_rules() {
+      rules = [[[[[0,0],[0,0]],[[0,0],[0,0]]],[[[0,0],[0,0]],[[0,0],[0,0]]]],[[[[1,1],[1,1]],[[1,1],[1,1]]],[[[1,1],[1,1]],[[1,1],[1,1]]]]];
+      for (let n=0; n<2; n++) {
+        for (let e=0; e<2; e++) {
+          for (let s=0; s<2; s++) {
+            for (let w=0; w<2; w++) {
+              document.getElementById('rule-0'+n.toString()+e.toString()+s.toString()+w.toString()).innerHTML = '&nbsp;0&nbsp;';
+              document.getElementById('rule-1'+n.toString()+e.toString()+s.toString()+w.toString()).innerHTML = '&nbsp;1&nbsp;';
+      } } } }
+    }
+    function sierpinski_triangle() {
+      reset_rules();
+      changeRule(0, 0, 0, 0, 1);
+      changeRule(0, 1, 0, 0, 0);
+    }
+    function sierpinski_2() { 
+      rules = [[[[[0,0],[0,0]],[[0,0],[0,0]]],[[[0,0],[0,0]],[[0,0],[0,0]]]],[[[[0,0],[0,0]],[[0,0],[0,0]]],[[[0,0],[0,0]],[[0,0],[0,0]]]]];
+      for (let n=0; n<2; n++) {
+        for (let e=0; e<2; e++) {
+          for (let s=0; s<2; s++) {
+            for (let w=0; w<2; w++) {
+              document.getElementById('rule-0'+n.toString()+e.toString()+s.toString()+w.toString()).innerHTML = '&nbsp;0&nbsp;';
+              document.getElementById('rule-1'+n.toString()+e.toString()+s.toString()+w.toString()).innerHTML = '&nbsp;0&nbsp;';
+      } } } }
+      changeRule(0, 0, 0, 0, 1);
+      changeRule(0, 0, 0, 1, 0);
+      changeRule(0, 0, 1, 0, 0);
+      changeRule(1, 0, 0, 0, 1);
+      changeRule(1, 0, 0, 1, 0);
+      changeRule(1, 0, 1, 0, 0);
+      changeRule(1, 1, 0, 0, 0);
+    }
+    function flash() {
+      reset_rules();
+      changeRule(0, 1, 0, 0, 0);
+      changeRule(0, 0, 1, 0, 0);
+      changeRule(0, 0, 0, 1, 0);
+      changeRule(0, 0, 0, 0, 1);
+      changeRule(1, 0, 0, 0, 0);
+      changeRule(1, 1, 1, 1, 1);
+    }
+    function flash2() {
+      flash();
+      changeRule(1, 0, 0, 0, 1);
+      changeRule(1, 0, 0, 1, 0);
+      changeRule(1, 0, 1, 0, 0);
+      changeRule(1, 1, 0, 0, 0);
+    }
+    function stone() {
+      reset_rules();
+      changeRule(0, 0, 0, 0, 1);
+      changeRule(0, 0, 0, 1, 1);
+      changeRule(0, 1, 0, 1, 1);
+      changeRule(1, 0, 0, 0, 1);
+      changeRule(1, 1, 0, 1, 0);
+      changeRule(1, 1, 1, 1, 1);
+    }
+    function parity() {
+      reset_rules();
+      changeRule(0, 0, 0, 0, 1);
+      changeRule(0, 0, 0, 1, 0);
+      changeRule(0, 0, 1, 0, 0);
+      changeRule(0, 1, 0, 0, 0);
+      changeRule(0, 0, 1, 1, 1);
+      changeRule(0, 1, 0, 1, 1);
+      changeRule(0, 1, 1, 0, 1);
+      changeRule(0, 1, 1, 1, 0);
+      changeRule(1, 0, 0, 0, 1);
+      changeRule(1, 0, 0, 1, 0);
+      changeRule(1, 0, 1, 0, 0);
+      changeRule(1, 1, 0, 0, 0);
+      changeRule(1, 0, 1, 1, 1);
+      changeRule(1, 1, 0, 1, 1);
+      changeRule(1, 1, 1, 0, 1);
+      changeRule(1, 1, 1, 1, 0);
+    }
+  </script>
+</head>
+
+<body>
+  <table>
+  <tr><td style='vertical-align:top'><div style='max-width:180px'>
+    <h4><u>Test Patterns</u></h4>
+    <table>
+      <tr><td><button onclick='randomize()'>Random</button></td></tr>
+      <tr><td><button onclick='centre()'>Centre</button></td></tr>
+      <tr><td><button onclick='horizontal()'>Horizontal Line</button></td></tr>
+      <tr><td><button onclick='vertical()'>Vertical Line</button></td></tr>
+      <tr><td><button onclick='square()'>Square</button></td></tr>
+    </table>
+    <h4><u>Drawing Help</u></h4>
+    <div style='color:#33f'>Left mouse: full</div><br>
+    <div>Right mouse: empty</div><br>
+    <p><button onclick='toggleGrid()' id='gridToggle'>Grid: Off</button></p>
+    <p style='color:gray; max-width:inherit'><button onclick='toggleSmoothDrawing()' id='smoothToggle' style='color:black'>Continuous Drawing: On</button><br>
+    This will ensure that drawing will be continuous even when the mouse is moving too quickly, but may cause a lot of lag.</p>
+  </div></td>
+  <td><div>
+    <canvas id='Canvas'></canvas>
+    <br>
+    <table>
+      <tr><td><button onclick="prepare()">Reset</button></td>
+          <td width='150'><div>Speed (ms/tick):   </div><div id="speedDisplay">50</div></td>
+          <td><div class='slidecontainer'>
+              <input type="range" min="5" max="1000" value="50" class="slider" id="speedSlider"></input>
+              </div></td></tr>
+      <tr><td><button onclick="start_stop()" id="StartBtn">Start</button></td></tr>
+      <tr><td><button onclick="step()">Step</button></td></tr>
+    </table>
+  </div></td>
+  <td style='vertical-align:top'><div>
+    <h2><u>Rules</u></h2>
+    <p>Rules are of the format CENTRE NORTH EAST SOUTH WEST | RESULT,<br>
+    and are performed on each square each tick of the game,<br>
+    where CENTRE is the value of the square itself, NORTH is the value of the square above, and so on;<br>
+    and RESULT is the value that is assigned to the square if has the surroundings specified.</p>
+    <table cellspacing='0' cellpadding='0' class='rulesTable'>
+      <tr><td class='rulesTable'>&nbsp;0 0 0 0 0&nbsp;</td><td class='rulesEntry' id='rule-00000' onclick="changeRule(0,0,0,0,0); takeAwayHint();">&nbsp;0&nbsp;</td>
+          <td class='rulesTable'>&nbsp;0 1 0 0 0&nbsp;</td><td class='rulesEntry' id='rule-01000' onclick="changeRule(0,1,0,0,0); takeAwayHint();">&nbsp;0&nbsp;</td>
+          <td class='rulesTable'>&nbsp;1 0 0 0 0&nbsp;</td><td class='rulesEntry' id='rule-10000' onclick="changeRule(1,0,0,0,0); takeAwayHint();">&nbsp;0&nbsp;</td>
+          <td class='rulesTable'>&nbsp;1 1 0 0 0&nbsp;</td><td class='rulesEntry' id='rule-11000' onclick="changeRule(1,1,0,0,0); takeAwayHint();">&nbsp;0&nbsp;</td></tr>
+      <tr><td class='rulesTable'>&nbsp;0 0 0 0 1&nbsp;</td><td class='rulesEntry' id='rule-00001' onclick="changeRule(0,0,0,0,1); takeAwayHint();">&nbsp;0&nbsp;</td>
+          <td class='rulesTable'>&nbsp;0 1 0 0 1&nbsp;</td><td class='rulesEntry' id='rule-01001' onclick="changeRule(0,1,0,0,1); takeAwayHint();">&nbsp;0&nbsp;</td>
+          <td class='rulesTable'>&nbsp;1 0 0 0 1&nbsp;</td><td class='rulesEntry' id='rule-10001' onclick="changeRule(1,0,0,0,1); takeAwayHint();">&nbsp;0&nbsp;</td>
+          <td class='rulesTable'>&nbsp;1 1 0 0 1&nbsp;</td><td class='rulesEntry' id='rule-11001' onclick="changeRule(1,1,0,0,1); takeAwayHint();">&nbsp;0&nbsp;</td></tr>
+      <tr><td class='rulesTable'>&nbsp;0 0 0 1 0&nbsp;</td><td class='rulesEntry' id='rule-00010' onclick="changeRule(0,0,0,1,0); takeAwayHint();">&nbsp;0&nbsp;</td>
+          <td class='rulesTable'>&nbsp;0 1 0 1 0&nbsp;</td><td class='rulesEntry' id='rule-01010' onclick="changeRule(0,1,0,1,0); takeAwayHint();">&nbsp;0&nbsp;</td>
+          <td class='rulesTable'>&nbsp;1 0 0 1 0&nbsp;</td><td class='rulesEntry' id='rule-10010' onclick="changeRule(1,0,0,1,0); takeAwayHint();">&nbsp;0&nbsp;</td>
+          <td class='rulesTable'>&nbsp;1 1 0 1 0&nbsp;</td><td class='rulesEntry' id='rule-11010' onclick="changeRule(1,1,0,1,0); takeAwayHint();">&nbsp;0&nbsp;</td></tr>
+      <tr><td class='rulesTable'>&nbsp;0 0 0 1 1&nbsp;</td><td class='rulesEntry' id='rule-00011' onclick="changeRule(0,0,0,1,1); takeAwayHint();">&nbsp;0&nbsp;</td>
+          <td class='rulesTable'>&nbsp;0 1 0 1 1&nbsp;</td><td class='rulesEntry' id='rule-01011' onclick="changeRule(0,1,0,1,1); takeAwayHint();">&nbsp;0&nbsp;</td>
+          <td class='rulesTable'>&nbsp;1 0 0 1 1&nbsp;</td><td class='rulesEntry' id='rule-10011' onclick="changeRule(1,0,0,1,1); takeAwayHint();">&nbsp;0&nbsp;</td>
+          <td class='rulesTable'>&nbsp;1 1 0 1 1&nbsp;</td><td class='rulesEntry' id='rule-11011' onclick="changeRule(1,1,0,1,1); takeAwayHint();">&nbsp;0&nbsp;</td></tr>
+      <tr><td class='rulesTable'>&nbsp;0 0 1 0 0&nbsp;</td><td class='rulesEntry' id='rule-00100' onclick="changeRule(0,0,1,0,0); takeAwayHint();">&nbsp;0&nbsp;</td>
+          <td class='rulesTable'>&nbsp;0 1 1 0 0&nbsp;</td><td class='rulesEntry' id='rule-01100' onclick="changeRule(0,1,1,0,0); takeAwayHint();">&nbsp;0&nbsp;</td>
+          <td class='rulesTable'>&nbsp;1 0 1 0 0&nbsp;</td><td class='rulesEntry' id='rule-10100' onclick="changeRule(1,0,1,0,0); takeAwayHint();">&nbsp;0&nbsp;</td>
+          <td class='rulesTable'>&nbsp;1 1 1 0 0&nbsp;</td><td class='rulesEntry' id='rule-11100' onclick="changeRule(1,1,1,0,0); takeAwayHint();">&nbsp;0&nbsp;</td></tr>
+      <tr><td class='rulesTable'>&nbsp;0 0 1 0 1&nbsp;</td><td class='rulesEntry' id='rule-00101' onclick="changeRule(0,0,1,0,1); takeAwayHint();">&nbsp;0&nbsp;</td>
+          <td class='rulesTable'>&nbsp;0 1 1 0 1&nbsp;</td><td class='rulesEntry' id='rule-01101' onclick="changeRule(0,1,1,0,1); takeAwayHint();">&nbsp;0&nbsp;</td>
+          <td class='rulesTable'>&nbsp;1 0 1 0 1&nbsp;</td><td class='rulesEntry' id='rule-10101' onclick="changeRule(1,0,1,0,1); takeAwayHint();">&nbsp;0&nbsp;</td>
+          <td class='rulesTable'>&nbsp;1 1 1 0 1&nbsp;</td><td class='rulesEntry' id='rule-11101' onclick="changeRule(1,1,1,0,1); takeAwayHint();">&nbsp;0&nbsp;</td></tr>
+      <tr><td class='rulesTable'>&nbsp;0 0 1 1 0&nbsp;</td><td class='rulesEntry' id='rule-00110' onclick="changeRule(0,0,1,1,0); takeAwayHint();">&nbsp;0&nbsp;</td>
+          <td class='rulesTable'>&nbsp;0 1 1 1 0&nbsp;</td><td class='rulesEntry' id='rule-01110' onclick="changeRule(0,1,1,1,0); takeAwayHint();">&nbsp;0&nbsp;</td>
+          <td class='rulesTable'>&nbsp;1 0 1 1 0&nbsp;</td><td class='rulesEntry' id='rule-10110' onclick="changeRule(1,0,1,1,0); takeAwayHint();">&nbsp;0&nbsp;</td>
+          <td class='rulesTable'>&nbsp;1 1 1 1 0&nbsp;</td><td class='rulesEntry' id='rule-11110' onclick="changeRule(1,1,1,1,0); takeAwayHint();">&nbsp;0&nbsp;</td></tr>
+      <tr><td class='rulesTable'>&nbsp;0 0 1 1 1&nbsp;</td><td class='rulesEntry' id='rule-00111' onclick="changeRule(0,0,1,1,1); takeAwayHint();">&nbsp;0&nbsp;</td>
+          <td class='rulesTable'>&nbsp;0 1 1 1 1&nbsp;</td><td class='rulesEntry' id='rule-01111' onclick="changeRule(0,1,1,1,1); takeAwayHint();">&nbsp;0&nbsp;</td>
+          <td class='rulesTable'>&nbsp;1 0 1 1 1&nbsp;</td><td class='rulesEntry' id='rule-10111' onclick="changeRule(1,0,1,1,1); takeAwayHint();">&nbsp;0&nbsp;</td>
+          <td class='rulesTable'>&nbsp;1 1 1 1 1&nbsp;</td><td class='rulesEntry' id='rule-11111' onclick="changeRule(1,1,1,1,1); takeAwayHint();">&nbsp;0&nbsp;</td></tr>
+    </table>
+    <div id='rulesHint'><p style='background:#55f; color:#edf; width:300px'>Hint: Click on a result value to change it!</p></div>
+    <h4><u>Some Interesting Rule Sets</u></h4>
+    <table>
+      <tr><td><button onclick='sierpinski_triangle()'>Sierpinski Triangle</button></td>
+          <td><button onclick='sierpinski_2()'>Sierpinski Triangle 2</button></td>
+          <td style='color:gray'> - Start with a point or square</td></tr>
+      <tr><td><button onclick='flash()' style='width:100%'>Flash</button></td>
+          <td><button onclick='flash2()' style='width:100%'>Flash 2</button></td></tr>
+      <tr><td><button onclick='stone()' style='width:100%'>Stone</button></td></tr>
+      <tr><td><button onclick='parity()' style='width:100%'>Parity</button></td></tr>
+    </table>
+  </div></td></tr>
+  </table>
+
+  <script>
+    setTimeout(init, 100);
+    function setupSlider() {
+      slider = document.getElementById("speedSlider");
+      display = document.getElementById("speedDisplay");
+      slider.oninput = function() {
+        FREQ = this.value;
+        display.innerHTML = FREQ
+        if (going) {
+          clearInterval(process);
+          process = setInterval(step, FREQ);
+        }
+      };
+    }
+    setTimeout(setupSlider, 10);
+    document.addEventListener('mousedown', on_mouse_down, false);
+    document.addEventListener('mouseup', on_mouse_up, false);
+  </script>
+</body>
+
+</html>
