@@ -1,0 +1,94 @@
+@charset "UTF-8";
+* {
+    margin: auto;
+    padding: 0;
+    -moz-box-sizing: border-box;
+    box-sizing:border-box;
+    width: 100%;
+    max-width: 1600px;
+}
+
+.container {
+    max-width: 100%;
+    min-width: 535px;
+}
+
+body {
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-size: 16px;
+    background: url(/images/green_grass_02_hd_picture_166104_m.jpg) repeat;
+}
+
+.testbox {
+    display: block;
+    border: darkred 1px solid;
+}
+
+.hidden {
+    display: none;
+}
+
+.copy {
+    display: block;
+    padding: 2px;
+    margin: 0;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 30px;
+    width: 100%;
+    content: "\00A9 2017 dmitry@ablov.ru";
+    text-align: right;
+    font-size: x-small;
+    color: #C0C0C0;
+    background-color: #606060;
+    z-index: 50;
+}
+
+.col-1 {width: 8.33%;}
+.col-2 {width: 16.66%;}
+.col-3 {width: 25%;}
+.col-4 {width: 33.33%;}
+.col-5 {width: 41.66%;}
+.col-6 {width: 50%;}
+.col-7 {width: 58.33%;}
+.col-8 {width: 66.66%;}
+.col-9 {width: 75%;}
+.col-10 {width: 83.33%;}
+.col-11 {width: 91.66%;}
+.col-12 {width: 100%;}
+[class*="col-"] {
+    float: left;
+    padding: 15px;
+    border: 1px none white;
+}
+
+@media only screen and (max-width: 1200px) {
+    .col-1 {width: 16.66%;}
+    .col-2 {width: 33.33%;}
+    .col-3 {width: 50%;}
+    .col-4 {width: 66.66%;}
+    .col-5 {width: 83.33%;}
+    .col-6 {width: 100%;}
+    .col-7 {width: 100%;}
+    .col-8 {width: 100%;}
+    .col-9 {width: 100%;}
+    .col-10 {width: 100%;}
+    .col-11 {width: 100%;}
+    .col-12 {width: 100%;}
+    [class*="col-"] {
+        float: left;
+        padding: 10px;
+        border: 1px none white;
+    }
+}
+@media only screen and (max-width: 850px) {
+    [class*="col-"] {
+        width: 100%;
+    }
+}
+.row::after {
+    content: "";
+    clear: both;
+    display: block;
+}

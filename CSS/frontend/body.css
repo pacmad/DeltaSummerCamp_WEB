@@ -1,0 +1,28 @@
+
+.news {
+    position: relative;
+    top: 120px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    max-width: 1600px;
+    color: darkblue;
+    overflow-x: hidden;
+    overflow-y: auto;
+    z-index: 1;
+}
+
+.newsblock {
+    margin: 5px 5px 0 5px;
+    padding: 0 10px;
+    border-radius: 15px;
+    border: darkblue 1px solid;
+    background-color: #EEEEEE;
+}
+
+@media only screen and (max-width: 750px) {
+    .news {
+        top: 65px;
+    }
+
+}

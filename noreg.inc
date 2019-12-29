@@ -26,7 +26,7 @@
     <br>
     <br>
     <br>
-    Регистрация в летний лагерь 2019 года закрыта.<br>
+    Регистрация в летний лагерь 2020 года пока ещё не открыта.<br>
     Следите за новостями на нашей страничке в Facebook:
     <a href="https://www.facebook.com/Summer.Camp.Delta/" target="_blank">https://www.facebook.com/Summer.Camp.Delta/</a>
     <br>

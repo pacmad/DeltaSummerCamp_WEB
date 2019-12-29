@@ -19,6 +19,27 @@ class dbConnect
     public $status = DB_ADD_OK; // Результат работы с базой данных
     private $conn; // Активное соединение
 
+    // Устанавливает флаг status для конкретного абитуриента
+    public $AppStatus = array(
+        -5 => "Не зашли в ЛК",
+        -4 => "Не скачали олимпиаду",
+        -3 => "Нехорошо себя повели",
+        -2 => "Не прошёл по конкурсу",
+        -1 => "Отказ от регистрации",
+        0 => "Только что создан",
+        1 => "Входил в персональный кабинет",
+        2 => "Выслана/скачана олимпиада",
+        3 => "Получено решение олимпиады",
+        5 => "Из прошлой Дельты",
+        6 => "Послали 'прнят'",
+        7 => "Перекличка, свои",
+        9 => "Обещали",
+        10 => "Внесена предоплата",
+        11 => "Без проживания",
+        15 => "Участник",
+        20 => "Готово приложение №2"
+    );
+
     /**
      * dbConnect constructor. Open 'delta' database.
      */
@@ -37,7 +58,18 @@ class dbConnect
  *  Р Е Г И С Т Р А Ц И И
  *
  */
-
+    /**
+     * @param $surname
+     * @param $name
+     * @param $middlename
+     * @param $birthday - в формате dd/mm/yyyy
+     * @param $gender
+     * @return string - UID, уникальный идентификатор
+     */
+    public function generateUID($surname, $name, $middlename, $birthday, $gender)
+    {
+        return md5($surname . $name . $middlename . $birthday . $gender);
+    }
 
     /**
      * putRegData() - put registration data from _POST array into the 'registrations' table
@@ -57,7 +89,7 @@ class dbConnect
         }
         // Уникальный ключ, проверка: если есть, значит регистрация уже была
         // Важно! По стравнению с 2018 годом убран e-mail и добавлен gender
-        $unique = md5($_POST["surname"] . $_POST["name"] . $_POST["middlename"] . $_POST["birthday"] . $_POST["gender"]);
+        $unique = $this->generateUID($_POST["surname"], $_POST["name"], $_POST["middlename"], $_POST["birthday"], $_POST["gender"]);
         // Сразу пишем в Log для проверки...
         $this->dbLog(print_r($_POST), $unique);
         // Проверка на дубликат
@@ -79,6 +111,7 @@ class dbConnect
             $email = substr(trim($email), 0, 100);
         }
         $phone = substr(trim(filter_var($_POST["tel"], FILTER_SANITIZE_STRING)), 0, 40);
+        $regname = substr(trim(filter_var($_POST["regname"], FILTER_SANITIZE_STRING)), 0, 255);
         $surname = substr(trim(filter_var($_POST["surname"], FILTER_SANITIZE_STRING)), 0, 60);
         $name = substr(trim(filter_var($_POST["name"], FILTER_SANITIZE_STRING)), 0, 60);
         $middlename = substr(trim(filter_var($_POST["middlename"], FILTER_SANITIZE_STRING)), 0, 60);
@@ -90,7 +123,7 @@ class dbConnect
         if ($birthday = date_create_from_format("d/m/Y", $_POST["birthday"])) {
             $birthday = $birthday->format("Y-m-d");
         } else {
-            error("Invalid Date of Birthday field");
+            error("Invalid Date of Birthday field", $unique);
             $birthday = "2000-01-01";
         }
         if ($_POST["class"] === '') {
@@ -100,26 +133,19 @@ class dbConnect
         $school = substr(trim(filter_var($_POST["school"], FILTER_SANITIZE_STRING)), 0, 140);
         $city = substr(trim(filter_var($_POST["city"], FILTER_SANITIZE_STRING)), 0, 80);
         $country = substr(trim(filter_var($_POST["country"], FILTER_SANITIZE_STRING)), 0, 40);
-        $langs = substr(trim(filter_var($_POST["langs"], FILTER_SANITIZE_STRING)), 0, 180);
+        $langs = substr(trim(filter_var($_POST["langs"], FILTER_SANITIZE_STRING)), 0, 255);
         $notes = substr(trim(filter_var($_POST["notes"], FILTER_SANITIZE_STRING)), 0, 1024);
 
-        $dbFields = "UniqueId, UserIP, Email, Surname, Name, MiddleName, Gender, Birthday,
-              Class, School, City, Country, Languages, Tel, Notes";
+        $dbFields = "UniqueId, UserIP, Email, Surname, Name, MiddleName, Gender, Birthday, Class, School, City, Country, Languages, Tel, RegName, Notes";
         $dbValues = "'$unique', '$_SERVER[REMOTE_ADDR]', '$email', '$surname', '$name',
               '$middlename', '$gender', '$birthday', '$class', '$school', '$city',
-              '$country', '$langs', '$phone', '$notes'";
+              '$country', '$langs', '$phone', '$regname', '$notes'";
 
         // Учёт старой регистрации
         if (!strcmp($_POST["ALL_DONE"], "Old")) {
             $ownTel = substr(trim(filter_var($_POST["ownTel"], FILTER_SANITIZE_STRING)), 0, 40);
             $certLang = substr(trim(filter_var($_POST["certLang"], FILTER_SANITIZE_STRING)), 0, 2);
             $certName = html_entity_decode(substr(trim(filter_var($_POST["certName"], FILTER_SANITIZE_STRING)), 0, 255));
-            $health = trim(filter_var($_POST["health"], FILTER_SANITIZE_STRING));
-            $insurance = trim(filter_var($_POST["insurance"], FILTER_SANITIZE_STRING));
-            $notesText = trim(filter_var($_POST["notesText"], FILTER_SANITIZE_STRING));
-            $visa = (int) substr(filter_var($_POST["visa"], FILTER_SANITIZE_STRING),0, 1);
-            $notebook = filter_var($_POST["notebook"], FILTER_SANITIZE_STRING);
-            $shirt = filter_var($_POST["shirt"], FILTER_SANITIZE_STRING);
 
             $dbFields .= ", AppStatus";
             $dbValues .= ", '5'";
@@ -139,37 +165,6 @@ class dbConnect
                 $dbValues .= ", '$certName'";
             }
 
-            if ($health !== null) {
-                $dbFields .= ", Health";
-                $dbValues .= ", '$health'";
-
-            }
-
-            if ($insurance !== null)
-            {
-                $dbFields .= ", Insurance";
-                $dbValues .= ", '$insurance'";
-            }
-
-            if ($notesText !== null) {
-                $dbFields .= ", NotesText";
-                $dbValues .= ", '$notesText'";
-            }
-
-            if ($visa !== null) {
-                $dbFields .= ", Visa";
-                $dbValues .= ", '$visa'";
-            }
-
-            if ($notebook !== null) {
-                $dbFields .= ", Notebook";
-                $dbValues .= ", '$notebook'";
-            }
-
-            if ($shirt !== null) {
-                $dbFields .= ", Shirt";
-                $dbValues .= ", '$shirt'";
-            }
         }
 
         // Записываем в базу
@@ -193,8 +188,7 @@ class dbConnect
         if ($birthday = date_create_from_format("d/m/Y", $birthday)) {
             $birthday = $birthday->format("Y-m-d");
         }
-        $sql = "SELECT * FROM oldregs WHERE Surname = '$surname' AND Name = '$name' AND MiddleName = '$middleName' 
-          AND Birthday = '$birthday'";
+        $sql = "SELECT * FROM oldregs WHERE Surname = '$surname' AND Name = '$name' AND Birthday = '$birthday'";
         try {
             $result = $this->conn->query($sql);
         } catch (PDOException $exception) {
@@ -203,10 +197,8 @@ class dbConnect
         $records = $result->rowCount();
         if ($records === 1) {
             $row = $result->fetch();
-            if ((int)$row["AppStatus"] > 10) {
-                $row["ALL_DONE"] = "Old";
-                return $row;
-            }
+            $row["ALL_DONE"] = "Old";
+            return $row;
         }
 
         return false;
@@ -234,6 +226,143 @@ class dbConnect
         return false;
     }
 
+
+    /**
+     * Обновление таблицы oldregs перед началом регистрации
+     * @param string $ageLimit - дата отсечки по дням рождения в формате "yyyy-mm-dd"
+     * @param bool $regenerate_UID - требуется ли перегенерация UID?
+     * @param int $minAppStatus - минимальный AppStatus с которым переносим в oldregs из registrations
+     * @return array - статистика выполнения команды
+     */
+    public function updateOldregs($ageLimit, $regenerate_UID = false, $minAppStatus = 10)
+    {
+        $stat = array("Added"=>0, "Deleted"=>0, "Updated"=>0);
+        if(!($date = date_create_from_format("Y-m-d", $ageLimit))) {
+            error("Wrong date in function dbConnect->updateOldregs");
+            exit;
+        }
+
+        // Сначала чистим oldregs от устаревших записей
+        try {
+            $result = $this->conn->query('SELECT * FROM oldregs');
+            foreach ($result as $row) {
+                if (!($birthday = date_create_from_format("Y-m-d", $row['Birthday']))) {
+                    error("Wrong birthday date format in module updateOldregs", $row['UniqueId']);
+                    exit;
+                };
+                $uniqueID = $row["UniqueId"];
+                if ($birthday < $date || $row['AppStatus'] < 5) { // Убираем выросших и с малым статусом
+                    $sql = "DELETE FROM oldregs WHERE UniqueId = '$uniqueID'";
+                    echo '<p>' . $sql . '</p>';
+                    $this->conn->exec($sql);
+                    $stat['Deleted']++;
+                } else {
+                    // Проверяем не сменился ли статус на -3
+                    $name = $row['Name'];
+                    $surname = $row['Surname'];
+                    $birthday = $row['Birthday'];
+                    $sql = "SELECT AppStatus FROM registrations WHERE Name = '$name' AND Surname = '$surname' AND Birthday = '$birthday'";
+                    $newRes = $this->conn->query($sql);
+                    if ($appStatus = $newRes->fetch()) {
+                        if ($appStatus['AppStatus'] == -3) {  // Отсечка тех, кто нехорошо себя повёл в прошлой смене
+                            echo "<p>DELETE FROM oldregs WHERE UniqueId = '$uniqueID'</p>";
+                            $this->conn->exec("DELETE FROM oldregs WHERE UniqueId = '$uniqueID'");
+                            echo "<p>DELETE FROM oldregs WHERE UniqueId = '$uniqueID'</p>";
+                            $stat['Deleted']++;
+                        } else { // Обновляем записи
+                            $sql = "UPDATE oldregs SET AppStatus = 5 WHERE UniqueId = '$uniqueID'";
+                            $this->conn->exec($sql); // Меняем AppStatus на "старенький"
+
+                            if ($regenerate_UID) { // Обновляем, если нужно, UID
+                                if ($birthday = date_create_from_format("Y-m-d", $row['Birthday'])) {
+                                    $birthday = $birthday->format("d/m/Y");
+                                } else {
+                                    error("Invalid Date of Birthday field");
+                                    exit;
+                                }
+                                $UID = $this->generateUID($row['Surname'], $row['Name'], $row['MiddleName'], $birthday, $row['Gender']);
+                                $oldUniqueID = $row["UniqueId"];
+                                $sql = "UPDATE oldregs SET UniqueId = '$UID' WHERE UniqueId = '$oldUniqueID'";
+                                echo "<p>$sql</p>";
+                                $this->conn->exec($sql);
+                                $stat['Updated']++;
+                            }
+                        }
+                    }
+                }
+            }
+            echo "<p>oldregs records are updated</p>";
+        } catch (PDOException $PDOException) {
+            error("PDOException in module dbConnect->updateOldregs: " . $PDOException->getMessage());
+            exit;
+        }
+
+        // Теперь переносим записи из основной таблицы регистраций registrations
+        try {
+            $result = $this->conn->query("SELECT * FROM registrations WHERE AppStatus >= '$minAppStatus'");
+            foreach ($result as $row) {
+                $period = $row['Period'];
+                $email = $row['Email'];
+                $surname = $row['Surname'];
+                $name = $row['Name'];
+                $middleName = $row['MiddleName'];
+                $gender = $row['Gender'];
+                $birthday = $row['Birthday'];
+                $class = $row['Class'];
+                $school = $row['School'];
+                $city = $row['City'];
+                $country = $row['Country'];
+                $languages = $row['Languages'];
+                $tel = $row['Tel'];
+                $ownTel = $row['OwnTel'];
+                $appStatus = 5;
+                $certLang = $row['CertLang'];
+                $certName = $row['CertName'];
+                $uniqueID = $this->generateUID($surname, $name, $middleName, $birthday, $gender);
+
+                // Увеличиваем класс на следующий год
+                if ($class > 0) $class++;
+
+                // В одной транзакции удаляем старую запись из oldregs (если старой записи не было, запрос проходит вхолостую)
+                // далее вносим запись в oldregs
+                $sqldel = "DELETE FROM oldregs WHERE Name = '$name' AND Surname = '$surname' AND Birthday = '$birthday'";
+                $sqlins = "INSERT INTO oldregs " .
+                    "(UniqueId, Period, Email, Surname, Name, MiddleName, Gender, Birthday, Class, School, City, Country, " .
+                    "Languages, Tel, OwnTel, AppStatus, CertLang, CertName) " .
+                    "VALUES ('$uniqueID', '$period', '$email', '$surname', '$name', '$middleName', '$gender', " .
+                    "'$birthday', '$class', '$school', '$city', '$country', '$languages', '$tel', '$ownTel', " .
+                    "'$appStatus', '$certLang', '$certName')";
+                echo '<p>' . $sqldel . '</p>' ;
+                echo '<p>' . $sqlins . '</p>';
+                $this->conn->beginTransaction();
+                $deleted = $this->conn->exec($sqldel);
+                $this->conn->exec($sqlins);
+                $this->conn->commit();
+                if ($deleted != 0) {
+                    $stat['Updated']++;
+                } else {
+                    $stat['Added']++;
+                }
+            }
+            echo "<p>UPDATE oldregs form registrations finished</p>";
+        } catch (PDOException $PDOException) {
+            error("PDOException in module dbConnect->updateOldregs: " . $PDOException->getMessage());
+            $this->conn->rollBack();
+            exit;
+        }
+
+        // Наконец, чистим таблицу registrations
+        try {
+            $this->conn->exec("DELETE FROM registrations");
+            echo "<p>registrations table has been cleared!</p>";
+        } catch (PDOException $PDOException) {
+            error("PDOException in module dbConnect->updateOldregs: " . $PDOException->getMessage());
+            exit;
+        }
+
+        return $stat;
+    }
+
     /*
      * Возвращает массив со всеми полями для конкретного человека из базы регистраций
      */
@@ -254,27 +383,6 @@ class dbConnect
             return false;
         }
     }
-
-    // Устанавливает флаг status для конкретного абитуриента
-    public $AppStatus = array(
-        -5 => "Не зашли в ЛК",
-        -4 => "Не скачали олимпиаду",
-        -3 => "Нехорошо себя повели",
-        -2 => "Не прошёл по конкурсу",
-        -1 => "Отказ от регистрации",
-         0 => "Только что создан",
-         1 => "Входил в персональный кабинет",
-         2 => "Выслана/скачана олимпиада",
-         3 => "Получено решение олимпиады",
-         5 => "Из прошлой Дельты",
-         6 => "Послали 'прнят'",
-         7 => "Перекличка, свои",
-         9 => "Обещали",
-        10 => "Внесена предоплата",
-        11 => "Без проживания",
-        15 => "Участник",
-        20 => "Готово приложение №2"
-    );
 
     // Устанавливает статус
     public function setAppStatus($UID, $status) {
@@ -635,6 +743,8 @@ class dbConnect
 *   Работа с базой заметок
 *
 */
+/* ToDo: заметки по каждому ребёнку
+
     public function addTechNote ($UID, $note)
     {
         $sql = "INSERT INTO technotes (UID, Note) VALUES ('$UID', '$note')";
@@ -654,7 +764,7 @@ class dbConnect
         }
         return null;
     }
-
+*/
 /*
 *
 *   Преподаватели
@@ -1133,3 +1243,5 @@ class dbConnect
         $this->conn = null;
     }
 }
+
+

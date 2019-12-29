@@ -28,8 +28,10 @@ function getScrollbarWidth() {
     return widthNoScroll - widthWithScroll;
 }
 */
-const startDay = new Date('2019-07-22');
-const endDay = new Date('2019-08-05');
+
+// Это копия констант, определённых в PHP/common.inc
+const startDay = new Date('2020-07-20');
+const endDay = new Date('2020-07-03');
 
 // Возвращает полное число лет от birthday до date
 // noinspection SyntaxError

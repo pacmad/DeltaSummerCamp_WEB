@@ -11,6 +11,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 require_once 'PHPMailer\PHPMailer.php';
 require_once 'PHPMailer\SMTP.php';
 require_once 'PHPMailer\Exception.php';
+require_once 'common.inc';
 
 /***
  * Определяем глобальные переменные
@@ -21,10 +22,6 @@ $bcc = 'ablov@cintra.ru';
 $reply_to = 'summer.camp.delta@gmail.com';
 $domain = 'delta.gorod.de';
 $myCabinet = 'https://' . $domain . '/mycabinet.php';
-
-const _DEBUG = false; // Если установлен этот флаг, вместо адреса клиента ставится адрес $cc
-const _PREREG = false; // Если установлен - идёт предварительная регистрация
-
 
 /***
  * Отсылка письма об удадчной регистрации
@@ -55,14 +52,15 @@ function sendRegMail($person) {
     $country = $person['Country'];
     $lang = $person['Languages'];
     $tel = $person['Tel'];
+    $regname = $person['RegName'];
     $notes = $person['Notes'];
     $to = (_DEBUG ? $cc : $email);
-    $subject = 'Delta-2019 new registration';
+    $subject = 'Delta-2020 new registration';
 
     /*
      * Сначала отправляем строку для ввода в Excel
      */
-    $debug = "
+    $mailBody = "
         <!doctype html>
         <html>
         <head>
@@ -71,7 +69,7 @@ function sendRegMail($person) {
         </head>
         <body>
         $time<br>$ip<br>$email<br>$surname<br>$name<br>$m_name<br>$gender<br>$birthday<br>$class<br>$school<br>
-        $city<br>$country<br>$lang<br>$tel<br>$notes
+        $city<br>$country<br>$lang<br>$tel<br>$notes<br>$regname
         </body>
         </html>
     ";
@@ -82,7 +80,7 @@ function sendRegMail($person) {
         'To: ' . $reply_to . "\r\n" .
         'Cc: ' . $cc . "\r\n" .
         'X-Mailer: PHP/' . phpversion();
-    mail((_DEBUG ? $cc : $reply_to), $subject, $debug, $headers);
+    mail((_DEBUG ? $cc : $reply_to), $subject, $mailBody, $headers);
 
     /*
      * Теперь основное письмо (предварительная регистрация!)
@@ -113,17 +111,18 @@ function sendRegMail($person) {
     /*
      * Теперь основное письмо (регистрация открыта!)
      */
-    else $message = '
+    else $message = "
         <!doctype html>
         <html>
         <head>
-        <meta charset="UTF-8">
+        <meta charset='UTF-8'>
         <title>Благодарим за регистрацию!</title>
         </head>
         <body>
-        <p>Благодарим Вас за регистрацию в летний физико-математический лагерь «Дельта» в Мюнхене!</p>
+        <p>Здравствуйте, $regname!</p>
+        <p>Благодарим Вас за регистрацию в летний физико-математический лагерь «Дельта» в Мюнхене.</p>
         <p> Адрес Личного кабинета:</p>
-        <p><a href="' . $myCabinet . '?id=' . $id . '">' . $myCabinet . '?id=' . $id . '</a></p>
+        <p><a href='$myCabinet?id=$id'>$myCabinet?id=$id</a></p>
         <p><b>Пожалуйста, зайдите в Личный кабинет и скачайте вступительную олимпиаду!<br>
         Не теряйте адрес личного кабинета, в дальнейшем в нём будет выкладываться другая важная персональная информация.</b></p>
         <p>Несколько слов о задачах вступительной олимпиады.</p>
@@ -136,9 +135,6 @@ function sendRegMail($person) {
         <p>Именно поэтому на решение задач даётся две недели. Не стоит решать всё в последний день, лучше подумать 
         над задачами подольше.</p>
         <p>&nbsp;</p>
-        <p>Для участников прошлых лет решение олимпиады не является обязательным, но оно желательно, так как результаты 
-        учитываются при распределении в учебные группы и проекты.</p>
-        <p>&nbsp;</p>
         <p>Результаты можно представить в виде сканов (фотографий) работы или в электронном виде по адресу:  
         summer.camp.delta@gmail.com в течение <b>двух недель</b> после получения олимпиады.</p>
         <p>&nbsp;</p>
@@ -148,11 +144,11 @@ function sendRegMail($person) {
         <p>+7(903)749-4851<br>
         E-mail: anna@sem@gmail.com<br>
         Skype: aselect1976<br>
-        Facebook: <a href="https://www.facebook.com/Summer.Camp.Delta">https://www.facebook.com/Summer.Camp.Delta</a><br>
-        ВКонтакте: <a href="https://vk.com/summer_camp_delta">https://vk.com/summer_camp_delta</a></p>
+        Facebook: <a href='https://www.facebook.com/Summer.Camp.Delta'>https://www.facebook.com/Summer.Camp.Delta</a><br>
+        ВКонтакте: <a href='https://vk.com/summer_camp_delta'>https://vk.com/summer_camp_delta</a></p>
         </body>
         </html>
-        ';
+        ";
     $mail = new PHPMailer(true);
     $mail->SMTPDebug = 0;
     $mail->isSMTP();
@@ -171,12 +167,12 @@ function sendRegMail($person) {
     $mail->Body = $message;
     if (_PREREG)
         $mail->AltBody =
-        'Здравствуйте! Вы зарегистрировались в Летний физико-математический лагерь "Дельта" в Мюнхене.\n\r
+        "Здравствуйте, $regname! Вы зарегистрировались в Летний физико-математический лагерь \"Дельта\" в Мюнхене.\n\r
         При открытии основной регистрации мы вышлем Вам письмо со вступительной олимпиадой и подробной информацией о 
-        стоимости и сроках проведения лагеря.';
+        стоимости и сроках проведения лагеря.";
     else
-        $mail->AltBody = 'Здравствуйте! Вы зарегистрировались в Летний физико-математический лагерь "Дельта" в Мюнхене.\n\r
-        Зайдите, пожалуйста, в личный кабинет по адресу: ' . $myCabinet . '?id=' . $id;
+        $mail->AltBody = "Здравствуйте, $regname! Вы зарегистрировались в Летний физико-математический лагерь \"Дельта\" в Мюнхене.\n\r
+        Зайдите, пожалуйста, в личный кабинет по адресу: $myCabinet?id=$id";
 
     return $mail->send();
 }
@@ -210,14 +206,15 @@ function sendGreetingsMail($person) {
     $country = $person['Country'];
     $lang = $person['Languages'];
     $tel = $person['Tel'];
+    $regname = $person['RegName'];
     $notes = $person['Notes'];
     $to = (_DEBUG ? $cc : $email);
-    $subject = 'Delta-2019 registration';
+    $subject = 'Delta-2020 registration';
 
     /*
      * Сначала отправляем строку для ввода в Excel
      */
-    $debug = "
+    $mailBody = "
         <!doctype html>
         <html>
         <head>
@@ -226,7 +223,7 @@ function sendGreetingsMail($person) {
         </head>
         <body>
         $time<br>$ip<br>$email<br>$surname<br>$name<br>$m_name<br>$gender<br>$birthday<br>$class<br>$school<br>
-        $city<br>$country<br>$lang<br>$tel<br>$notes
+        $city<br>$country<br>$lang<br>$tel<br>$notes<br>$regname
         </body>
         </html>
     ";
@@ -237,24 +234,24 @@ function sendGreetingsMail($person) {
         'To: ' . $reply_to . "\r\n" .
         'Cc: ' . $cc . "\r\n" .
         'X-Mailer: PHP/' . phpversion();
-    mail($reply_to, $subject, $debug, $headers);
+    mail((_DEBUG ? $cc : $reply_to), $subject, $mailBody, $headers);
 
     /*
      * Теперь основное письмо
      */
-    $message = '
+    $message = "
         <!doctype html>
         <html>
         <head>
-        <meta charset="UTF-8">
+        <meta charset='UTF-8'>
         <title>Благодарим за регистрацию!</title>
         </head>
         <body>
-        <p>Здравствуйте!</p>
+        <p>Здравствуйте, $regname!</p>
         <p>&nbsp;</p>
         <p>Спасибо за регистрацию в Дельту, мы рады видеть старых друзей!</p>
         <p>&nbsp;</p>
-        <p>Ваш личный кабинет: <a href="' . $myCabinet . '?id=' . $id . '">' . $myCabinet . '?id=' . $id . '</a> 
+        <p>Ваш личный кабинет: <a href='$myCabinet?id=$id'>$myCabinet?id=$id</a> 
         По ссылке откроется анкета, содержащая сведения прошлого года. Проверьте актуальность данных участника.</p>
         <p>&nbsp;</p>
         <p>С нового года центр GOROD переезжает в другое здание, поэтому в жизни и распорядке Дельты будут некоторые 
@@ -266,7 +263,7 @@ function sendGreetingsMail($person) {
             <li>Сроки проведения Дельты определены: в этот раз мы проводим лагерь с 22 июля по 5 августа 2019 г.</li>
             <li>В новом здании количество спальных мест в этом году будет меньше, скорее всего, количество участников 
             будет ограничено.</li>
-            <li>Новый GOROD будет жить по адресу <a href="https://goo.gl/maps/bYxmTNgg1hH2">Arnulfstraße 197</a>. 
+            <li>Новый GOROD будет жить по адресу <a href='https://goo.gl/maps/bYxmTNgg1hH2'>Arnulfstraße 197</a>. 
             Неподалёку есть большой парк для прогулок. Кроме того, в новом месте в нашем распоряжении будет 
             внутренний двор.</li>
         </ol>
@@ -280,26 +277,26 @@ function sendGreetingsMail($person) {
         <p><b>Анна Семовская</b><br>
         директор лагеря</p>
         <p>            
-        +7(903)749-4851 (<a title="Телефон" href="tel:+79037494851" target="_blank">телефон</a>,
-        <a title="Telegram" href="https://t.me/annasemovskaya" target="_blank">Telegram</a>,
-        <a title="WhatsApp" href="whatsapp://send?phone=+79037494851" target="_blank">WhatsApp</a>)<br>
-        <a title="E-mail" href="mailto:anna.sem@gmail.com" target="_blank">anna.sem@gmail.com</a><br>
-        Skype: <a title="Skype" href="skype:aselect1976?chat" target="_blank">aselect1976</a>
+        +7(903)749-4851 (<a title='Телефон' href='tel:+79037494851' target='_blank'>телефон</a>,
+        <a title='Telegram' href='https://t.me/annasemovskaya' target='_blank'>Telegram</a>,
+        <a title='WhatsApp' href='whatsapp://send?phone=+79037494851' target='_blank'>WhatsApp</a>)<br>
+        <a title='E-mail' href='mailto:anna.sem@gmail.com' target='_blank'>anna.sem@gmail.com</a><br>
+        Skype: <a title='Skype' href='skype:aselect1976?chat' target='_blank'>aselect1976</a>
         </p>
         <p><b>Дмитрий Аблов</b><br></p>
         <p>       
-        +7(903)795-4223 (<a title="Телефон" href="tel:+79037954223" target="_blank">телефон</a>,
-        <a title="Telegram" href="https://t.me/d_ablov" target="_blank">Telegram</a>,
-        <a title="Viber" href="viber://add?number=+79037954223" target="_blank">Viber</a>,
-        <a title="WhatsApp" href="whatsapp://send?phone=+79037954223" target="_blank">WhatsApp</a>)<br>
-        <a title="E-Mail" href="mailto:d.ablov@gmail.com" target="_blank">d.ablov@gmail.com</a><br>
-        Skype: <a title="Skype" href="skype:d.ablov?chat" target="_blank">d.ablov</a>       
+        +7(903)795-4223 (<a title='Телефон' href='tel:+79037954223' target='_blank'>телефон</a>,
+        <a title='Telegram' href='https://t.me/d_ablov' target='_blank'>Telegram</a>,
+        <a title='Viber' href='viber://add?number=+79037954223' target='_blank'>Viber</a>,
+        <a title='WhatsApp' href='whatsapp://send?phone=+79037954223' target='_blank'>WhatsApp</a>)<br>
+        <a title='E-Mail' href='mailto:d.ablov@gmail.com' target='_blank'>d.ablov@gmail.com</a><br>
+        Skype: <a title='Skype' href='skype:d.ablov?chat' target='_blank'>d.ablov</a>       
         </p>
-        Facebook: <a href="https://www.facebook.com/Summer.Camp.Delta">https://www.facebook.com/Summer.Camp.Delta</a><br>
-        ВКонтакте: <a href="https://vk.com/summer_camp_delta">https://vk.com/summer_camp_delta</a></p>
+        Facebook: <a href='https://www.facebook.com/Summer.Camp.Delta'>https://www.facebook.com/Summer.Camp.Delta</a><br>
+        ВКонтакте: <a href='https://vk.com/summer_camp_delta'>https://vk.com/summer_camp_delta</a></p>
         </body>
         </html>
-    ';
+    ";
     $mail = new PHPMailer(true);
     $mail->SMTPDebug = 0;
     $mail->isSMTP();
@@ -344,10 +341,10 @@ function sendGreetingsMail($person) {
  */
 function sendAssignmentsMail($person) {
     global $from;
-    $to = 'ablov@cintra.ru';//$person['Email'];
+    $to = (_DEBUG ? 'ablov@cintra.ru' : $person['Email']);
     global $bcc;
     global $reply_to;
-    $subject = 'Вступительная олимпиада Delta-2018';
+    $subject = 'Вступительная олимпиада Delta-2019';
     $attachment = 'documents/assignments.pdf';
     global $domain;
     global $myCabinet;
@@ -459,7 +456,7 @@ function sendFeedbackMail($email, $name, $message){
  */
 function sendComfirmMail($person){
     global $from;
-    $to = 'ablov@cintra.ru'; //$person['Email'];
+    $to = (_DEBUG ? 'ablov@cintra.ru' : $person['Email']);
     global $bcc;
     global $reply_to;
     $subject = 'Подтверждение получения решения олимпиады Delta-2018';

@@ -7,5 +7,5 @@ Disallow: /phplib
 Disallow: /uploads
 Disallow: /_2018
 Disallow: /.documentation
-Sitemap: https://https://delta.gorod.de/sitemap.xml
+Sitemap: https://delta.gorod.de/sitemap.xml
 Host: https://delta.gorod.de

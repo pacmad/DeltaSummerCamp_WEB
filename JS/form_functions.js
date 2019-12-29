@@ -2,7 +2,7 @@
 
 // var startDay = new Date('2018-07-16'); - перенесено в common.js
 const MIN_AGE = 11, MAX_AGE = 18;
-const MIN_YEAR = 1950, MAX_YEAR = 2019;
+const MIN_YEAR = 1950, MAX_YEAR = 2020;
 
 // Вешаем обработчики событий (с проверкой IE > 9)
 document.addEventListener("DOMContentLoaded", function (e) {
@@ -306,20 +306,21 @@ function chkRegistered(value, flag) {
                 if (this.status === 200) { // Запись есть в старой базе регистраций
 
                     let message = document.getElementById("known");
-                    message.innerHTML = "С возвращением, мы вас узнали!";
                     message.classList.add("highlighted");
                     message.style.fontSize = "x-large";
+                    message.innerHTML = "С возвращением, мы вас узнали!";
 
                     let person = this.response;
 
                     // Заполняем незаполненные поля формы регистрации
+                    if (document.getElementById("middlename").value === "") document.getElementById("middlename").value = person["MiddleName"];
                     if (document.getElementById("email").value === "") document.getElementById("email").value = person["Email"];
                     if (document.getElementById("tel").value === "") document.getElementById("tel").value = person["Tel"];
                     if (document.getElementById("school").value === "") document.getElementById("school").value = person["School"];
+                    if (document.getElementById("class").value === "") document.getElementById("class").value = person["Class"];
                     if (document.getElementById("city").value === "") document.getElementById("city").value = person["City"];
                     if (document.getElementById("country").value === "") document.getElementById("country").value = person["Country"];
                     if (document.getElementById("langs").value === "русский") document.getElementById("langs").value = person["Languages"];
-                    if (document.getElementById("notes").value === "") document.getElementById("notes").value = person["Notes"];
 
                     // Помечаем правильно пол
                     if (person["Gender"] === "f") {

@@ -20,6 +20,7 @@ document.addEventListener("DOMContentLoaded", function (e) {
         }
     }
 });
+
 /*
 Инициализация библиотеки Masonry, используется при выводе проектов
  */
@@ -34,6 +35,7 @@ window.addEventListener("load", function (e) {
         });
     }
 });
+
 /*
 Раскрываем новость
  */
@@ -42,3 +44,16 @@ function showMore(el) {
     el.querySelector('div.more').style.display = 'block';
     msnry.layout();
 }
+
+/*
+Определение размеров экрана
+ */
+$(function() {
+    $.post('index_new.php', { width: screen.width, height:screen.height }, function(json) {
+        if(json.outcome === 'success') {
+            alert('Success!')
+        } else {
+            alert('Unable to let PHP know what the screen resolution is!');
+        }
+    },'json');
+});

@@ -1,4 +1,4 @@
-@charset "windows-1251";
+@charset "utf-8";
 .title {
     display: block;
     margin: 0 0 20px 0;
@@ -55,6 +55,9 @@ h2 {
     top: -1em;
     font-weight: bold;
     background-color: #EEE;
+}
+.ext {
+	top: 0.5em;
 }
 .questionnaire {
     border: gray 1px dashed;

@@ -28,6 +28,52 @@ if (isset($_GET['SentRegistrationMailForAllPreregistered']) && $_GET['SentRegist
 }
 */
 
+/**
+ * Кусочек для генерации новой таблицы 'oldreg'
+ *
+ * Сначала вытягиваем участников предыдущего года, потом (только в этот раз) - добавляем участников прошлых лет из
+ * базы oldregs_2019. В будущем надо будет просто обновлять тут oldregs и вбивать туда участников прошлого года.
+ */
+if (isset($_GET['UpdateOldRegsTable']) && $_GET['UpdateOldRegsTable'] === "Update") {
+    try {
+        $db = new dbConnect();
+        echo <<<EOT1
+        <!doctype html>
+        <html lang="ru">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Уголок администратора</title>
+            <link href="CSS/common.css" rel="stylesheet" type="text/css">
+            <link href="CSS/admin.css" rel="stylesheet" type="text/css">
+        </head>
+        
+        <body>
+        <div class="main">
+            <h1>Результат выполнения обновления таблиц:</h1>
+EOT1;
+        $result = $db->updateOldregs("2002-05-01", true);
+    } catch (PDOException $PDOException) {
+        error("Error in PDO request in UpdateOldRegsTable module: " . $PDOException);
+        print "Error in PDO request in UpdateOldRegsTable module: " . $PDOException;
+        exit();
+    }
+    $deleted = $result['Deleted'];
+    $added = $result['Added'];
+    $updated = $result['Updated'];
+    echo <<<EOT2
+            <p>Удалено старых записей: $deleted</p>
+            <p>Обновлено записей: $updated</p>
+            <p>Добавлено записей: $added</p>
+        </div>
+        </body>
+        </html>
+EOT2;
+
+    $db->dbLog("oldregs table has been updated. Deleted: $deleted. Updated: $updated. Added: $added");
+    exit();
+}
+
 // Обработка AJAX-запросов.
 if(isset($_POST['AppStatus'])) {
     $_SESSION['AppStatus'] = $_POST['AppStatus'];
@@ -92,9 +138,9 @@ if(isset($_POST['Save']) && $_POST['Save'] === 'true') {
                     </a>
                 </div>
                 <div class="tooltip">
-                    <a href="_2018/admin.php">
+                    <a href="_2019/admin.php">
                         <div class="iconbox"><span class="fa fa-calendar icon"></span></div>
-                        <span class="tooltiptext">Админка 2018</span>
+                        <span class="tooltiptext">Админка 2019</span>
                     </a>
                 </div>
                 <div class="tooltip">
@@ -214,7 +260,9 @@ if(isset($_POST['Save']) && $_POST['Save'] === 'true') {
         </span>
         </div>
         <div class="search"><input type="text" name="search_string" id="search_string" autofocus><span class="fa fa-search" onclick="doSearch()"></span></div>
-    </div>
+    </div>';
+    if (isset($_SESSION["ID"])) {
+        $output .= '
     <script>
     $(function() {  // Прокрутка до активной записи при выходе из карточки участника
         $("html, body").animate({
@@ -225,7 +273,8 @@ if(isset($_POST['Save']) && $_POST['Save'] === 'true') {
         $("#search_string").focus().on("input", search);
     })
     </script>';
-    header("Content-type: text/html; charset=UTF-8");
+    }
+    // header("Content-type: text/html; charset=UTF-8");
     echo $output;
 ?>
     </div>

@@ -22,6 +22,8 @@ if (isset($_POST["ALL_DONE"]) && $_POST["ALL_DONE"] === 'Check'){
     }
 }
 ?>
+
+
 <!doctype html>
 <html>
 <head>
@@ -42,7 +44,7 @@ if (isset($_POST["ALL_DONE"]) && $_POST["ALL_DONE"] === 'Check'){
 
 <body>
 <div class="title">
-    <h1>Регистрация в летний физико-математический лагерь "Дельта" <span class="highlighted">на июль-август 2019 года</span> </h1>
+    <h1>Регистрация в летний физико-математический лагерь "Дельта" <span class="highlighted">на июль-август 2020 года</span> </h1>
 </div>
 
 <?php
@@ -60,23 +62,9 @@ if (!isset($_POST["ALL_DONE"]) || $_POST["ALL_DONE"] === "") {
                 <h3>Здравствуйте! Заполните, пожалуйста, регистрационную анкету.</h3>
                 <p>Поля, помеченные звёздочкой <span class="required">*</span> обязательны.</p>
                 <p id="known"><b>Если вы уже бывали в "Дельте"</b>, достаточно заполнить только поля<br>
-                    'Фамилия', 'Имя', 'Отчество' (если есть) и 'Дата рождения'.</p>
+                    'Фамилия', 'Имя' и 'Дата рождения'.</p>
             </div>
         </div>
-        <div class="row">
-            <div class="col-4">
-                E-Mail <span class="required">*</span><br>
-                <input class="text-input" name="email" type="email" required id="email" placeholder="ivan@ivanov.earth"
-                       title="Адрес электронной почты">
-                <br>
-                <span class="explanation">Ваш адрес электронной почты. На него придёт подтверждение регистрации.</span>
-            </div> <!-- col- -->
-            <div class="col-4">
-                Контактный телефон <span class="required">*</span><br>
-                <input name="tel" type="tel" required class="text-input" id="tel" title="Телефон для связи"
-                       placeholder="+71234567890">
-            </div> <!-- col- -->
-        </div> <!-- row -->
         <div class="row">
             <div class="col-3">
                 Фамилия <span class="required">*</span><br>
@@ -144,20 +132,47 @@ if (!isset($_POST["ALL_DONE"]) || $_POST["ALL_DONE"] === "") {
                     <br>
                     <span class="explanation">Всё, что Вы ещё хотели бы нам сообщить. Также Вы можете задать свои вопросы письмом на summer.camp.delta@gmail.com</span>
                 </p>
+            </div>
+        </div>
+        <div class="form-title ext">&nbsp;Данные об ответственном лице, заполнившем регистрацию&nbsp;</div>
+        <div class="row questionnaire">
+            <div class="col-4">
+                Имя<br>
+                <input class="text-input" name="regname" type="text" id="regname" placeholder="Мария Ивановна">
+                <br>
+                <span class="explanation">Как мы к Вам будем обращаться</span>
+            </div>
+            <div class="col-4">
+                E-Mail <span class="required">*</span><br>
+                <input class="text-input" name="email" type="email" required id="email" placeholder="ivan@ivanov.earth"
+                       title="Адрес электронной почты.">
+                <br>
+                <span class="explanation">Ваш адрес электронной почты. На него придёт подтверждение регистрации и прочие важные письма от нас.</span>
+            </div> <!-- col- -->
+            <div class="col-4">
+                Контактный телефон <span class="required">*</span><br>
+                <input name="tel" type="tel" required class="text-input" id="tel" title="Телефон для связи"
+                       placeholder="+71234567890">
+                <br>
+                <span class="explanation">Телефон родителей, не ребёнка!</span>
+            </div> <!-- col- -->
+        </div> <!-- row -->
+        <div class="row">
+            <div class="col-12">
                 <div class="indented" id="agree_box">На основании ст.64 п.1 Семейного кодекса РФ даю свое согласие на
-                    обработку указанных выше данных моего ребенка для участия в выездной школе, получения информации о
-                    школе, отъезде, возвращении. Использование данных для других целей не предусмотрено.<br>
-                    <b>Согласен</b><span class="required" title="Обязательно для заполнения.">*</span>:
-                    <input name="agree" id="agree" type="checkbox" value="agree" title="Согласие">
-                    <label for="agree"><span><span></span></span></label>
-                </div>
+                            обработку указанных выше данных моего ребенка для участия в выездной школе, получения информации о
+                            школе, отъезде, возвращении. Использование данных для других целей не предусмотрено.<br>
+                            <b>Согласен</b><span class="required" title="Обязательно для заполнения.">*</span>:
+                            <input name="agree" id="agree" type="checkbox" value="agree" title="Согласие">
+                            <label for="agree"><span><span></span></span></label>
+                        </div>
                 <p>
                     <input name="submit" type="submit" id="submit" value="Зарегистрировать">
                 </p>
+                <input name="ALL_DONE" type="hidden" id="ALL_DONE" value="Ok">
+                <p>&nbsp;<br></p>
             </div>
-        </div> <!-- col-6 row -->
-        <input name="ALL_DONE" type="hidden" id="ALL_DONE" value="Ok">
-        <p>&nbsp;<br></p>
+        </div>
     </form>
 </div> <!-- class "main" -->
 <?php
@@ -181,16 +196,7 @@ if (!isset($_POST["ALL_DONE"]) || $_POST["ALL_DONE"] === "") {
 
         // Если были в прошлом году
         if ($_POST["ALL_DONE"] === "Old" && $OldUID = $db->getOldUID($uniqueID)) {
-            // ...перекидываем фотографию из бекапа в новую папку
-            $source_pattern = "_2018/photos/" . $OldUID . ".*";
-            if ($all_source_photos = glob($source_pattern)) {
-                $source = $all_source_photos[0];
-                $dest = "photos/" . $uniqueID . ".JPG";
-                $result = copy($source, $dest);
-                if (!$result) error("Unable to copy photo from old account for UID: $uniqueID, old_UID: $OldUID");
-            }
-
-            // ... и отправляем письмо об успешной регистрации
+            // ... отправляем письмо об успешной регистрации
             try {
                 sendGreetingsMail($person);
             } catch (PHPMailer\PHPMailer\Exception $e) {
